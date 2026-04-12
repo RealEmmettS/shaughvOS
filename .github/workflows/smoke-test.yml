@@ -57,10 +57,18 @@ jobs:
         # Source globals in a subshell to test it loads
         bash -c '. /boot/shaughvos/func/shaughvos-globals && echo "G_SHAUGHVOS-NOTIFY function: $(type -t G_SHAUGHVOS-NOTIFY)"'
 
-    - name: Verify no dietpi references in scripts
+    - name: Verify no dietpi branding in scripts
       run: |
-        # Check for dietpi references, excluding man page attribution
+        # Check for dietpi branding — exclude legitimate upstream infrastructure:
+        # - dietpi.com URLs (real server for packages, docs, forums, APIs)
+        # - Author attribution lines (daniel.knight@dietpi.com, micha@dietpi.com)
+        # - Man page DietPi attribution
         pattern='diet''pi'
-        count=$(grep -ri "$pattern" shaughvos/ rootfs/ shaughvos.txt 2>/dev/null | grep -v '\.update/patches' | grep -vc 'foundation by Daniel Knight' || true)
-        echo "DietPi references found: $count"
+        count=$(grep -ri "$pattern" shaughvos/ rootfs/ shaughvos.txt 2>/dev/null \
+          | grep -v '\.update/patches' \
+          | grep -v 'dietpi\.com' \
+          | grep -v '@dietpi\.com' \
+          | grep -v 'foundation by Daniel Knight' \
+          | grep -vc '^$' || true)
+        echo "DietPi branding references found (excluding .com URLs and attribution): $count"
         [ "$count" -eq 0 ]
