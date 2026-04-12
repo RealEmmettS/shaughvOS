@@ -10483,6 +10483,7 @@ _EOF_
 				G_SHAUGHVOS-NOTIFY 2 'Generating MinIO server config'
 				# Password needs to be >=8 characters long
 				local minio_pw=$GLOBAL_PW
+				# shellcheck disable=SC2324
 				until (( ${#minio_pw} >= 8 )); do minio_pw+=$GLOBAL_PW; done
 				G_EXEC install -g minio-user -m 0640 /dev/null /etc/default/minio
 				cat << _EOF_ > /etc/default/minio || exit 1
