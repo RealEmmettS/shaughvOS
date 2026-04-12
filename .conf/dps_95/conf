@@ -1,5 +1,5 @@
 userlist_deny=YES
-local_root=/mnt/dietpi_userdata
+local_root=/mnt/shaughvos_userdata
 listen=YES
 listen_ipv6=NO
 anonymous_enable=NO
@@ -22,7 +22,7 @@ data_connection_timeout=30
 async_abor_enable=NO
 ascii_upload_enable=NO
 ascii_download_enable=NO
-ftpd_banner=DietPi FTP
+ftpd_banner=shaughvOS FTP
 #banned_email_file=/etc/vsftpd.banned_emails
 chroot_local_user=NO
 chroot_list_enable=NO

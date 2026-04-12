@@ -1,6 +1,6 @@
 #!/bin/bash
 {
-. /boot/dietpi/func/dietpi-globals || exit 1
+. /boot/shaughvos/func/shaughvos-globals || exit 1
 
 # APT dependencies
 # - SDL2
@@ -33,7 +33,7 @@ case $G_DISTRO in
 	7) adeps+=('libvpx7');;
 	8) adeps+=('libvpx9');;
 	9) adeps+=('libvpx11');;
-	*) G_DIETPI-NOTIFY 1 "Unsupported distro version: $G_DISTRO_NAME (ID=$G_DISTRO)"; exit 1;;
+	*) G_SHAUGHVOS-NOTIFY 1 "Unsupported distro version: $G_DISTRO_NAME (ID=$G_DISTRO)"; exit 1;;
 esac
 
 G_AGUP
@@ -42,7 +42,7 @@ for i in "${adeps[@]}"
 do
 	# Trixie library package names often have a t64 suffix due to 64-but time_t transition: https://wiki.debian.org/ReleaseGoals/64bit-time
 	dpkg-query -s "$i" &> /dev/null || dpkg-query -s "${i}t64" &> /dev/null && continue
-	G_DIETPI-NOTIFY 1 "Expected dependency package was not installed: $i"
+	G_SHAUGHVOS-NOTIFY 1 "Expected dependency package was not installed: $i"
 	exit 1
 done
 
@@ -50,8 +50,8 @@ done
 NAME='SDL2'
 PRETTY='SDL2'
 version=$(curl -sSf 'https://api.github.com/repos/libsdl-org/SDL/releases' | mawk -F\" '/^ *"name": "2./{print $4}' | head -1)
-[[ $version ]] || { G_DIETPI-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
-G_DIETPI-NOTIFY 2 "Building $PRETTY version \e[33m$version"
+[[ $version ]] || { G_SHAUGHVOS-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/libsdl-org/SDL/releases/download/release-$version/$NAME-$version.tar.gz"
 [[ -d $NAME-$version ]] && G_EXEC rm -R "$NAME-$version"
@@ -68,8 +68,8 @@ G_EXEC_OUTPUT=1 G_EXEC make install
 NAME='ZMusic'
 PRETTY='ZMusic'
 version=$(curl -sSf 'https://api.github.com/repos/ZDoom/ZMusic/releases/latest' | mawk -F\" '/^  "tag_name"/{print $4}')
-[[ $version ]] || { G_DIETPI-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
-G_DIETPI-NOTIFY 2 "Building $PRETTY version \e[33m$version"
+[[ $version ]] || { G_SHAUGHVOS-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/ZDoom/ZMusic/archive/$version.tar.gz"
 [[ -d $NAME-$version ]] && G_EXEC rm -R "$NAME-$version"
@@ -86,9 +86,9 @@ G_EXEC_OUTPUT=1 G_EXEC make -C build install
 NAME='freedoom'
 PRETTY='Freedoom'
 version=$(curl -sSf 'https://api.github.com/repos/freedoom/freedoom/releases/latest' | mawk -F\" '/^  "tag_name"/{print $4}')
-[[ $version ]] || { G_DIETPI-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
+[[ $version ]] || { G_SHAUGHVOS-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
 version=${version#v}
-G_DIETPI-NOTIFY 2 "Downloading $PRETTY version \e[33m$version"
+G_SHAUGHVOS-NOTIFY 2 "Downloading $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/freedoom/freedoom/releases/download/v$version/$NAME-$version.zip"
 G_EXEC curl -sSfLO "https://github.com/freedoom/freedoom/releases/download/v$version/freedm-$version.zip"
@@ -101,9 +101,9 @@ G_EXEC rm {"$NAME",freedm}"-$version.zip"
 NAME='gzdoom'
 PRETTY='GZDoom'
 version=$(curl -sSf 'https://api.github.com/repos/ZDoom/gzdoom/releases/latest' | mawk -F\" '/^  "tag_name"/{print $4}')
-[[ $version ]] || { G_DIETPI-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
+[[ $version ]] || { G_SHAUGHVOS-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
 version=${version#g}
-G_DIETPI-NOTIFY 2 "Building $PRETTY version \e[33m$version"
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 [[ -d $NAME ]] && G_EXEC rm -R "$NAME"
 G_EXEC_OUTPUT=1 G_EXEC git clone -b "$version" 'https://github.com/ZDoom/gzdoom'
@@ -120,7 +120,7 @@ G_EXEC strip --remove-section=.comment --remove-section=.note "build/$NAME"
 G_EXEC_OUTPUT=1 G_EXEC make -C build install
 
 # Prepare DEB package
-G_DIETPI-NOTIFY 2 "Building $PRETTY DEB package"
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY DEB package"
 G_EXEC mkdir -p "$DIR/"{DEBIAN,usr/lib/gzdoom}
 
 # - Libraries
@@ -147,10 +147,10 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version) || exit 1
 G_EXEC rm package.deb
-suffix=${old_version#*-dietpi}
-[[ $old_version == "$version-"* ]] && version+="-dietpi$((suffix+1))" || version+='-dietpi1'
-G_DIETPI-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
-G_DIETPI-NOTIFY 2 "Building new package version: \e[33m$version"
+suffix=${old_version#*-shaughvos}
+[[ $old_version == "$version-"* ]] && version+="-shaughvos$((suffix+1))" || version+='-shaughvos1'
+G_SHAUGHVOS-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
+G_SHAUGHVOS-NOTIFY 2 "Building new package version: \e[33m$version"
 
 # - control
 cat << _EOF_ > "$DIR/DEBIAN/control"

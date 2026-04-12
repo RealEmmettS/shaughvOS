@@ -1,0 +1,113 @@
+name: Release Images
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: 'Build targets'
+        type: choice
+        options: [all, rpi4, x86-pc, x86-vm]
+        default: all
+        required: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: write
+jobs:
+  prep:
+    outputs:
+      targets: ${{ steps.targets.outputs.targets }}
+      version: ${{ steps.version.outputs.version }}
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v6
+    - id: version
+      run: |
+        if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+          echo "version=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+        else
+          echo "version=dev-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+        fi
+    - id: targets
+      run: |
+        input='${{ github.event.inputs.targets }}'
+        if [ -z "$input" ] || [ "$input" = 'all' ]; then
+          echo 'targets=["rpi4", "x86-pc", "x86-vm"]' >> "$GITHUB_OUTPUT"
+        else
+          echo "targets=[\"$input\"]" >> "$GITHUB_OUTPUT"
+        fi
+
+  build:
+    needs: prep
+    strategy:
+      matrix:
+        target: ${{ fromJson(needs.prep.outputs.targets) }}
+      fail-fast: false
+    name: "Build: ${{ matrix.target }}"
+    runs-on: ${{ matrix.target == 'rpi4' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    steps:
+    - uses: actions/checkout@v6
+    - name: Build image
+      run: |
+        # Map target to shaughvos-build arguments
+        case '${{ matrix.target }}' in
+          rpi4)   model=4;  desc='RPi4-aarch64';;
+          x86-pc) model=21; desc='NativePC-x86_64';;
+          x86-vm) model=20; desc='VM-x86_64';;
+        esac
+
+        sudo systemctl --now mask ssh ssh.socket systemd-resolved azure-proxy-agent 2>/dev/null || true
+        echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf > /dev/null
+
+        sudo bash -c "G_GITOWNER=$GITHUB_REPOSITORY_OWNER G_GITBRANCH=$GITHUB_REF_NAME; \
+          $(curl -sSf "https://raw.githubusercontent.com/$GITHUB_REPOSITORY_OWNER/shaughvOS/$GITHUB_REF_NAME/.build/images/shaughvos-build" || echo false)" \
+          -- -m "$model" -o "$GITHUB_REPOSITORY_OWNER" -b "$GITHUB_REF_NAME"
+
+        # Find the output image
+        img=$(find . -maxdepth 1 -name '*.img.xz' -o -name '*.7z' | head -1)
+        if [ -z "$img" ]; then
+          echo "::error::No image file produced"
+          exit 1
+        fi
+
+        # Rename to standard format
+        version='${{ needs.prep.outputs.version }}'
+        mv "$img" "shaughvOS_${desc}_${version}.img.xz" 2>/dev/null || \
+        mv "$img" "shaughvOS_${desc}_${version}.${img##*.}"
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: shaughvOS-${{ matrix.target }}
+        path: shaughvOS_*
+        retention-days: 7
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [prep, build]
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v6
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts/
+
+    - name: Generate checksums
+      run: |
+        cd artifacts
+        find . -type f \( -name '*.img.xz' -o -name '*.7z' -o -name '*.iso' \) -exec sha256sum {} + | sed 's|  \./[^/]*/|  |' > SHA256SUMS.txt
+        cat SHA256SUMS.txt
+
+    - name: Create GitHub Release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        version='${{ needs.prep.outputs.version }}'
+        gh release create "$version" \
+          --title "shaughvOS $version" \
+          --generate-notes \
+          artifacts/*/* \
+          artifacts/SHA256SUMS.txt

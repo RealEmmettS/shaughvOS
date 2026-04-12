@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-Config
+Type=Application
+Comment=Feature rich config tool for shaughvOS
+Terminal=true
+Exec=/boot/shaughvos/shaughvos-config
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+Categories=ConsoleOnly;System;
+GenericName=shaughvOS-Config

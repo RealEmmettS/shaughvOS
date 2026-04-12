@@ -455,13 +455,13 @@ do
 		echo "Replacing \"${aREGEX[i]}\" with \"$release\" ..."
 
 		# Check whether regex exists in related code block
-		sed -n "/^\t\tif To_Install ${i%00?} /,/^\t\tfi$/p" dietpi/dietpi-software | grep -q "${aREGEX[i]}" || Exit_Error "Regex \"${aREGEX[i]}\" does not exist"
+		sed -n "/^\t\tif To_Install ${i%00?} /,/^\t\tfi$/p" shaughvos/shaughvos-software | grep -q "${aREGEX[i]}" || Exit_Error "Regex \"${aREGEX[i]}\" does not exist"
 
-		# Replace URL/version in dietpi-software
-		sed -i "/^\t\tif To_Install ${i%00?} /,/^\t\tfi$/s|${aREGEX[i]}|$release|" dietpi/dietpi-software
+		# Replace URL/version in shaughvos-software
+		sed -i "/^\t\tif To_Install ${i%00?} /,/^\t\tfi$/s|${aREGEX[i]}|$release|" shaughvos/shaughvos-software
 
 		# Verify that release has been added
-		sed -n "/^\t\tif To_Install ${i%00?} /,/^\t\tfi$/p" dietpi/dietpi-software | grep -q "$release" || Exit_Error "Release \"$release\" failed to be added"
+		sed -n "/^\t\tif To_Install ${i%00?} /,/^\t\tfi$/p" shaughvos/shaughvos-software | grep -q "$release" || Exit_Error "Release \"$release\" failed to be added"
 	fi
 
 	# Check for possibly newly supported architectures

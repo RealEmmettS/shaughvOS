@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-Update
+Type=Application
+Comment=Update your version of shaughvOS
+Terminal=true
+Exec=/boot/shaughvos/shaughvos-update
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+Categories=ConsoleOnly;System;
+GenericName=shaughvOS-Update

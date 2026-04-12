@@ -1,11 +1,11 @@
 #!/bin/bash
 {
-. /boot/dietpi/func/dietpi-globals || exit 1
-Error_Exit(){ G_DIETPI-NOTIFY 1 "$1, aborting ..."; exit 1; }
+. /boot/shaughvos/func/shaughvos-globals || exit 1
+Error_Exit(){ G_SHAUGHVOS-NOTIFY 1 "$1, aborting ..."; exit 1; }
 
 [[ $1 ]] && PLATFORM=$1
 [[ $PLATFORM ]] || { G_WHIP_DEFAULT_ITEM='rpi1-sdl2' G_WHIP_INPUTBOX 'Enter platform (default: "rpi1-sdl2"): https://github.com/BlitterStudio/amiberry/blob/master/Makefile'; PLATFORM=$G_WHIP_RETURNED_VALUE; }
-G_DIETPI-NOTIFY 2 "Amiberry will be built for platform: \e[33m$PLATFORM"
+G_SHAUGHVOS-NOTIFY 2 "Amiberry will be built for platform: \e[33m$PLATFORM"
 
 # Apply GitHub token if set
 header=()
@@ -39,7 +39,7 @@ done
 # Build libSDL2
 v_sdl=$(curl -sSf "${header[@]}" 'https://api.github.com/repos/libsdl-org/SDL/releases' | mawk -F\" '/^ *"name": "2./{print $4}' | head -1)
 [[ $v_sdl ]] || Error_Exit 'No latest LibSDL2 version found'
-G_DIETPI-NOTIFY 2 "Building libSDL2 version \e[33m$v_sdl"
+G_SHAUGHVOS-NOTIFY 2 "Building libSDL2 version \e[33m$v_sdl"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/libsdl-org/SDL/releases/download/release-$v_sdl/SDL2-$v_sdl.tar.gz"
 [[ -d /tmp/SDL2-$v_sdl ]] && G_EXEC rm -R "/tmp/SDL2-$v_sdl"
@@ -55,7 +55,7 @@ G_EXEC_OUTPUT=1 G_EXEC make install
 # Build libSDL2_image
 v_img=$(curl -sSf "${header[@]}" 'https://api.github.com/repos/libsdl-org/SDL_image/releases' | mawk -F\" '/^ *"name": "2./{print $4}' | head -1)
 [[ $v_img ]] || Error_Exit 'No latest libSDL2_image version found'
-G_DIETPI-NOTIFY 2 "Building libSDL2_image version \e[33m$v_img"
+G_SHAUGHVOS-NOTIFY 2 "Building libSDL2_image version \e[33m$v_img"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/libsdl-org/SDL_image/releases/download/release-$v_img/SDL2_image-$v_img.tar.gz"
 [[ -d /tmp/SDL2_image-$v_img ]] && G_EXEC rm -R "/tmp/SDL2_ttf-$v_img"
@@ -71,7 +71,7 @@ G_EXEC_OUTPUT=1 G_EXEC make install
 # Build libSDL2_ttf
 v_ttf=$(curl -sSf "${header[@]}" 'https://api.github.com/repos/libsdl-org/SDL_ttf/releases' | mawk -F\" '/^ *"name": "2./{print $4}' | head -1)
 [[ $v_ttf ]] || Error_Exit 'No latest libSDL2_ttf version found'
-G_DIETPI-NOTIFY 2 "Building libSDL2_ttf version \e[33m$v_ttf"
+G_SHAUGHVOS-NOTIFY 2 "Building libSDL2_ttf version \e[33m$v_ttf"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/libsdl-org/SDL_ttf/releases/download/release-$v_ttf/SDL2_ttf-$v_ttf.tar.gz"
 [[ -d /tmp/SDL2_ttf-$v_ttf ]] && G_EXEC rm -R "/tmp/SDL2_ttf-$v_ttf"
@@ -85,7 +85,7 @@ G_EXEC rm -f /usr/local/lib/libSDL2_ttf[.-]*
 G_EXEC_OUTPUT=1 G_EXEC make install
 
 # Build capsimg: IPF support
-G_DIETPI-NOTIFY 2 'Building capsimg'
+G_SHAUGHVOS-NOTIFY 2 'Building capsimg'
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO 'https://github.com/FrodeSolheim/capsimg/archive/master.tar.gz'
 [[ -d '/tmp/capsimg-master' ]] && G_EXEC rm -R /tmp/capsimg-master
@@ -104,7 +104,7 @@ G_EXEC strip --strip-unneeded --remove-section=.comment --remove-section=.note c
 # - ARMv6: v5.7.2 dropped support for Raspberry Pi 1, hence use v5.7.1
 # - Build v5.7.4 until v7.0.0 stable has been released. It requires a major rework, using cmake and no device-specific targets anymore.
 [[ $PLATFORM == 'rpi1'* ]] && v_ami='5.7.1' || v_ami='5.7.4'
-G_DIETPI-NOTIFY 2 "Building Amiberry version \e[33m$v_ami\e[90m for platform: \e[33m$PLATFORM"
+G_SHAUGHVOS-NOTIFY 2 "Building Amiberry version \e[33m$v_ami\e[90m for platform: \e[33m$PLATFORM"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/BlitterStudio/amiberry/archive/v$v_ami.tar.gz"
 [[ -d amiberry-$v_ami ]] && G_EXEC rm -R "amiberry-$v_ami"
@@ -114,35 +114,35 @@ G_EXEC cd "amiberry-$v_ami"
 # - Patch for latest C++
 curl -sSf 'https://github.com/BlitterStudio/amiberry/commit/d32a798.patch' | patch -p1 || Error_Exit 'Failed to apply patch to fix build with latest C++'
 # - Add lib to rpath
-G_EXEC sed --follow-symlinks -i '/^LDFLAGS = /s|$| -Wl,-rpath,/mnt/dietpi_userdata/amiberry/lib|' Makefile
+G_EXEC sed --follow-symlinks -i '/^LDFLAGS = /s|$| -Wl,-rpath,/mnt/shaughvos_userdata/amiberry/lib|' Makefile
 G_EXEC_OUTPUT=1 G_EXEC make "-j$(nproc)" "PLATFORM=$PLATFORM" # Passing compiler flags here overrides some mandatory ones in the Makefile, where -O3 is set as well.
 G_EXEC strip --remove-section=.comment --remove-section=.note amiberry
 
 # Prepare DEB package
-G_DIETPI-NOTIFY 2 'Building Amiberry DEB package'
+G_SHAUGHVOS-NOTIFY 2 'Building Amiberry DEB package'
 G_EXEC cd /tmp
 #DIR="amiberry_$PLATFORM"
 DIR='amiberry_armv6l'
 [[ -d $DIR ]] && G_EXEC rm -R "$DIR"
-G_EXEC mkdir -p "$DIR/"{DEBIAN,mnt/dietpi_userdata/amiberry/lib,lib/systemd/system}
+G_EXEC mkdir -p "$DIR/"{DEBIAN,mnt/shaughvos_userdata/amiberry/lib,lib/systemd/system}
 
 # - Copy files in place
-G_EXEC mv "/tmp/amiberry-$v_ami/"{abr,conf,controllers,data,kickstarts,plugins,savestates,screenshots,whdboot,amiberry} "$DIR/mnt/dietpi_userdata/amiberry/"
-G_EXEC cp -aL /usr/local/lib/libSDL2{,_image,_ttf}-2.0.so.0 "$DIR/mnt/dietpi_userdata/amiberry/lib/"
-G_EXEC cp -a /tmp/capsimg-master/capsimg.so "$DIR/mnt/dietpi_userdata/amiberry/lib/"
+G_EXEC mv "/tmp/amiberry-$v_ami/"{abr,conf,controllers,data,kickstarts,plugins,savestates,screenshots,whdboot,amiberry} "$DIR/mnt/shaughvos_userdata/amiberry/"
+G_EXEC cp -aL /usr/local/lib/libSDL2{,_image,_ttf}-2.0.so.0 "$DIR/mnt/shaughvos_userdata/amiberry/lib/"
+G_EXEC cp -a /tmp/capsimg-master/capsimg.so "$DIR/mnt/shaughvos_userdata/amiberry/lib/"
 
 # - systemd service
 cat << '_EOF_' > "$DIR/lib/systemd/system/amiberry.service"
 [Unit]
-Description=Amiberry Amiga Emulator (DietPi)
+Description=Amiberry Amiga Emulator (shaughvOS)
 Documentation=https://github.com/BlitterStudio/amiberry/wiki
 
 [Service]
-WorkingDirectory=/mnt/dietpi_userdata/amiberry
+WorkingDirectory=/mnt/shaughvos_userdata/amiberry
 StandardInput=tty
 TTYPath=/dev/tty3
 ExecStartPre=/bin/chvt 3
-ExecStart=/mnt/dietpi_userdata/amiberry/amiberry
+ExecStart=/mnt/shaughvos_userdata/amiberry/amiberry
 ExecStopPost=/bin/chvt 1
 
 [Install]
@@ -150,7 +150,7 @@ WantedBy=local-fs.target
 _EOF_
 
 # - conffiles
-echo '/mnt/dietpi_userdata/amiberry/conf/amiberry.conf' > "$DIR/DEBIAN/conffiles"
+echo '/mnt/shaughvos_userdata/amiberry/conf/amiberry.conf' > "$DIR/DEBIAN/conffiles"
 
 # - prerm
 cat << '_EOF_' > "$DIR/DEBIAN/prerm"
@@ -190,10 +190,10 @@ grep -q '^ID=raspbian' /etc/os-release && DEPS_APT_VERSIONED=$(sed 's/+rp[it][0-
 G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/amiberry_armv6l.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC rm package.deb
-suffix=${old_version#*-dietpi}
-[[ $old_version == "$v_ami-"* ]] && v_ami+="-dietpi$((suffix+1))" || v_ami+="-dietpi1"
-G_DIETPI-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
-G_DIETPI-NOTIFY 2 "Building new package version: \e[33m$v_ami"
+suffix=${old_version#*-shaughvos}
+[[ $old_version == "$v_ami-"* ]] && v_ami+="-shaughvos$((suffix+1))" || v_ami+="-shaughvos1"
+G_SHAUGHVOS-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
+G_SHAUGHVOS-NOTIFY 2 "Building new package version: \e[33m$v_ami"
 
 # - control
 cat << _EOF_ > "$DIR/DEBIAN/control"
@@ -216,7 +216,7 @@ G_CONFIG_INJECT 'Installed-Size: ' "Installed-Size: $(du -sk "$DIR" | mawk '{pri
 G_EXEC chown -R 0:0 "$DIR"
 G_EXEC find "$DIR" -type f -exec chmod 0644 {} +
 G_EXEC find "$DIR" -type d -exec chmod 0755 {} +
-G_EXEC chmod +x "$DIR/mnt/dietpi_userdata/amiberry/amiberry" "$DIR/DEBIAN/"{prerm,postrm}
+G_EXEC chmod +x "$DIR/mnt/shaughvos_userdata/amiberry/amiberry" "$DIR/DEBIAN/"{prerm,postrm}
 
 # Build DEB package
 G_EXEC_OUTPUT=1 G_EXEC dpkg-deb -b "$DIR"

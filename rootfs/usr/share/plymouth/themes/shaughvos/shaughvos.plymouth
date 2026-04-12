@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=shaughvOS
+Description=shaughvOS boot splash — SHAUGHV logo on black background
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/shaughvos
+ScriptFile=/usr/share/plymouth/themes/shaughvos/shaughvos.script

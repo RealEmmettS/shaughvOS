@@ -1,6 +1,6 @@
 #!/bin/bash
 {
-. /boot/dietpi/func/dietpi-globals || exit 1
+. /boot/shaughvos/func/shaughvos-globals || exit 1
 
 # Apply GitHub token if set
 header=()
@@ -17,7 +17,7 @@ for i in "${adeps[@]}"
 do
 	# Trixie library package names often have a t64 suffix due to 64-but time_t transition: https://wiki.debian.org/ReleaseGoals/64bit-time
 	dpkg-query -s "$i" &> /dev/null || dpkg-query -s "${i}t64" &> /dev/null && continue
-	G_DIETPI-NOTIFY 1 "Expected dependency package was not installed: $i"
+	G_SHAUGHVOS-NOTIFY 1 "Expected dependency package was not installed: $i"
 	exit 1
 done
 
@@ -26,8 +26,8 @@ NAME='unbound'
 ORGA='NLnetLabs'
 PRETTY='Unbound'
 version=$(curl -sSf "${header[@]}" "https://api.github.com/repos/$ORGA/$NAME/releases/latest" | mawk -F\" '/^  "tag_name"/{print $4}')
-[[ $version ]] || { G_DIETPI-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
-G_DIETPI-NOTIFY 2 "Building $PRETTY version \e[33m${version#release-}"
+[[ $version ]] || { G_SHAUGHVOS-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY version \e[33m${version#release-}"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/$ORGA/$NAME/archive/$version.tar.gz"
 [[ -d $NAME-$version ]] && G_EXEC rm -R "$NAME-$version"
@@ -43,7 +43,7 @@ DIR="/tmp/${NAME}_$G_HW_ARCH_NAME"
 G_EXEC_OUTPUT=1 G_EXEC make DESTDIR="$DIR" install
 
 # Prepare DEB package
-G_DIETPI-NOTIFY 2 "Building $PRETTY DEB package"
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY DEB package"
 # shellcheck disable=SC2046
 G_EXEC rm -R $(find "$DIR" -name '*unbound-anchor*' -o -name '*unbound-host*') "$DIR/usr/"{share/man/man[13],include,lib}
 G_EXEC mkdir -p "$DIR/"{DEBIAN,etc/unbound/unbound.conf.d,share/doc/unbound/examples,lib/systemd/system}
@@ -78,7 +78,7 @@ server:
     auto-trust-anchor-file: "/var/lib/unbound/root.key"
 _EOF_
 
-cat << '_EOF_' > "$DIR/etc/unbound/unbound.conf.d/dietpi.conf" || exit 1
+cat << '_EOF_' > "$DIR/etc/unbound/unbound.conf.d/shaughvos.conf" || exit 1
 # https://nlnetlabs.nl/documentation/unbound/unbound.conf/
 server:
 	# Do not daemonize, to allow proper systemd service control and status estimation.
@@ -102,7 +102,7 @@ server:
 	port: 53
 
 	# Control IP ranges which should be able to use this Unbound instance.
-	# The DietPi defaults permit access from official local network IP ranges only, hence requests from www are denied.
+	# The shaughvOS defaults permit access from official local network IP ranges only, hence requests from www are denied.
 	access-control: 0.0.0.0/0 refuse
 	access-control: 10.0.0.0/8 allow
 	access-control: 127.0.0.1/8 allow
@@ -114,7 +114,7 @@ server:
 	access-control: fe80::/10 allow
 
 	# Private IP ranges, which shall never be returned or forwarded as public DNS response.
-	# NB: 127.0.0.1/8 is sometimes used by adblock lists, hence DietPi by default allows those as response.
+	# NB: 127.0.0.1/8 is sometimes used by adblock lists, hence shaughvOS by default allows those as response.
 	private-address: 10.0.0.0/8
 	private-address: 172.16.0.0/12
 	private-address: 192.168.0.0/16
@@ -138,7 +138,7 @@ server:
 	# Set EDNS reassembly buffer size to match new upstream default, as of DNS Flag Day 2020 recommendation.
 	edns-buffer-size: 1232
 
-	# Disable ECS module, matching new Unbound defaults, and mute 2 warnings: https://github.com/NLnetLabs/unbound/commit/35dbbcb, https://github.com/MichaIng/DietPi/issues/7539#issuecomment-2906900497
+	# Disable ECS module, matching new Unbound defaults, and mute 2 warnings: https://github.com/NLnetLabs/unbound/commit/35dbbcb, https://github.com/RealEmmettS/shaughvOS/issues/7539#issuecomment-2906900497
 	module-config: "validator iterator"
 
 	# Increase incoming and outgoing query buffer size to cover traffic peaks.
@@ -177,7 +177,7 @@ cat << '_EOF_' > "$DIR/DEBIAN/conffiles" || exit 1
 /etc/unbound/unbound.conf
 /etc/unbound/unbound.conf.d/remote-control.conf
 /etc/unbound/unbound.conf.d/root-auto-trust-anchor-file.conf
-/etc/unbound/unbound.conf.d/dietpi.conf
+/etc/unbound/unbound.conf.d/shaughvos.conf
 _EOF_
 
 # - service
@@ -204,10 +204,10 @@ _EOF_
 # - postinst
 cat << _EOF_ > "$DIR/DEBIAN/postinst" || exit 1
 #!/bin/dash -e
-if ! ip -6 r l ::/0 > /dev/null && [ -f '/etc/unbound/unbound.conf.d/dietpi.conf' ] && grep -q '^	do-ip6: yes$' /etc/unbound/unbound.conf.d/dietpi.conf
+if ! ip -6 r l ::/0 > /dev/null && [ -f '/etc/unbound/unbound.conf.d/shaughvos.conf' ] && grep -q '^	do-ip6: yes$' /etc/unbound/unbound.conf.d/shaughvos.conf
 then
 	echo 'Disabling $PRETTY IPv6 usage since no IPv6 default route is assigned'
-	sed --follow-symlinks -i 's/^	do-ip6: yes$/	do-ip6: no/' /etc/unbound/unbound.conf.d/dietpi.conf
+	sed --follow-symlinks -i 's/^	do-ip6: yes$/	do-ip6: no/' /etc/unbound/unbound.conf.d/shaughvos.conf
 fi
 
 if [ -d '/run/systemd/system' ]
@@ -313,10 +313,10 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 G_EXEC_NOHALT=1 G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC_NOHALT=1 G_EXEC rm package.deb
-suffix=${old_version#*-dietpi}
-[[ $old_version == "$version-"* ]] && version+="-dietpi$((suffix+1))" || version+="-dietpi1"
-G_DIETPI-NOTIFY 2 "Old package version is:       \e[33m$old_version"
-G_DIETPI-NOTIFY 2 "Building new package version: \e[33m$version"
+suffix=${old_version#*-shaughvos}
+[[ $old_version == "$version-"* ]] && version+="-shaughvos$((suffix+1))" || version+="-shaughvos1"
+G_SHAUGHVOS-NOTIFY 2 "Old package version is:       \e[33m$old_version"
+G_SHAUGHVOS-NOTIFY 2 "Building new package version: \e[33m$version"
 
 # - control
 cat << _EOF_ > "$DIR/DEBIAN/control"

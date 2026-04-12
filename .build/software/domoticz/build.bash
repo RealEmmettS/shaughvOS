@@ -1,7 +1,7 @@
 #!/bin/bash
 {
-. /boot/dietpi/func/dietpi-globals || exit 1
-Error_Exit(){ G_DIETPI-NOTIFY 1 "$1, aborting ..."; exit 1; }
+. /boot/shaughvos/func/shaughvos-globals || exit 1
+Error_Exit(){ G_SHAUGHVOS-NOTIFY 1 "$1, aborting ..."; exit 1; }
 
 # Apply GitHub token if set
 header=()
@@ -23,7 +23,7 @@ do
 	dpkg-query -s "$i" &> /dev/null || Error_Exit "Expected dependency package was not installed: $i"
 done
 
-G_DIETPI-NOTIFY 2 'Building OpenZWave'
+G_SHAUGHVOS-NOTIFY 2 'Building OpenZWave'
 G_EXEC cd /tmp
 # Full clone needed for "git describe", used in build to obtain full version string
 G_EXEC_OUTPUT=1 G_EXEC git clone 'https://github.com/domoticz/open-zwave' open-zwave-read-only
@@ -36,7 +36,7 @@ ORGA='domoticz'
 PRETTY='Domoticz'
 version=$(curl -sSf "${header[@]}" "https://api.github.com/repos/$ORGA/$NAME/releases/latest" | mawk -F\" '/^  "tag_name"/{print $4}')
 [[ $version ]] || Error_Exit "No latest $PRETTY version found"
-G_DIETPI-NOTIFY 2 "Building $PRETTY version \e[33m$version"
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 [[ -d $NAME ]] && G_EXEC rm -R "$NAME"
 G_EXEC_OUTPUT=1 G_EXEC git clone --depth=1 --recurse-submodules --shallow-submodules -b "$version" "https://github.com/$ORGA/$NAME"
@@ -54,30 +54,30 @@ G_EXEC strip --remove-section=.comment --remove-section=.note "$DIR/opt/$NAME/$N
 G_EXEC rm "$DIR/opt/$NAME/scripts/"{_domoticz_main.bat,download_update.sh,install.sh,restart_domoticz,update_domoticz}
 
 # Prepare DEB package
-G_DIETPI-NOTIFY 2 "Building $PRETTY DEB package"
-G_EXEC mkdir -p "$DIR/"{DEBIAN,lib/systemd/system,"mnt/dietpi_userdata/$NAME",etc/sudoers.d}
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY DEB package"
+G_EXEC mkdir -p "$DIR/"{DEBIAN,lib/systemd/system,"mnt/shaughvos_userdata/$NAME",etc/sudoers.d}
 
 # - configs
-G_EXEC mv "$DIR/opt/$NAME/scripts/$NAME.conf" "$DIR/mnt/dietpi_userdata/$NAME/"
-G_EXEC mv "$DIR/opt/$NAME/scripts" "$DIR/mnt/dietpi_userdata/$NAME/"
-G_EXEC sed --follow-symlinks -i '/^# Disable update checking$/,/^$/d' "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-grep 'updates=' "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf" && Error_Exit 'Internal updater section still present in config file'
-G_CONFIG_INJECT 'http_port=' 'http_port=0' "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-G_CONFIG_INJECT 'ssl_port=' 'ssl_port=8424' "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-G_CONFIG_INJECT 'ssl_cert=' "ssl_cert=/opt/$NAME/server_cert.pem" "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-G_CONFIG_INJECT 'ssl_key=' "ssl_key=/opt/$NAME/server_cert.pem" "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-G_CONFIG_INJECT 'ssl_dhparam=' "ssl_dhparam=/opt/$NAME/server_cert.pem" "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-G_CONFIG_INJECT 'loglevel=' 'loglevel=error' "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-G_CONFIG_INJECT 'syslog=' 'syslog=local7' "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-G_CONFIG_INJECT 'dbase_file=' "dbase_file=/mnt/dietpi_userdata/$NAME/$NAME.db" "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-G_CONFIG_INJECT 'app_path=' "app_path=/opt/$NAME" "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
-G_CONFIG_INJECT 'userdata_path=' "userdata_path=/mnt/dietpi_userdata/$NAME" "$DIR/mnt/dietpi_userdata/$NAME/$NAME.conf"
+G_EXEC mv "$DIR/opt/$NAME/scripts/$NAME.conf" "$DIR/mnt/shaughvos_userdata/$NAME/"
+G_EXEC mv "$DIR/opt/$NAME/scripts" "$DIR/mnt/shaughvos_userdata/$NAME/"
+G_EXEC sed --follow-symlinks -i '/^# Disable update checking$/,/^$/d' "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+grep 'updates=' "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf" && Error_Exit 'Internal updater section still present in config file'
+G_CONFIG_INJECT 'http_port=' 'http_port=0' "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+G_CONFIG_INJECT 'ssl_port=' 'ssl_port=8424' "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+G_CONFIG_INJECT 'ssl_cert=' "ssl_cert=/opt/$NAME/server_cert.pem" "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+G_CONFIG_INJECT 'ssl_key=' "ssl_key=/opt/$NAME/server_cert.pem" "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+G_CONFIG_INJECT 'ssl_dhparam=' "ssl_dhparam=/opt/$NAME/server_cert.pem" "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+G_CONFIG_INJECT 'loglevel=' 'loglevel=error' "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+G_CONFIG_INJECT 'syslog=' 'syslog=local7' "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+G_CONFIG_INJECT 'dbase_file=' "dbase_file=/mnt/shaughvos_userdata/$NAME/$NAME.db" "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+G_CONFIG_INJECT 'app_path=' "app_path=/opt/$NAME" "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
+G_CONFIG_INJECT 'userdata_path=' "userdata_path=/mnt/shaughvos_userdata/$NAME" "$DIR/mnt/shaughvos_userdata/$NAME/$NAME.conf"
 
 # - sudoers: permit shutdown/restart from web UI
 G_EXEC eval "echo '$NAME ALL=NOPASSWD: $(command -v shutdown)' > '$DIR/etc/sudoers.d/$NAME'"
 
 # - conffiles
-find "$DIR/mnt/dietpi_userdata/$NAME" -type f | sed "s|^$DIR||" > "$DIR/DEBIAN/conffiles" || exit 1
+find "$DIR/mnt/shaughvos_userdata/$NAME" -type f | sed "s|^$DIR||" > "$DIR/DEBIAN/conffiles" || exit 1
 G_EXEC eval "echo '/etc/sudoers.d/$NAME' >> '$DIR/DEBIAN/conffiles'"
 
 # - service
@@ -89,13 +89,13 @@ After=network-online.target
 
 [Service]
 User=$NAME
-ExecStart=/opt/$NAME/$NAME -f /mnt/dietpi_userdata/$NAME/$NAME.conf
+ExecStart=/opt/$NAME/$NAME -f /mnt/shaughvos_userdata/$NAME/$NAME.conf
 
 # Hardening
 ProtectSystem=strict
 ProtectHome=true
 PrivateTmp=yes
-ReadWritePaths=/mnt/dietpi_userdata/$NAME
+ReadWritePaths=/mnt/shaughvos_userdata/$NAME
 
 [Install]
 WantedBy=multi-user.target
@@ -109,19 +109,19 @@ then
 	if getent passwd $NAME > /dev/null
 	then
 		echo 'Configuring $PRETTY service user "$NAME" ...'
-		usermod -aG dialout -d /mnt/dietpi_userdata/$NAME -s /usr/sbin/nologin $NAME
+		usermod -aG dialout -d /mnt/shaughvos_userdata/$NAME -s /usr/sbin/nologin $NAME
 	else
 		echo 'Creating $PRETTY service user "$NAME" ...'
-		useradd -rMU -G dialout -d /mnt/dietpi_userdata/$NAME -s /usr/sbin/nologin $NAME
+		useradd -rMU -G dialout -d /mnt/shaughvos_userdata/$NAME -s /usr/sbin/nologin $NAME
 	fi
 
-	echo 'Setting up $PRETTY data dir "/mnt/dietpi_userdata/$NAME" ...'
-	chown -R '$NAME:$NAME' /mnt/dietpi_userdata/$NAME
+	echo 'Setting up $PRETTY data dir "/mnt/shaughvos_userdata/$NAME" ...'
+	chown -R '$NAME:$NAME' /mnt/shaughvos_userdata/$NAME
 
 	echo 'Configuring $PRETTY systemd service ...'
 	systemctl --no-reload unmask $NAME
 	systemctl enable $NAME
-	pgrep -x 'dietpi-software' > /dev/null || systemctl restart $NAME
+	pgrep -x 'shaughvos-software' > /dev/null || systemctl restart $NAME
 fi
 _EOF_
 
@@ -147,10 +147,10 @@ then
 		rm -rv /etc/systemd/system/$NAME.service.d
 	fi
 
-	if [ -d '/mnt/dietpi_userdata/$NAME' ]
+	if [ -d '/mnt/shaughvos_userdata/$NAME' ]
 	then
 		echo 'Removing $PRETTY data dir ...'
-		rm -rv /mnt/dietpi_userdata/$NAME
+		rm -rv /mnt/shaughvos_userdata/$NAME
 	fi
 
 	if getent passwd $NAME > /dev/null
@@ -184,10 +184,10 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC rm package.deb
-suffix=${old_version#*-dietpi}
-[[ $old_version == "$version-"* ]] && version+="-dietpi$((suffix+1))" || version+="-dietpi1"
-G_DIETPI-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
-G_DIETPI-NOTIFY 2 "Building new package version: \e[33m$version"
+suffix=${old_version#*-shaughvos}
+[[ $old_version == "$version-"* ]] && version+="-shaughvos$((suffix+1))" || version+="-shaughvos1"
+G_SHAUGHVOS-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
+G_SHAUGHVOS-NOTIFY 2 "Building new package version: \e[33m$version"
 
 # - control
 cat << _EOF_ > "$DIR/DEBIAN/control"

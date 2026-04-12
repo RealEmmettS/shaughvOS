@@ -1,0 +1,26 @@
+#!/bin/dash
+{
+	#////////////////////////////////////
+	# shaughvOS PreBoot Script
+	#
+	#////////////////////////////////////
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
+	#
+	#////////////////////////////////////
+	#
+	# Info:
+	# - Location: /boot/shaughvos/preboot
+	# - Runs on boot from shaughvos-preboot.service before network and shaughvos-postboot.service
+	#////////////////////////////////////
+
+	# Obtain hardware info: Do on every boot since some contained info can change, especially when allowing RPi SD card swap
+	/boot/shaughvos/func/shaughvos-obtain_hw_model
+	. /boot/shaughvos/.hw_model
+
+	# Apply CPU governor and settings on physical machines
+	[ "$G_HW_MODEL" = 20 ] || [ "$G_HW_MODEL" = 75 ] || /boot/shaughvos/func/shaughvos-set_cpu
+
+	#-----------------------------------------------------------------------------------
+	exit 0
+	#-----------------------------------------------------------------------------------
+}

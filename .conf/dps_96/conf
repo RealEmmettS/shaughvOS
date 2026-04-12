@@ -23,12 +23,12 @@
 	printcap name = /dev/null
 	disable spoolss = yes
 
-[dietpi]
-	comment = DietPi Share
-	path = /mnt/dietpi_userdata
+[shaughvos]
+	comment = shaughvOS Share
+	path = /mnt/shaughvos_userdata
 	browseable = yes
 	create mask = 0664
 	directory mask = 0775
-	valid users = dietpi
+	valid users = shaughvos
 	writeable = yes
 	max connections = 1

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-Services
+Type=Application
+Comment=Control system services and apply process tool tweaks
+Terminal=true
+Exec=/boot/shaughvos/shaughvos-services
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+Categories=ConsoleOnly;System;
+GenericName=shaughvOS-Services

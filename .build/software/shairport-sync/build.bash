@@ -1,6 +1,6 @@
 #!/bin/bash
 {
-. /boot/dietpi/func/dietpi-globals
+. /boot/shaughvos/func/shaughvos-globals
 
 # -------------------------
 # ------- AirPlay 1 -------
@@ -14,13 +14,13 @@ adeps2=('libsodium23' 'libgcrypt20')
 case $G_DISTRO in
 	7) adeps+=('libconfig9'); adeps2+=('libavcodec59' 'libplist3');;
 	8|9) adeps+=('libconfig11'); adeps2+=('libavcodec61' 'libplist-2.0-4');;
-	*) G_DIETPI-NOTIFY 1 "Unsupported distro version: $G_DISTRO_NAME (ID=$G_DISTRO)"; exit 1;;
+	*) G_SHAUGHVOS-NOTIFY 1 "Unsupported distro version: $G_DISTRO_NAME (ID=$G_DISTRO)"; exit 1;;
 esac
 for i in "${adeps[@]}" "${adeps2[@]}"
 do
 	# Temporarily allow lib*t64 packages, while the 64-bit time_t transition is ongoing on Trixie: https://bugs.debian.org/1065394
 	dpkg-query -s "$i" &> /dev/null || dpkg-query -s "${i}t64" &> /dev/null && continue
-	G_DIETPI-NOTIFY 1 "Expected dependency package was not installed: $i"
+	G_SHAUGHVOS-NOTIFY 1 "Expected dependency package was not installed: $i"
 	exit 1
 done
 
@@ -29,10 +29,10 @@ NAME='shairport-sync'
 PRETTY='Shairport Sync'
 repo='https://github.com/mikebrady/shairport-sync'
 version=$(curl -sSf 'https://api.github.com/repos/mikebrady/shairport-sync/releases/latest' | mawk -F\" '/^  "tag_name"/{print $4;exit}')
-[[ $version ]] || { G_DIETPI-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
+[[ $version ]] || { G_SHAUGHVOS-NOTIFY 1 "No latest $PRETTY version found, aborting ..."; exit 1; }
 
 # Download
-G_DIETPI-NOTIFY 2 "Downloading $PRETTY version \e[33m$version"
+G_SHAUGHVOS-NOTIFY 2 "Downloading $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "$repo/archive/$version.tar.gz"
 [[ -d $NAME-$version ]] && G_EXEC rm -R "$NAME-$version"
@@ -40,7 +40,7 @@ G_EXEC tar xf "$version.tar.gz"
 G_EXEC rm "$version.tar.gz"
 
 # Compile
-G_DIETPI-NOTIFY 2 "Compiling $PRETTY"
+G_SHAUGHVOS-NOTIFY 2 "Compiling $PRETTY"
 G_EXEC cd "$NAME-$version"
 G_EXEC_OUTPUT=1 G_EXEC autoreconf -fiW all
 CFLAGS='-g0 -O3' CXXFLAGS='-g0 -O3' G_EXEC_OUTPUT=1 G_EXEC ./configure --with-alsa --with-avahi --with-ssl=openssl --with-soxr --with-metadata --with-systemd --with-dbus-interface --with-mpris-interface --with-mqtt-client --with-pipe --with-stdout
@@ -48,7 +48,7 @@ G_EXEC_OUTPUT=1 G_EXEC make
 G_EXEC strip --remove-section=.comment --remove-section=.note "$NAME"
 
 # Package dir: In case of Raspbian, force ARMv6
-G_DIETPI-NOTIFY 2 "Preparing $PRETTY DEB package directory"
+G_SHAUGHVOS-NOTIFY 2 "Preparing $PRETTY DEB package directory"
 G_EXEC cd /tmp
 grep -q '^ID=raspbian' /etc/os-release && G_HW_ARCH_NAME='armv6l'
 DIR="${NAME}_$G_HW_ARCH_NAME"
@@ -306,7 +306,7 @@ then
 	echo 'Configuring $PRETTY systemd service ...'
 	systemctl --no-reload unmask $NAME
 	systemctl enable $NAME
-	pgrep -x 'dietpi-software' || systemctl restart $NAME
+	pgrep -x 'shaughvos-software' || systemctl restart $NAME
 fi
 _EOF_
 
@@ -367,10 +367,10 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC rm package.deb
-suffix=${old_version#*-dietpi}
-[[ $old_version == "$version-"* ]] && suffix="dietpi$((suffix+1))" || suffix="dietpi1"
-G_DIETPI-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
-G_DIETPI-NOTIFY 2 "Building new package version: \e[33m$version-$suffix"
+suffix=${old_version#*-shaughvos}
+[[ $old_version == "$version-"* ]] && suffix="shaughvos$((suffix+1))" || suffix="shaughvos1"
+G_SHAUGHVOS-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
+G_SHAUGHVOS-NOTIFY 2 "Building new package version: \e[33m$version-$suffix"
 
 # - control
 cat << _EOF_ > "$DIR/DEBIAN/control"
@@ -459,12 +459,12 @@ then
 	echo 'Configuring NQPTP systemd service ...'
 	systemctl --no-reload unmask nqptp
 	systemctl enable nqptp
-	pgrep -x 'dietpi-software' || systemctl restart nqptp
+	pgrep -x 'shaughvos-software' || systemctl restart nqptp
 
 	echo 'Configuring $PRETTY systemd service ...'
 	systemctl --no-reload unmask $NAME
 	systemctl enable $NAME
-	pgrep -x 'dietpi-software' || systemctl restart $NAME
+	pgrep -x 'shaughvos-software' || systemctl restart $NAME
 fi
 _EOF_
 

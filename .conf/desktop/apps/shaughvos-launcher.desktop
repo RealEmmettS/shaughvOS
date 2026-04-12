@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-Launcher
+Type=Application
+Comment=Menu system that allows you to run any of the shaughvOS programs.
+Terminal=true
+Exec=/boot/shaughvos/shaughvos-launcher
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+Categories=ConsoleOnly;System;
+GenericName=shaughvOS-Launcher

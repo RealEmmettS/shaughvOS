@@ -1,0 +1,35 @@
+name: Rebrand Audit
+on: [pull_request, push]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.owner.login != github.event.pull_request.base.repo.owner.login
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v6
+    - name: Count remaining DietPi references
+      run: |
+        echo '--- Rebrand Progress Audit ---'
+        # Count all dietpi references (case-insensitive), excluding allowlisted files
+        # Note: the grep pattern below is split across a variable to avoid self-matching
+        pattern='diet''pi'
+        count=$(grep -ri --exclude-dir='.git' \
+          --exclude='rebrand-audit.yml' \
+          --exclude='CHANGELOG.txt' \
+          "$pattern" . | \
+          grep -v '^./README.md:' | \
+          grep -vc '^./.update/patches:' || true)
+        echo "Total references remaining (excluding allowlist): $count"
+        echo "REBRAND_COUNT=$count" >> "$GITHUB_ENV"
+    - name: Report results
+      run: |
+        echo "::notice::Rebrand progress: $REBRAND_COUNT old references remaining (target: 0)"
+        if [ "$REBRAND_COUNT" -eq 0 ]; then
+          echo '::notice::Rebrand complete!'
+        else
+          echo "::warning::$REBRAND_COUNT old references still present in the codebase"
+        fi

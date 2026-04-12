@@ -1,0 +1,12 @@
+[Unit]
+Description=shaughvOS-CloudShell on main screen (tty1)
+Documentation=https://dietpi.com/docs/software/system_stats/#shaughvos-cloudshell
+
+[Service]
+StandardOutput=tty
+TTYPath=/dev/tty1
+ExecStart=/boot/shaughvos/shaughvos-cloudshell 1
+ExecStopPost=/bin/echo 'shaughvOS-CloudShell terminated, have a nice day!'
+
+[Install]
+WantedBy=multi-user.target

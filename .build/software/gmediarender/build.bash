@@ -1,6 +1,6 @@
 #!/bin/bash
 {
-. /boot/dietpi/func/dietpi-globals
+. /boot/shaughvos/func/shaughvos-globals
 
 # Build deps
 G_AGUP
@@ -11,7 +11,7 @@ for i in "${adeps[@]}"
 do
 	# Temporarily allow lib*t64 packages, while the 64-bit time_t transition is ongoing on Trixie: https://bugs.debian.org/1065394
 	dpkg-query -s "$i" &> /dev/null || dpkg-query -s "${i}t64" &> /dev/null && continue
-	G_DIETPI-NOTIFY 1 "Expected dependency package was not installed: $i"
+	G_SHAUGHVOS-NOTIFY 1 "Expected dependency package was not installed: $i"
 	exit 1
 done
 
@@ -20,10 +20,10 @@ name='gmediarender'
 name_pretty='GMediaRender'
 repo='https://github.com/hzeller/gmrender-resurrect'
 version=$(curl -sSf 'https://api.github.com/repos/hzeller/gmrender-resurrect/releases/latest' | mawk -F\" '/^  "tag_name"/{print $4}')
-[[ $version ]] || { G_DIETPI-NOTIFY 1 "No latest $name_pretty version found, aborting ..."; exit 1; }
+[[ $version ]] || { G_SHAUGHVOS-NOTIFY 1 "No latest $name_pretty version found, aborting ..."; exit 1; }
 
 # Download
-G_DIETPI-NOTIFY 2 "Downloading $name_pretty version \e[33m$version"
+G_SHAUGHVOS-NOTIFY 2 "Downloading $name_pretty version \e[33m$version"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "$repo/archive/$version.tar.gz"
 [[ -d gmrender-resurrect-${version#v} ]] && G_EXEC rm -R "gmrender-resurrect-${version#v}"
@@ -32,7 +32,7 @@ G_EXEC rm "$version.tar.gz"
 version=${version#v}
 
 # Compile
-G_DIETPI-NOTIFY 2 "Compiling $name_pretty"
+G_SHAUGHVOS-NOTIFY 2 "Compiling $name_pretty"
 G_EXEC cd "gmrender-resurrect-$version"
 G_EXEC_OUTPUT=1 G_EXEC ./autogen.sh
 CFLAGS='-g0 -O3' G_EXEC_OUTPUT=1 G_EXEC ./configure --prefix='/usr'
@@ -40,7 +40,7 @@ G_EXEC_OUTPUT=1 G_EXEC make
 G_EXEC strip --remove-section=.comment --remove-section=.note "src/$name"
 
 # Package dir: In case of Raspbian, force ARMv6
-G_DIETPI-NOTIFY 2 "Preparing $name_pretty DEB package directory"
+G_SHAUGHVOS-NOTIFY 2 "Preparing $name_pretty DEB package directory"
 G_EXEC cd /tmp
 grep -q '^ID=raspbian' /etc/os-release && G_HW_ARCH_NAME='armv6l'
 DIR="gmediarender_$G_HW_ARCH_NAME"
@@ -61,7 +61,7 @@ G_EXEC cp "gmrender-resurrect-$version/COPYING" "$DIR/usr/share/doc/gmediarender
 # systemd service
 cat << '_EOF_' >  "$DIR/lib/systemd/system/$name.service"
 [Unit]
-Description=GMediaRender (DietPi)
+Description=GMediaRender (shaughvOS)
 Documentation=https://github.com/hzeller/gmrender-resurrect/blob/master/INSTALL.md#commandline-options
 Wants=network-online.target
 After=network-online.target sound.target
@@ -94,10 +94,10 @@ then
 	if [ -f '/etc/default/gmediarender' ] && grep -q '\-u UUID -f HOSTNAME -I eth0' /etc/default/gmediarender
 	then
 		echo 'Setting up environment file /etc/default/gmediarender ...'
-		[ ! -f '/boot/dietpi/.hw_model' ] || . /boot/dietpi/.hw_model
+		[ ! -f '/boot/shaughvos/.hw_model' ] || . /boot/shaughvos/.hw_model
 		[ "$G_HW_UUID" ] || read -r G_HW_UUID < /proc/sys/kernel/random/uuid
 		read -r HOSTNAME < /etc/hostname
-		[ "$HOSTNAME" ] || HOSTNAME='DietPi'
+		[ "$HOSTNAME" ] || HOSTNAME='shaughvOS'
 		INTERFACE=$(ip r l 0/0 | awk '{print $5;exit}')
 		[ "$INTERFACE" ] || INTERFACE=$(ip -br a | awk '$2=="UP"{print $1;exit}')
 		[ "$INTERFACE" ] || exit 1
@@ -116,7 +116,7 @@ then
 	echo 'Configuring GMediaRender systemd service ...'
 	systemctl --no-reload unmask gmediarender
 	systemctl enable gmediarender
-	pgrep -x 'dietpi-software' > /dev/null || systemctl restart gmediarender
+	pgrep -x 'shaughvos-software' > /dev/null || systemctl restart gmediarender
 fi
 _EOF_
 
@@ -177,10 +177,10 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/${name}_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version) || exit 1
 G_EXEC rm package.deb
-suffix=${old_version#*-dietpi}
-[[ $old_version == "$version-"* ]] && version+="-dietpi$((suffix+1))" || version+='-dietpi1'
-G_DIETPI-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
-G_DIETPI-NOTIFY 2 "Building new package version: \e[33m$version"
+suffix=${old_version#*-shaughvos}
+[[ $old_version == "$version-"* ]] && version+="-shaughvos$((suffix+1))" || version+='-shaughvos1'
+G_SHAUGHVOS-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
+G_SHAUGHVOS-NOTIFY 2 "Building new package version: \e[33m$version"
 
 # control
 cat << _EOF_ > "$DIR/DEBIAN/control"

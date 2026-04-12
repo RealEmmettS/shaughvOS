@@ -20,7 +20,7 @@ jobs:
         { sudo apt-get -q update; sudo DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends -qq install make gcc libc6-dev flex bison gcc-riscv64-linux-gnu bc libssl-dev; } &
         { curl -fO 'https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/snapshot/linux-rolling-stable.tar.gz'; tar xf linux-rolling-stable.tar.gz; rm linux-rolling-stable.tar.gz; } &
         wait
-        curl -sSfo linux-rolling-stable/arch/riscv64/configs/visionfive2_defconfig "https://raw.githubusercontent.com/$GITHUB_REPOSITORY_OWNER/DietPi/$GITHUB_REF_NAME/.build/images/VisionFive2/visionfive2_defconfig" &
+        curl -sSfo linux-rolling-stable/arch/riscv64/configs/visionfive2_defconfig "https://raw.githubusercontent.com/$GITHUB_REPOSITORY_OWNER/shaughvOS/$GITHUB_REF_NAME/.build/images/VisionFive2/visionfive2_defconfig" &
         rm -Rf linux-image-visionfive2
         mkdir -p linux-image-visionfive2/DEBIAN linux-image-visionfive2/boot/extlinux
         wait
@@ -43,13 +43,13 @@ jobs:
         wait
         cur_version=$(dpkg-deb -f linux-image-visionfive2.deb Version)
         rm linux-image-visionfive2.deb
-        cur_suffix=${cur_version#*-dietpi}
+        cur_suffix=${cur_version#*-shaughvos}
         echo "Current package version is:  $cur_version"
         echo "New kernel version is:       $version"
-        [ "$version-dietpi$cur_suffix" = "$cur_version" ] && version="$version-dietpi$((cur_suffix+1))" || version="$version-dietpi1"
+        [ "$version-shaughvos$cur_suffix" = "$cur_version" ] && version="$version-shaughvos$((cur_suffix+1))" || version="$version-shaughvos1"
         echo "New package version will be: $version"
         cat << '_EOF_' > linux-image-visionfive2/boot/extlinux/extlinux.conf
-        label DietPi
+        label shaughvOS
         linux /boot/vmlinuz
         fdt /boot/jh7110-starfive-visionfive-2-v1.3b.dts
         append root=/dev/mmcblk0p1 rootfstype=ext4 rootwait fsck.repair=yes earlycon=uart8250,mmio32,0xfe660000 console=ttyS2,1500000n8 console=tty1 consoleblank=0 net.ifnames=0

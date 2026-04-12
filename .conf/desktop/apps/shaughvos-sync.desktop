@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-Sync
+Type=Application
+Comment=Duplicate (Sync) one location to another
+Terminal=true
+Exec=/boot/shaughvos/shaughvos-sync
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+Categories=ConsoleOnly;Utility;Archiving;
+GenericName=shaughvOS-Sync

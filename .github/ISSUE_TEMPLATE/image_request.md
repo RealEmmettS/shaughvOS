@@ -1,6 +1,6 @@
 ---
 name: Image request
-about: Suggest a new SBC to be added to the official support and image list of DietPi
+about: Suggest a new SBC to be added to the official support and image list of shaughvOS
 ---
 
 ### Creating an image request

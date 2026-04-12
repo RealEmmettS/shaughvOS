@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-JustBoom
+Type=Application
+Comment=Tweak your sound card, MPD and CAVA settings
+Terminal=true
+Exec=/boot/shaughvos/misc/shaughvos-justboom
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/justboom.png
+Categories=ConsoleOnly;System;AudioVideo;
+GenericName=shaughvOS-JustBoom

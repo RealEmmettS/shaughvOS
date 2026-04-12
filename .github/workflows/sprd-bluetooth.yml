@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - name: Build
-      run: sudo bash -c "$(curl -sSf "https://raw.githubusercontent.com/$GITHUB_REPOSITORY_OWNER/DietPi/$GITHUB_REF_NAME/.build/software/sprd-bluetooth/build.bash")"
+      run: sudo bash -c "$(curl -sSf "https://raw.githubusercontent.com/$GITHUB_REPOSITORY_OWNER/shaughvOS/$GITHUB_REF_NAME/.build/software/sprd-bluetooth/build.bash")"
     - name: Upload
       run: |
         # SSH server and client keys

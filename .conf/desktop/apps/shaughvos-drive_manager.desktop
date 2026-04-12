@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-Drive Manager
+Type=Application
+Comment=Mount local and network drives
+Terminal=true
+Exec=/boot/shaughvos/shaughvos-drive_manager
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+Categories=ConsoleOnly;System;
+GenericName=shaughvOS-Drive_Manager

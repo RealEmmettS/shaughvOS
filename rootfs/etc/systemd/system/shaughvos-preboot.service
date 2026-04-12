@@ -1,0 +1,15 @@
+[Unit]
+Description=shaughvOS-PreBoot
+After=shaughvos-ramlog.service
+Wants=network-pre.target
+Before=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+StandardOutput=journal+console
+SyslogIdentifier=shaughvOS-PreBoot
+ExecStart=/boot/shaughvos/preboot
+
+[Install]
+WantedBy=multi-user.target

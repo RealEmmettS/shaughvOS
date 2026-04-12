@@ -1,11 +1,11 @@
 #!/bin/bash
 {
-if [[ -f '/boot/dietpi/func/dietpi-globals' ]]
+if [[ -f '/boot/shaughvos/func/shaughvos-globals' ]]
 then
-	. /boot/dietpi/func/dietpi-globals || exit 1
+	. /boot/shaughvos/func/shaughvos-globals || exit 1
 else
 	# shellcheck disable=SC1090
-	. <(curl -sSf "https://raw.githubusercontent.com/${G_GITOWNER:-MichaIng}/DietPi/${G_GITBRANCH:-master}/dietpi/func/dietpi-globals") || exit 1
+	. <(curl -sSf "https://raw.githubusercontent.com/${G_GITOWNER:-RealEmmettS}/shaughvOS/${G_GITBRANCH:-master}/shaughvos/func/shaughvos-globals") || exit 1
 fi
 
 ### data files
@@ -75,7 +75,7 @@ G_EXEC chmod +x DEBIAN/preinst
 
 cat << _EOF_ > DEBIAN/control
 Package: raspberrypi-sys-mods
-Version: 2:20251027-dietpi1
+Version: 2:20251027-shaughvos1
 Architecture: all
 Maintainer: MichaIng <micha@dietpi.com>
 Date: $(date -uR)
@@ -83,7 +83,7 @@ Installed-Size: $(du -sk | mawk '{print $1}')
 Section: admin
 Priority: optional
 Homepage: https://github.com/RPi-Distro/raspberrypi-sys-mods
-Description: System tweaks for the Raspberry Pi, DietPi edition
+Description: System tweaks for the Raspberry Pi, shaughvOS edition
 _EOF_
 G_CONFIG_INJECT 'Installed-Size: ' "Installed-Size: $(du -sk | mawk '{print $1}')" DEBIAN/control
 

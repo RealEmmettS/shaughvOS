@@ -25,7 +25,7 @@ jobs:
         wait
         curl -sSfo "u-boot-$uboot_version/ddr.bin" 'https://raw.githubusercontent.com/armbian/rkbin/master/rk35/rk3566_ddr_1056MHz_v1.21.bin' &
         curl -sSfo "u-boot-$uboot_version/bl31.elf" 'https://raw.githubusercontent.com/armbian/rkbin/master/rk35/rk3568_bl31_v1.44.elf' &
-        curl -sSfo linux-rolling-stable/arch/arm64/configs/quartz64_defconfig "https://raw.githubusercontent.com/$GITHUB_REPOSITORY_OWNER/DietPi/$GITHUB_REF_NAME/.build/images/Quartz64/quartz64_defconfig" &
+        curl -sSfo linux-rolling-stable/arch/arm64/configs/quartz64_defconfig "https://raw.githubusercontent.com/$GITHUB_REPOSITORY_OWNER/shaughvOS/$GITHUB_REF_NAME/.build/images/Quartz64/quartz64_defconfig" &
         rm -Rf firmware-quartz64a
         mkdir -p firmware-quartz64a/DEBIAN firmware-quartz64a/boot/extlinux firmware-quartz64a/lib/firmware/brcm
         rm -Rf firmware-quartz64b
@@ -38,7 +38,7 @@ jobs:
         export ROCKCHIP_TPL='ddr.bin'
         export BL31='bl31.elf'
         cd "u-boot-$uboot_version"
-        # Disable UEFI boot manager, which causes issues in some circumstances: https://github.com/MichaIng/DietPi/issues/7709
+        # Disable UEFI boot manager, which causes issues in some circumstances: https://github.com/RealEmmettS/shaughvOS/issues/7709
         echo 'CONFIG_BOOTMETH_EFI_BOOTMGR=n' >> configs/quartz64-a-rk3566_defconfig
         # Add Btrfs support to U-Boot incl. btrsubvol command
         echo 'CONFIG_CMD_BTRFS=y' >> configs/quartz64-a-rk3566_defconfig
@@ -87,14 +87,14 @@ jobs:
         wait
         cur_version=$(dpkg-deb -f firmware-quartz64a.deb Version)
         rm firmware-quartz64a.deb
-        cur_suffix=${cur_version#*-dietpi}
+        cur_suffix=${cur_version#*-shaughvos}
         echo "Current package version is:  $cur_version"
         echo "New kernel version is:       $version"
-        [ "$version-dietpi$cur_suffix" = "$cur_version" ] && version="$version-dietpi$((cur_suffix+1))" || version="$version-dietpi1"
+        [ "$version-shaughvos$cur_suffix" = "$cur_version" ] && version="$version-shaughvos$((cur_suffix+1))" || version="$version-shaughvos1"
         echo "New package version will be: $version"
         cp firmware-quartz64a/lib/firmware/brcm/brcmfmac43455-sdio.txt firmware-soquartz/lib/firmware/brcm/
         cat << '_EOF_' > firmware-quartz64a/boot/extlinux/extlinux.conf
-        label DietPi
+        label shaughvOS
         linux /boot/vmlinuz
         fdt /boot/rk3566-quartz64-a.dtb
         append root=/dev/mmcblk0p1 rootfstype=ext4 rootwait fsck.repair=yes earlycon=uart8250,mmio32,0xfe660000 console=ttyS2,1500000n8 console=tty1 consoleblank=0 net.ifnames=0

@@ -190,7 +190,7 @@ jobs:
         owner='${{ github.event.inputs.gitowner }}'
         [ "$owner" ] || owner='MichaIng'
         branch='${{ github.event.inputs.gitbranch }}'
-        [ "$branch" ] || branch='dietpi'
+        [ "$branch" ] || branch='shaughvos'
         git clone -b "$branch" "https://github.com/$owner/build"
         [ '${{ github.event.inputs.rebase }}' == 'false' ] && exit 0 || :
         cd build
@@ -198,13 +198,13 @@ jobs:
         git config user.email '${{ github.repository.owner.email }}'
         if [ "$owner" != 'MichaIng' ]
         then
-            git remote add dietpi https://github.com/MichaIng/build
-            git fetch dietpi dietpi
-            git rebase dietpi/dietpi
-        elif [ "$branch" != 'dietpi' ]
+            git remote add shaughvos https://github.com/MichaIng/build
+            git fetch shaughvos shaughvos
+            git rebase shaughvos/shaughvos
+        elif [ "$branch" != 'shaughvos' ]
         then
-            git fetch origin dietpi
-            git rebase origin/dietpi
+            git fetch origin shaughvos
+            git rebase origin/shaughvos
         fi
         if [ "$owner" != 'armbian' ]
         then
@@ -236,11 +236,11 @@ jobs:
         then
             cur_version=$(dpkg-deb -f "$package.deb" Version)
             rm "$package.deb"
-            cur_suffix=${cur_version#*-dietpi}
+            cur_suffix=${cur_version#*-shaughvos}
             echo "Current package version is:  $cur_version"
         fi
         echo "New Armbian version is:      $version"
-        [ "$version-dietpi$cur_suffix" = "$cur_version" ] && version="$version-dietpi$((cur_suffix+1))" || version="$version-dietpi1"
+        [ "$version-shaughvos$cur_suffix" = "$cur_version" ] && version="$version-shaughvos$((cur_suffix+1))" || version="$version-shaughvos1"
         echo "New package version will be: $version"
         echo "$version" > VERSION
     - name: Build asset

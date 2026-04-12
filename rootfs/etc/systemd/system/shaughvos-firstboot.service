@@ -1,0 +1,16 @@
+[Unit]
+Description=shaughvOS-FirstBoot setup
+Requisite=shaughvos-preboot.service
+After=shaughvos-preboot.service
+Wants=getty-pre.target
+Before=network-pre.target getty-pre.target shaughvos-postboot.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+StandardOutput=tty
+ExecStartPre=/bin/mkdir -p /var/tmp/shaughvos/logs
+ExecStart=/bin/dash -c '/var/lib/shaughvos/services/shaughvos-firstboot.bash 2>&1 | tee /var/tmp/shaughvos/logs/shaughvos-firstboot.log'
+
+[Install]
+WantedBy=multi-user.target

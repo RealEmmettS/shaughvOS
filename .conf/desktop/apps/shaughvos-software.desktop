@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-Software
+Type=Application
+Comment=Quickly and easily install shaughvOS optimized software.
+Terminal=true
+Exec=/boot/shaughvos/shaughvos-software
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+Categories=ConsoleOnly;System;
+GenericName=shaughvOS-Software

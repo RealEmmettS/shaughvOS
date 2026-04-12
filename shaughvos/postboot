@@ -1,0 +1,64 @@
+#!/bin/dash
+{
+	#////////////////////////////////////
+	# shaughvOS PostBoot Script
+	#
+	#////////////////////////////////////
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
+	#
+	#////////////////////////////////////
+	#
+	# Info:
+	# - Location: /boot/shaughvos/postboot
+	# - Run on boot from shaughvos-postboot.service after shaughvos-preboot.service and optionally after network
+	#////////////////////////////////////
+
+	read -r G_SHAUGHVOS_INSTALL_STAGE < /boot/shaughvos/.install_stage
+
+	# Pre-installed image, 1st run
+	if [ "$G_SHAUGHVOS_INSTALL_STAGE" = 10 ]
+	then
+		# Create swap file
+		/boot/shaughvos/func/shaughvos-set_swapfile
+
+		# Continue with normal boot
+		echo 2 > /boot/shaughvos/.install_stage
+	fi
+
+	# Regular boot
+	if [ "$G_SHAUGHVOS_INSTALL_STAGE" = 2 ] || [ "$G_SHAUGHVOS_INSTALL_STAGE" = 10 ]
+	then
+		# Run network time sync and check for shaughvOS updates if chosen, both in background
+		if grep -q '^[[:blank:]]*CONFIG_CHECK_SHAUGHVOS_UPDATES=1' /boot/shaughvos.txt
+		then
+			# Network time sync is included in every shaughvos-update call
+			/boot/shaughvos/shaughvos-update 2 > /dev/null 2>&1 &
+		else
+			/boot/shaughvos/func/run_ntpd > /dev/null 2>&1 &
+		fi
+	fi
+
+	# Execute optional user scripts
+	for f in /var/lib/shaughvos/postboot.d/*
+	do
+		# shellcheck disable=2015
+		[ "${f##*/}" != 'readme.txt' ] && [ -f "$f" ] || continue
+		[ -x "$f" ] || chmod +x "$f"
+		echo "\e[90m[\e[0m INFO \e[90m] shaughvOS-PostBoot | Running user script: ${f##*/}\e[0m"
+		"$f" || echo "\e[90m[\e[31mFAILED\e[90m] shaughvOS-PostBoot |\e[0m User script ${f##*/} failed with exit code: $?"
+	done
+
+	# Print shaughvOS login banner if no autologin selected
+	if [ ! -f '/etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf' ]
+	then
+		echo
+		/boot/shaughvos/func/shaughvos-banner 0
+		# Print default login credentials only on first boot
+		[ "$G_SHAUGHVOS_INSTALL_STAGE" = 2 ] || echo '\n Default Login:\n Username = root\n Password = shaughvos (or custom shaughvos.txt entry)'
+		echo '\n Please hit <return> to login\n'
+	fi
+
+	#-----------------------------------------------------------------------------------
+	exit 0
+	#-----------------------------------------------------------------------------------
+}

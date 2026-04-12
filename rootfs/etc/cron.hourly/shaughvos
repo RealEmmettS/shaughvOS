@@ -1,0 +1,38 @@
+#!/bin/bash
+{
+	#////////////////////////////////////
+	# shaughvOS Cron.Hourly script
+	#
+	#////////////////////////////////////
+	#
+	# Info:
+	# - Location: /etc/cron.hourly/shaughvos
+	#
+	#////////////////////////////////////
+
+	# Assure that whiptail dialogues are skipped, even when the script is called manually, since STDOUT is redirected
+	export G_INTERACTIVE=0
+
+	#----------------------------------------------------------------
+	# Main Loop
+	#----------------------------------------------------------------
+	# Sync system time, if mode 3 (hourly) is detected
+	grep -q '^[[:blank:]]*CONFIG_NTP_MODE=3' /boot/shaughvos.txt && /boot/shaughvos/func/run_ntpd 1
+	#----------------------------------------------------------------
+	# Clear /var/log files, if shaughvOS-RAMlog is detected
+	[[ -f '/boot/shaughvos/.installed' ]] && INDEX_LOGGING=$(sed -n '/^[[:blank:]]*INDEX_LOGGING=/{s/^[^=]*=//p;q}' /boot/shaughvos/.installed)
+	# - Mode -1: Clear only
+	if (( ${INDEX_LOGGING:=0} == -1 )); then
+
+		/boot/shaughvos/func/shaughvos-logclear 1
+
+	# - Mode -2: Append logs at /root/logfile_storage, then clear
+	elif (( $INDEX_LOGGING == -2 )); then
+
+		/boot/shaughvos/func/shaughvos-logclear 0
+
+	fi
+	#----------------------------------------------------------------
+	exit
+	#----------------------------------------------------------------
+} > /dev/null

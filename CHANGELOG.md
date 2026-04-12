@@ -1,0 +1,64 @@
+# shaughvOS Changelog
+
+All notable changes to shaughvOS are documented in this file.
+
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [Unreleased]
+
+### Added
+- QubeTX 300 Series integration (software IDs 218-220):
+  - TR-300 (`tr300`) — machine report with system info and resource graphs
+  - ND-300 (`nd300` + `speedqx`) — network diagnostics and quad-provider speed test
+  - SD-300 (`sd300`) — real-time interactive system diagnostic TUI
+- Xfce desktop with Dracula theme (GTK, WM, terminal, Papirus-Dark icons)
+- Makira sans-serif font for system UI
+- IBM Plex Mono font for terminal
+- Custom desktop wallpaper (`assets/desktop_background.jpg`)
+- `desktop on/off/status` toggle command (`rootfs/usr/local/bin/desktop`)
+- Plymouth boot splash with SHAUGHV logo (white on black)
+- ASCII art terminal splash with TR-300 auto-run (`rootfs/etc/bashrc.d/shaughvos.bash`)
+- Man pages: `desktop(1)`, `shaughvos(1)`
+- Rebrand audit CI workflow (`.github/workflows/rebrand-audit.yml`)
+- Xfce bottom panel layout (app menu, tasklist, systray, clock, actions)
+- Xfce Terminal Dracula color scheme
+
+### Changed
+- **Complete rebrand from DietPi to shaughvOS:**
+  - Renamed `dietpi/` directory to `shaughvos/`
+  - Renamed all 27 scripts, 17 library functions, 9 systemd services
+  - Renamed `dietpi.txt` to `shaughvos.txt`
+  - Replaced all internal path references (`/boot/dietpi/` -> `/boot/shaughvos/`, etc.)
+  - Replaced all branding strings (DietPi -> shaughvOS)
+  - Replaced all function names (G_DIETPI-NOTIFY -> G_SHAUGHVOS-NOTIFY, etc.)
+  - Updated all GitHub URLs to `RealEmmettS/shaughvOS`
+  - Updated all GITOWNER defaults to `RealEmmettS`
+- Version reset from DietPi v10.2 RC3 to shaughvOS v1.0.0
+- Default hostname: `shaughvOS`
+- Default password: `shaughvos`
+- Default autostart: desktop autologin (Xfce, index 2)
+- Auto-install: Xfce (25) + QubeTX TR-300 (218) + ND-300 (219) + SD-300 (220)
+- `AUTO_SETUP_AUTOMATED=1` for unattended first boot
+- README rewritten with shaughvOS branding and DietPi attribution
+- SECURITY.md, BRANCH_SYSTEM.md, GitHub templates updated for shaughvOS
+- CLAUDE.md updated to reflect post-rebrand codebase
+
+### Removed
+- `dietpi-survey` — DietPi telemetry system (sent data to DietPi servers)
+- `SURVEY_OPTED_IN` config and all survey references across the codebase
+- All DietPi branding, logos, and references (except attribution in README)
+
+---
+
+## [0.0.0] — 2026-04-12
+
+Initial fork from [DietPi v10.2 RC3](https://github.com/MichaIng/DietPi) by Emmett Shaughnessy.
+
+- Added shaughvOS documentation, branding assets, and custom fonts
+- Added `QUBETX_INTEGRATION.md` aspirational goals document
+- Added SHAUGHV logo (`assets/shaughv-logo.svg`)
+- Added desktop wallpaper (`assets/desktop_background.jpg`)
+- Added Makira font (6 weights) and IBM Plex Mono font (14 variants)
