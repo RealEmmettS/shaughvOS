@@ -487,6 +487,10 @@ exit 0
 _EOF_
 G_EXEC chmod +x rootfs/etc/rc.local
 
+# Ensure DNS resolution works inside the container
+G_EXEC rm -f rootfs/etc/resolv.conf
+G_EXEC eval "echo 'nameserver 1.1.1.1' > rootfs/etc/resolv.conf"
+
 # Start container
 # - Bind mounts required to allow container reading its own drive info, /dev/disk for GRUB and probably other tools to detect UUIDs
 # - Skip for container images
