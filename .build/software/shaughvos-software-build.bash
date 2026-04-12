@@ -179,7 +179,7 @@ G_CONFIG_INJECT 'CONFIG_CHECK_CONNECTION_IP=' 'CONFIG_CHECK_CONNECTION_IP=127.0.
 # Shutdown on failures before the custom script is executed
 G_EXEC sed --follow-symlinks -i 's|Prompt_on_Failure$|{ journalctl -n 50; ss -tulpn; df -h; free -h; systemctl start poweroff.target; }|' rootfs/boot/shaughvos/shaughvos-login
 
-# Avoid shaughvOS-Survey uploads to not mess with the statistics
+# Avoid unintended uploads from build images
 G_EXEC rm rootfs/root/.ssh/known_hosts
 
 # Automated build

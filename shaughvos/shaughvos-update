@@ -46,7 +46,7 @@
 
 	# Git repo to update from
 	GITOWNER_TARGET=$(sed -n '/^[[:blank:]]*DEV_GITOWNER=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt)
-	GITOWNER_TARGET=${GITOWNER_TARGET:-MichaIng}
+	GITOWNER_TARGET=${GITOWNER_TARGET:-RealEmmettS}
 	GITBRANCH_TARGET=$(sed -n '/^[[:blank:]]*DEV_GITBRANCH=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt)
 	GITBRANCH_TARGET=${GITBRANCH_TARGET:-master}
 
@@ -496,9 +496,6 @@ Do you wish to continue and update shaughvOS to v$G_REMOTE_VERSION_CORE.$G_REMOT
 				INFO_VERSIONS_UPDATE
 				G_SHAUGHVOS-NOTIFY 2 "$INFO_CURRENT_VERSION"
 				G_SHAUGHVOS-NOTIFY 2 "$INFO_REMOTE_VERSION"
-
-				# Update shaughvOS-Survey
-				/boot/shaughvos/shaughvos-survey 1
 
 				# Failsafe: Force sync to disk
 				G_EXEC sync

@@ -464,7 +464,7 @@ G_CONFIG_INJECT 'CONFIG_CHECK_CONNECTION_IP=' 'CONFIG_CHECK_CONNECTION_IP=127.0.
 G_CONFIG_INJECT 'DEV_GITBRANCH=' "DEV_GITBRANCH=$G_GITBRANCH" rootfs/boot/shaughvos.txt
 G_CONFIG_INJECT 'DEV_GITOWNER=' "DEV_GITOWNER=$G_GITOWNER" rootfs/boot/shaughvos.txt
 
-# Avoid shaughvOS-Survey uploads to not mess with the statistics
+# Avoid unintended uploads from build images
 G_EXEC rm rootfs/root/.ssh/known_hosts
 
 # Apply software IDs to install

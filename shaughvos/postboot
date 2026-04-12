@@ -21,9 +21,6 @@
 		# Create swap file
 		/boot/shaughvos/func/shaughvos-set_swapfile
 
-		# Run survey
-		/boot/shaughvos/shaughvos-survey
-
 		# Continue with normal boot
 		echo 2 > /boot/shaughvos/.install_stage
 	fi

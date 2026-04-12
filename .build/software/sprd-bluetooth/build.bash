@@ -4,7 +4,7 @@ if [[ -f '/boot/shaughvos/func/shaughvos-globals' ]]
 then
 	. /boot/shaughvos/func/shaughvos-globals || exit 1
 else
-	curl -sSf "https://raw.githubusercontent.com/${G_GITOWNER:-MichaIng}/shaughvOS/${G_GITBRANCH:-master}/shaughvos/func/shaughvos-globals" -o /tmp/shaughvos-globals || exit 1
+	curl -sSf "https://raw.githubusercontent.com/${G_GITOWNER:-RealEmmettS}/shaughvOS/${G_GITBRANCH:-master}/shaughvos/func/shaughvos-globals" -o /tmp/shaughvos-globals || exit 1
 	# shellcheck disable=SC1091
 	. /tmp/shaughvos-globals || exit 1
 	G_EXEC_NOHALT=1 G_EXEC rm /tmp/shaughvos-globals

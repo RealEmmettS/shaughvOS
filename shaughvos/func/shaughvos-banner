@@ -97,7 +97,7 @@
 	GREEN_SEPARATOR="${aCOLOUR[0]}:$COLOUR_RESET"
 
 	SHAUGHVOS_VERSION="$G_SHAUGHVOS_VERSION_CORE.$G_SHAUGHVOS_VERSION_SUB.$G_SHAUGHVOS_VERSION_RC"
-	if [[ $G_GITOWNER != 'MichaIng' ]]
+	if [[ $G_GITOWNER != 'RealEmmettS' ]]
 	then
 		SHAUGHVOS_VERSION+=" ($G_GITOWNER/$G_GITBRANCH)"
 
@@ -114,7 +114,7 @@
 		read -r AVAILABLE_UPDATE < /run/shaughvos/.update_available
 		local owner=$(sed -n '/^[[:blank:]]*DEV_GITOWNER=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt)
 		local branch=$(sed -n '/^[[:blank:]]*DEV_GITBRANCH=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt)
-		if [[ ${owner:-MichaIng} != 'MichaIng' ]]
+		if [[ ${owner:-RealEmmettS} != 'RealEmmettS' ]]
 		then
 			AVAILABLE_UPDATE+=" ($owner/$branch)"
 

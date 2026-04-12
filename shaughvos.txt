@@ -354,7 +354,7 @@ SOFTWARE_ROONSERVER_EARLYACCESS=0
 ##### Dev settings #####
 #------------------------------------------------------------------------------------------------------
 DEV_GITBRANCH=master
-DEV_GITOWNER=MichaIng
+DEV_GITOWNER=RealEmmettS
 
 #------------------------------------------------------------------------------------------------------
 ##### Settings, automatically added by shaughvos-update #####

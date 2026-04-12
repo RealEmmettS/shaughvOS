@@ -162,7 +162,7 @@ Available commands:
 		if [[ ! -f '/root/.ssh/known_hosts' ]] || ! grep -Eq '^\[?ssh.shaughvos.com(]:29248)?[[:blank:]]' /root/.ssh/known_hosts
 		then
 			# If missing, offer to re-add it
-			if G_WHIP_YESNO '[WARNING] ssh.shaughvos.com SSH host key is missing\n\nOur ssh.shaughvos.com SSH host key, required to send or purge survey data and bug reports, is missing in /root/.ssh/known_hosts. Shall we re-create it to proceed with sending/purging the bug report?'
+			if G_WHIP_YESNO '[WARNING] ssh.shaughvos.com SSH host key is missing\n\nOur ssh.shaughvos.com SSH host key, required to send or purge bug reports, is missing in /root/.ssh/known_hosts. Shall we re-create it to proceed with sending/purging the bug report?'
 			then
 				[[ -d '/root/.ssh' ]] || G_EXEC mkdir /root/.ssh
 				[[ -f '/root/.ssh/known_hosts' ]] || > /root/.ssh/known_hosts

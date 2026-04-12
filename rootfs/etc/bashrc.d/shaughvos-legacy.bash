@@ -39,7 +39,6 @@
 	alias shaughvos-update='/boot/shaughvos/shaughvos-update'
 	alias shaughvos-drive_manager='/boot/shaughvos/shaughvos-drive_manager'
 	alias shaughvos-logclear='/boot/shaughvos/func/shaughvos-logclear'
-	alias shaughvos-survey='/boot/shaughvos/shaughvos-survey'
 	alias shaughvos-explorer='/boot/shaughvos/shaughvos-explorer'
 	alias shaughvos-banner='/boot/shaughvos/func/shaughvos-banner'
 	alias shaughvos-justboom='/boot/shaughvos/misc/shaughvos-justboom'

@@ -72,18 +72,6 @@ BENCH_NET_LAN_SPEED='$BENCH_NET_LAN_SPEED'
 _EOF_
 	}
 
-	Upload_Survey()
-	{
-		if grep -q '^[[:blank:]]*SURVEY_OPTED_IN=1$' /boot/shaughvos.txt
-		then
-			/boot/shaughvos/shaughvos-survey 1
-
-		elif G_WHIP_YESNO 'To upload and compare your results against other users, you must be opted in to the shaughvOS-Survey.\n\nWould you like to run shaughvOS-Survey now, allowing you to opt in?'
-		then
-			/boot/shaughvos/shaughvos-survey
-		fi
-	}
-
 	CPU_Benchmark()
 	{
 		G_SHAUGHVOS-NOTIFY 2 "Running CPU benchmark with max value of 1000000 over $G_HW_CPU_CORES cores, please wait..."
@@ -185,7 +173,7 @@ _EOF_
 		fi
 	}
 
-	Benchmark_Survey()
+	Benchmark_Full_Suite()
 	{
 		[[ -d '/var/lib/shaughvos/shaughvos-benchmark' ]] || G_EXEC mkdir /var/lib/shaughvos/shaughvos-benchmark
 
@@ -260,23 +248,19 @@ _EOF_
 		/boot/shaughvos/shaughvos-services stop
 		case $1 in
 			1) Filesystem_Benchmark;;
-			2) Benchmark_Survey;;
+			2) Benchmark_Full_Suite;;
 			4) Benchmark_Lan_Client;;
 			*) { G_SHAUGHVOS-NOTIFY 1 "Run_Benchmark: Invalid input \"$1\", aborting ..."; return 1; }
 		esac
 		/boot/shaughvos/shaughvos-services start
 		# Export results data for other scripts
 		Save_Results
-		# Upload if in survey, else, prompt
-		Upload_Survey
 	}
 
 	Menu_Full_Benchmark()
 	{
 		G_WHIP_YESNO "$G_PROGRAM_NAME will now run the following benchmarks:\n - CPU performance\n - RootFS read/write performance\n - RAM read/write performance
 \nThe test duration depends on hardware specs, ranging from a few seconds up to a few minutes on slower hardware like Raspberry Pi 1 and Zero (1) models.
-\nIf you are opted in to the shaughvOS-Survey, your scores will uploaded automatically.
-You can compare results against other users and hardware using the following link:\n - https://shaughvos.com/survey#benchmark
 \nPlease select 'Ok' to begin the benchmark tests." || return 0
 
 		Run_Benchmark 2
@@ -285,10 +269,7 @@ You can compare results against other users and hardware using the following lin
  - CPU performance : Duration = $BENCH_CPU seconds (lower is faster)
  - CPU temps       : Idle = $BENCH_CPU_TEMP_START °C | Full load = $BENCH_CPU_TEMP_END °C
  - RootFS I/O      : Write = $BENCH_ROOTFS_WRITE MiB/s | Read = $BENCH_ROOTFS_READ MiB/s
- - RAM I/O         : Write = $BENCH_RAM_WRITE MiB/s | Read = $BENCH_RAM_READ MiB/s
-
-Compare these results online with other users, using the link below:
- - https://shaughvos.com/survey#benchmark"
+ - RAM I/O         : Write = $BENCH_RAM_WRITE MiB/s | Read = $BENCH_RAM_READ MiB/s"
 	}
 
 	Menu_Custom_Filesystem()
@@ -363,7 +344,7 @@ Compare these results online with other users, using the link below:
 
 		G_WHIP_BUTTON_CANCEL_TEXT='Exit'
 		G_WHIP_MENU "\
-shaughvOS-Benchmark | https://shaughvos.com/survey#benchmark :
+shaughvOS-Benchmark:
  - CPU Performance   : Duration = $BENCH_CPU seconds (lower is faster)
  - CPU Temp          : Idle = $BENCH_CPU_TEMP_START °C | Full load = $BENCH_CPU_TEMP_END °C
  - RootFS            : Write = $BENCH_ROOTFS_WRITE MiB/s | Read = $BENCH_ROOTFS_READ MiB/s

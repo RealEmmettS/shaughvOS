@@ -5,7 +5,7 @@ then
 	. /boot/shaughvos/func/shaughvos-globals || exit 1
 else
 	# shellcheck disable=SC1090
-	. <(curl -sSf "https://raw.githubusercontent.com/${G_GITOWNER:-MichaIng}/shaughvOS/${G_GITBRANCH:-master}/shaughvos/func/shaughvos-globals") || exit 1
+	. <(curl -sSf "https://raw.githubusercontent.com/${G_GITOWNER:-RealEmmettS}/shaughvOS/${G_GITBRANCH:-master}/shaughvos/func/shaughvos-globals") || exit 1
 fi
 
 ### data files

@@ -16452,12 +16452,9 @@ List of installed software and their online documentation URLs:
 
 	G_SHAUGHVOS-NOTIFY 3 "$G_PROGRAM_NAME" 'Install completed'
 
-	# Upload shaughvOS-Survey data if opted in, prompt user choice if no settings file exists
-	# - Skip if G_SERVICE_CONTROL == 0, exported by "patches" (shaughvOS-Update) which sends survey already
 	# Start services, restart to reload configs of possibly running services
 	if [[ $G_SERVICE_CONTROL != 0 ]]
 	then
-		/boot/shaughvos/shaughvos-survey 1
 		/boot/shaughvos/shaughvos-services restart
 		(( $RESTART_DELUGE_WEB )) && { G_SLEEP 1; G_EXEC_NOHALT=1 G_EXEC systemctl restart deluge-web; }
 	fi

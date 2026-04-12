@@ -139,8 +139,8 @@
 		fi
 	}
 
-	# NB: PLEASE ENSURE HW_MODEL INDEX ENTRIES MATCH : shaughvos-installer, shaughvos-obtain_hw_model, shaughvos-survey_results
-	# NBB: DO NOT REORDER INDEX's. These are now fixed and will never change (due to survey results etc)
+	# NB: PLEASE ENSURE HW_MODEL INDEX ENTRIES MATCH : shaughvos-installer, shaughvos-obtain_hw_model
+	# NBB: DO NOT REORDER INDEX's. These are now fixed and will never change
 	Obtain_HW_Info()
 	{
 		# Get distro ID

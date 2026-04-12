@@ -17,7 +17,7 @@
 	# - G_RASPBIAN
 	#
 	# The following environment variables can be set to automate this script (adjust example values to your needs):
-	# - GITOWNER='RealEmmettS'			(optional, defaults to 'MichaIng')
+	# - GITOWNER='RealEmmettS'			(optional, defaults to 'RealEmmettS')
 	# - GITBRANCH='master'
 	# - IMAGE_CREATOR='Mr. Tux'
 	# - PREIMAGE_INFO='Some GNU/Linux'
@@ -128,7 +128,7 @@ _EOF_
 	unset -v aAPT_PREREQS
 
 	# Set Git owner
-	GITOWNER=${GITOWNER:-MichaIng}
+	GITOWNER=${GITOWNER:-RealEmmettS}
 
 	# Select Git branch
 	if [[ ! $GITBRANCH ]]
@@ -336,8 +336,8 @@ _EOF_
 		G_SHAUGHVOS-NOTIFY 2 "Entered pre-image info: $PREIMAGE_INFO"
 
 		# Hardware selection
-		# - NB: PLEASE ENSURE HW_MODEL INDEX ENTRIES MATCH shaughvos-obtain_hw_model and shaughvos-survey_report
-		# - NBB: DO NOT REORDER INDICES. These are now fixed and will never change (due to survey results etc)
+		# - NB: PLEASE ENSURE HW_MODEL INDEX ENTRIES MATCH shaughvos-obtain_hw_model
+		# - NBB: DO NOT REORDER INDICES. These are now fixed and will never change
 		G_WHIP_DEFAULT_ITEM=0
 		local userland_arch=$(dpkg --print-architecture)
 		case $G_HW_ARCH in
@@ -1964,7 +1964,7 @@ _EOF_'
 		echo -e "Samba client: $info_use_drive_manager" > /mnt/samba/readme.txt
 		echo -e "NFS client: $info_use_drive_manager" > /mnt/nfs_client/readme.txt
 
-		G_SHAUGHVOS-NOTIFY 2 'Resetting and adding shaughvos.com SSH pub host key for shaughvOS-Survey/Bugreport uploads:'
+		G_SHAUGHVOS-NOTIFY 2 'Resetting and adding shaughvos.com SSH pub host key for shaughvOS-Bugreport uploads:'
 		G_EXEC mkdir -p /root/.ssh
 		G_EXEC eval 'echo '\''[ssh.shaughvos.com]:29248 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdEPlagpQ+RVHNOX3jkG1Bya7Oza1dAke8h8NszVW84'\'' > /root/.ssh/known_hosts'
 

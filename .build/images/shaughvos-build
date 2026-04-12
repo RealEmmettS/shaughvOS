@@ -690,7 +690,6 @@ then
 fi
 
 # FirstBoot
-G_CONFIG_INJECT 'SURVEY_OPTED_IN=' 'SURVEY_OPTED_IN=-1' /boot/shaughvos.txt
 G_EXEC systemctl enable shaughvos-fs_partition_resize
 G_EXEC eval 'echo 10 > /boot/shaughvos/.install_stage'
 
