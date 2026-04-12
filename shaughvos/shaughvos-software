@@ -3361,20 +3361,23 @@ _EOF_"
 			# Install Papirus-Dark icon theme
 			command -v papirus-icon-theme > /dev/null 2>&1 || G_AGI papirus-icon-theme
 
-			# Install shaughvOS fonts (Makira + IBM Plex Mono)
+			# Install shaughvOS fonts (Makira + IBM Plex Mono) from GitHub
 			G_EXEC mkdir -p /usr/share/fonts/truetype/shaughvos
-			local font_src='/boot/shaughvos/../assets/fonts'
-			# If fonts are in the repo assets directory, install from there
-			if [[ -d "$G_GITPATH/assets/fonts/Makira" ]]
-			then
-				G_EXEC cp "$G_GITPATH/assets/fonts/Makira"/*.ttf /usr/share/fonts/truetype/shaughvos/
-				G_EXEC cp "$G_GITPATH/assets/fonts/IBMPlexMono"/*.ttf /usr/share/fonts/truetype/shaughvos/
-			fi
+			local font_base="https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/assets/fonts"
+			local font
+			for font in Makira/Makira-Regular.ttf Makira/Makira-Medium.ttf Makira/Makira-SemiBold.ttf Makira/Makira-Bold.ttf Makira/Makira-ExtraBold.ttf Makira/Makira-Black.ttf
+			do
+				curl -sSfLo "/usr/share/fonts/truetype/shaughvos/${font##*/}" "$font_base/$font" || true
+			done
+			for font in IBMPlexMono/IBMPlexMono-Regular.ttf IBMPlexMono/IBMPlexMono-Medium.ttf IBMPlexMono/IBMPlexMono-SemiBold.ttf IBMPlexMono/IBMPlexMono-Bold.ttf IBMPlexMono/IBMPlexMono-Italic.ttf IBMPlexMono/IBMPlexMono-MediumItalic.ttf IBMPlexMono/IBMPlexMono-BoldItalic.ttf
+			do
+				curl -sSfLo "/usr/share/fonts/truetype/shaughvos/${font##*/}" "$font_base/$font" || true
+			done
 			G_EXEC fc-cache -f
 
-			# Set wallpaper
+			# Set wallpaper from GitHub
 			G_EXEC mkdir -p /usr/share/backgrounds/shaughvos
-			[[ -f "$G_GITPATH/assets/desktop_background.jpg" ]] && G_EXEC cp "$G_GITPATH/assets/desktop_background.jpg" /usr/share/backgrounds/shaughvos/
+			curl -sSfLo /usr/share/backgrounds/shaughvos/desktop_background.jpg "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/assets/desktop_background.jpg" || true
 
 			# Apply Xfce settings for all users via /etc/xdg defaults
 			G_EXEC mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml
