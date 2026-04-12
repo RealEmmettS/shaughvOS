@@ -39,7 +39,7 @@ Options:
 			G_SHAUGHVOS-NOTIFY 0 'Console mode enabled. Will persist across reboots.'
 		;;
 		'status')
-			local index=0
+			index=0
 			[[ -f '/boot/shaughvos/.shaughvos-autostart_index' ]] && read -r index < /boot/shaughvos/.shaughvos-autostart_index
 			case $index in
 				2|16) G_SHAUGHVOS-NOTIFY 0 'Current mode: Desktop';;

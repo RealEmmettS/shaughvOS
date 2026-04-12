@@ -40,4 +40,4 @@ jobs:
     - name: Check for multiple newlines
       if: always()
       run: |
-        ! grep -rzPo --exclude-dir='.git' --exclude='*.png' --exclude='*.txt' --exclude='*.md' --exclude='shellcheck*' '(^|\n)\N*\n\n\n+\N*(\n|$)' .
+        ! grep -rzPo --exclude-dir='.git' --exclude='*.png' --exclude='*.ttf' --exclude='*.jpg' --exclude='*.svg' --exclude='*.txt' --exclude='*.md' --exclude='shellcheck*' '(^|\n)\N*\n\n\n+\N*(\n|$)' .
