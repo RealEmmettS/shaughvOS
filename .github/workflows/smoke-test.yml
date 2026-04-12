@@ -1,0 +1,64 @@
+name: Smoke Test
+on:
+  push:
+    branches: [dev]
+    paths:
+    - 'shaughvos/**'
+    - 'rootfs/**'
+    - 'shaughvos.txt'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    container:
+      image: debian:bookworm-slim
+    steps:
+    - uses: actions/checkout@v6
+    - name: Setup shaughvOS environment
+      run: |
+        apt-get update && apt-get install -y bash curl ca-certificates systemd
+        mkdir -p /boot/shaughvos/func
+        cp shaughvos/func/shaughvos-globals /boot/shaughvos/func/
+        cp shaughvos/func/shaughvos-obtain_hw_model /boot/shaughvos/func/
+        chmod +x /boot/shaughvos/func/*
+        # Create minimal hw_model for testing
+        mkdir -p /boot/shaughvos
+        echo -e '0\n20\nx86_64\n10' > /boot/shaughvos/.hw_model
+        echo -e 'G_HW_MEMORY_SIZE=2048\nG_HW_ONBOARD_WIFI=0' >> /boot/shaughvos/.hw_model
+        # Create version file
+        cp .update/version /boot/shaughvos/.version
+        # Create config
+        cp shaughvos.txt /boot/shaughvos.txt
+
+    - name: Verify all scripts parse
+      run: |
+        echo '--- Checking bash syntax for all shell scripts ---'
+        errors=0
+        for f in shaughvos/shaughvos-* shaughvos/func/shaughvos-* shaughvos/preboot shaughvos/postboot; do
+          if head -1 "$f" | grep -q '#!/bin/bash'; then
+            if ! bash -n "$f" 2>/dev/null; then
+              echo "FAIL: $f"
+              errors=$((errors + 1))
+            else
+              echo "OK: $f"
+            fi
+          fi
+        done
+        echo "--- $errors errors found ---"
+        [ "$errors" -eq 0 ]
+
+    - name: Verify shaughvos-globals sources
+      run: |
+        export G_PROGRAM_NAME='smoke-test'
+        # Source globals in a subshell to test it loads
+        bash -c '. /boot/shaughvos/func/shaughvos-globals && echo "G_SHAUGHVOS-NOTIFY function: $(type -t G_SHAUGHVOS-NOTIFY)"'
+
+    - name: Verify no dietpi references in scripts
+      run: |
+        count=$(grep -ri 'dietpi' shaughvos/ rootfs/ shaughvos.txt 2>/dev/null | grep -cv '\.update/patches' || true)
+        echo "DietPi references found: $count"
+        [ "$count" -eq 0 ]
