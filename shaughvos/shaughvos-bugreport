@@ -31,9 +31,6 @@ Available commands:
 	# Grab input
 	INPUT=$*
 
-	readonly SFTP_ADDR='localhost' # Bug report upload disabled — shaughvOS saves reports locally
-	readonly SFTP_USER='shaughvos-survey'
-	readonly SFTP_PASS='upload2shaughvos'
 	ext='gz'
 	command -v xz > /dev/null && ext='xz'
 	readonly UPLOAD_FILENAME="$G_HW_UUID.tar.$ext"
