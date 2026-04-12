@@ -2241,7 +2241,7 @@ _EOF_
 	Create_Required_Dirs()
 	{
 		G_EXEC mkdir -p /mnt/shaughvos_userdata/{Music,Pictures,Video,downloads} /var/www /opt /usr/local/bin
-		getent passwd shaughvos > /dev/null && G_EXEC chown shaughvos:shaughvos /mnt/shaughvos_userdata/{Music,Pictures,Video,downloads}
+		getent passwd admin > /dev/null && G_EXEC chown admin:admin /mnt/shaughvos_userdata/{Music,Pictures,Video,downloads}
 		G_EXEC chmod 0775 /mnt/shaughvos_userdata/{Music,Pictures,Video,downloads}
 	}
 
@@ -2249,7 +2249,7 @@ _EOF_
 	{
 		[[ -f '/mnt/shaughvos_userdata/Music/fourdee_tech.ogg' ]] && return
 		G_EXEC curl -sSf 'https://dietpi.com/downloads/audio/fourdee_tech.ogg' -o /mnt/shaughvos_userdata/Music/fourdee_tech.ogg
-		getent passwd shaughvos > /dev/null && G_EXEC chown shaughvos:shaughvos /mnt/shaughvos_userdata/Music/fourdee_tech.ogg
+		getent passwd admin > /dev/null && G_EXEC chown admin:admin /mnt/shaughvos_userdata/Music/fourdee_tech.ogg
 		G_EXEC chmod 0664 /mnt/shaughvos_userdata/Music/fourdee_tech.ogg
 	}
 
@@ -2749,7 +2749,7 @@ sudo sysctl -p /etc/sysctl.d/shaughvos-$1.conf"
 end
 _EOF_
 			G_EXEC chsh root -s /usr/bin/fish
-			getent passwd shaughvos &> /dev/null && G_EXEC chsh shaughvos -s /usr/bin/fish
+			getent passwd admin &> /dev/null && G_EXEC chsh admin -s /usr/bin/fish
 		fi
 
 		if To_Install 5 # ALSA
@@ -3050,7 +3050,7 @@ unix_socket_directories = '/run/postgresql'" > "$i/00shaughvos.conf"
 			[[ -f '/mnt/shaughvos_userdata/beets/library.db' ]] || > /mnt/shaughvos_userdata/beets/library.db
 			[[ -f '/mnt/shaughvos_userdata/beets/state.pickle' ]] || > /mnt/shaughvos_userdata/beets/state.pickle
 			# shellcheck disable=SC2015
-			getent passwd shaughvos > /dev/null && G_EXEC chown -R shaughvos:audio /mnt/shaughvos_userdata/beets || G_EXEC chgrp -R audio /mnt/shaughvos_userdata/beets
+			getent passwd admin > /dev/null && G_EXEC chown -R admin:audio /mnt/shaughvos_userdata/beets || G_EXEC chgrp -R audio /mnt/shaughvos_userdata/beets
 			G_EXEC chmod -R g+w /mnt/shaughvos_userdata/beets
 
 			# Load global beets config in all interactive bash shells
@@ -5472,7 +5472,7 @@ _EOF_
 			# - ARMv6: Amiberry v5 used a different default dir for kickstart ROMs
 			(( $G_HW_ARCH == 1 )) && fp_roms='/mnt/shaughvos_userdata/amiberry/kickstarts'
 			G_EXEC mkdir -p "$fp_roms"
-			G_EXEC chgrp shaughvos "$fp_roms"
+			G_EXEC chgrp admin "$fp_roms"
 			G_EXEC chmod g=rwx "$fp_roms"
 
 			# Pre-v6.26: Remove obsolete config file: https://github.com/BlitterStudio/amiberry/releases/tag/v2.25
@@ -5496,7 +5496,7 @@ _EOF_
 
 			# Permissions: Enable access for kickstart uploads via file servers
 			G_EXEC mkdir -p /mnt/shaughvos_userdata/amiberry-lite/roms
-			G_EXEC chgrp shaughvos /mnt/shaughvos_userdata/amiberry-lite/roms
+			G_EXEC chgrp admin /mnt/shaughvos_userdata/amiberry-lite/roms
 			G_EXEC chmod g=rwx /mnt/shaughvos_userdata/amiberry-lite/roms
 		fi
 
@@ -9052,7 +9052,7 @@ _EOF_
 			if [[ ! -f '/mnt/shaughvos_userdata/syncthing/config.xml' ]]
 			then
 				# Failsafe: Assure that "syncthing" (its "admin" group) has permission to create the /mnt/shaughvos_userdata/syncthing directory
-				G_EXEC chgrp shaughvos /mnt/shaughvos_userdata
+				G_EXEC chgrp admin /mnt/shaughvos_userdata
 				G_EXEC chmod 'g+rwx' /mnt/shaughvos_userdata
 
 				# Generate config

@@ -1854,7 +1854,7 @@ _EOF_
 		G_EXEC mkdir -p /var/lib/shaughvos/{postboot.d,shaughvos-software/installed}
 		G_EXEC mkdir -p /var/tmp/shaughvos/logs/shaughvos-ramlog_store
 		G_EXEC mkdir -p /mnt/{shaughvos_userdata,samba,ftp_client,nfs_client}
-		G_EXEC chgrp -R shaughvos /mnt/{shaughvos_userdata,samba,ftp_client,nfs_client}
+		G_EXEC chgrp -R admin /mnt/{shaughvos_userdata,samba,ftp_client,nfs_client}
 		G_EXEC find /mnt/{shaughvos_userdata,samba,ftp_client,nfs_client} -type d -exec chmod 0775 {} +
 
 		#-----------------------------------------------------------------------------------
