@@ -6,7 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **shaughvOS** — a custom operating system built on a Debian foundation (originally forked from [DietPi](https://github.com/MichaIng/DietPi)). The rebrand is **complete** — all DietPi references have been replaced with shaughvOS branding. The repo lives at `RealEmmettS/shaughvOS` as a fully independent fork.
 
-See `QUBETX_INTEGRATION.md` for the aspirational goals document.
+### Key Documents
+- `QUBETX_INTEGRATION.md` — aspirational goals and feature research
+- `CHANGELOG.md` — all changes, follows [Keep a Changelog](https://keepachangelog.com/) format
+- `DEPLOYMENT.md` — full release lifecycle: versioning, tagging, CI, image building, OTA updates, GitHub Releases
+
+### Deployment & Releases
+See `DEPLOYMENT.md` for the complete release process. Key points:
+- **Versioning:** `CORE.SUB.RC` in `.update/version` (currently v1.0.0)
+- **Changelog:** Update `CHANGELOG.md` with every release — move `[Unreleased]` to a dated version section
+- **Release flow:** `dev` -> `master` -> tag `v1.x.0` -> GitHub Release with image artifacts
+- **OTA updates:** Push to `master` with bumped `.update/version` — devices auto-detect via `raw.githubusercontent.com`
 
 ## Target Hardware
 
