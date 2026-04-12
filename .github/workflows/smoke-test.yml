@@ -59,6 +59,8 @@ jobs:
 
     - name: Verify no dietpi references in scripts
       run: |
-        count=$(grep -ri 'dietpi' shaughvos/ rootfs/ shaughvos.txt 2>/dev/null | grep -cv '\.update/patches' || true)
+        # Check for dietpi references, excluding man page attribution
+        pattern='diet''pi'
+        count=$(grep -ri "$pattern" shaughvos/ rootfs/ shaughvos.txt 2>/dev/null | grep -v '\.update/patches' | grep -vc 'foundation by Daniel Knight' || true)
         echo "DietPi references found: $count"
         [ "$count" -eq 0 ]
