@@ -13,7 +13,7 @@
 
 shaughvOS is a custom, lightweight operating system built on a Debian foundation. It ships with a polished Xfce desktop, powerful diagnostic tools, and a streamlined terminal experience — all pre-configured and ready to use out of the box.
 
-Designed for Raspberry Pi 4, x86_64 PCs and laptops, Intel Macs, and virtual machines.
+Designed for Raspberry Pi 2/3/4/5, x86_64 PCs and laptops, Intel Macs, and virtual machines.
 
 ## Features
 
@@ -58,14 +58,20 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 
 ### Download a pre-built image
 
-Visit the [Releases](https://github.com/RealEmmettS/shaughvOS/releases) page and download the image for your platform:
+Visit the [Releases](https://github.com/RealEmmettS/shaughvOS/releases/latest) page and download the image for your hardware:
 
-| Platform | File | How to flash |
-|----------|------|-------------|
-| Raspberry Pi 4 | `shaughvOS_RPi4-aarch64-*.img.xz` | Balena Etcher or `dd` to SD card |
-| PC / Laptop | `shaughvOS_NativePC-x86_64-*.img.xz` | Balena Etcher or Rufus to USB |
-| Virtual Machine | `shaughvOS_VM-x86_64-*.img.xz` | Import as disk in VirtualBox/VMware/UTM |
-| Bootable ISO | `shaughvOS_NativePC-x86_64-*.iso` | Write to USB or mount in VM |
+| Image | Hardware | CPU | How to flash |
+|-------|----------|-----|-------------|
+| `shaughvOS_RPi234-aarch64_*.img.xz` | Raspberry Pi 2, 3, 3B+, 4, 4B | ARM 64-bit (aarch64) | Balena Etcher or `dd` to microSD card |
+| `shaughvOS_RPi5-aarch64_*.img.xz` | Raspberry Pi 5 | ARM 64-bit (aarch64) | Balena Etcher or `dd` to microSD card |
+| `shaughvOS_NativePC-x86_64_*.img.xz` | PCs, laptops, Intel Macs | x86_64 (Intel/AMD) | Balena Etcher or Rufus to USB drive |
+| `shaughvOS_VM-x86_64_*.img.xz` | VirtualBox, VMware, UTM, QEMU | x86_64 (virtual) | Import as raw disk image |
+
+> **Which image do I need?**
+> - **Raspberry Pi 2/3/4** share the same image — one download covers all three generations.
+> - **Raspberry Pi 5** requires its own image due to a different bootloader and device tree.
+> - **Native PC** is for booting directly on real hardware via USB (dual-boot or dedicated).
+> - **VM** is for running inside a virtual machine (no hardware boot firmware needed).
 
 ### Install on an existing Debian system
 
@@ -79,12 +85,14 @@ Reboot after installation completes.
 
 ## Target Hardware
 
-| Target | Architecture | Notes |
-|--------|-------------|-------|
-| **Raspberry Pi 4** | aarch64 | Primary target. 2-8GB RAM. |
-| **x86_64 PCs / Laptops** | x86_64 | Dual-boot or USB boot. |
-| **Intel Macs** | x86_64 | Native USB boot via Startup Manager. |
-| **Virtual Machines** | x86_64 / aarch64 | VirtualBox, VMware, UTM, Parallels. |
+| Target | Architecture | Image | Notes |
+|--------|-------------|-------|-------|
+| **Raspberry Pi 2/3/4** | aarch64 (ARMv8) | RPi234 | 1-8GB RAM. Shared boot firmware. |
+| **Raspberry Pi 5** | aarch64 (ARMv8) | RPi5 | 4-8GB RAM. Separate bootloader. |
+| **x86_64 PCs / Laptops** | x86_64 (Intel/AMD) | NativePC | Dual-boot or dedicated USB boot. |
+| **Intel Macs** | x86_64 | NativePC | USB boot via Startup Manager (hold Option at boot). |
+| **Apple Silicon Macs** | aarch64 | VM | Via UTM or Parallels only (no native boot). |
+| **Virtual Machines** | x86_64 / aarch64 | VM | VirtualBox, VMware, UTM, QEMU, Parallels. |
 
 ## Branch System
 

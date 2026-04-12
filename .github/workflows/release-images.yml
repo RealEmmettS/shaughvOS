@@ -7,7 +7,7 @@ on:
       targets:
         description: 'Build targets'
         type: choice
-        options: [all, rpi4, x86-pc, x86-vm]
+        options: [all, rpi4, rpi5, x86-pc, x86-vm]
         default: all
         required: true
 concurrency:
@@ -34,7 +34,7 @@ jobs:
       run: |
         input='${{ github.event.inputs.targets }}'
         if [ -z "$input" ] || [ "$input" = 'all' ]; then
-          echo 'targets=["rpi4", "x86-pc", "x86-vm"]' >> "$GITHUB_OUTPUT"
+          echo 'targets=["rpi4", "rpi5", "x86-pc", "x86-vm"]' >> "$GITHUB_OUTPUT"
         else
           echo "targets=[\"$input\"]" >> "$GITHUB_OUTPUT"
         fi
@@ -46,13 +46,14 @@ jobs:
         target: ${{ fromJson(needs.prep.outputs.targets) }}
       fail-fast: false
     name: "Build: ${{ matrix.target }}"
-    runs-on: ${{ matrix.target == 'rpi4' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    runs-on: ${{ (matrix.target == 'rpi4' || matrix.target == 'rpi5') && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     steps:
     - name: Build image
       run: |
         # Map target to shaughvos-build arguments
         case '${{ matrix.target }}' in
-          rpi4)   model=4;  desc='RPi4-aarch64';;
+          rpi4)   model=4;  desc='RPi234-aarch64';;
+          rpi5)   model=5;  desc='RPi5-aarch64';;
           x86-pc) model=21; desc='NativePC-x86_64';;
           x86-vm) model=20; desc='VM-x86_64';;
         esac

@@ -11,6 +11,17 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.1.0] — 2026-04-12
+
+### Added
+- Raspberry Pi 5 build target in release image workflow
+- RPi 2/3/4 image descriptor renamed from `RPi4-aarch64` to `RPi234-aarch64` for clarity
+
+### Fixed
+- FAT volume label `SHAUGHVOSSETUP` (14 chars) exceeded 11-char FAT limit, shortened to `SHAUGHVOS`
+
+---
+
 ## [1.0.0] — 2026-04-12
 
 First release of shaughvOS — a complete OS rebrand built on the DietPi foundation.
