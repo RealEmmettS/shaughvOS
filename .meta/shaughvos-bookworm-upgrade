@@ -64,7 +64,7 @@ mapfile -t apackages < <(apt-mark showhold)
 unset -v apackages
 
 G_SHAUGHVOS-NOTIFY 2 'Migrating package lists to Bookworm suite'
-# Update Microsoft list properly: https://shaughvos.com/blog/?p=3128#comment-6199
+# Update Microsoft list properly: https://dietpi.com/blog/?p=3128#comment-6199
 if dpkg-query -s 'packages-microsoft-prod' 2> /dev/null | grep -q '^Status: install ok installed$'
 then
 	G_EXEC curl -sSf 'https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb'
@@ -111,8 +111,8 @@ read -rp 'Next, some migrations are done for all software to run nicely on Bookw
 G_SHAUGHVOS-NOTIFY 2 'Running post upgrade migrations'
 /boot/shaughvos/shaughvos-services stop
 
-# Switch from RSA to shorter and modern Ed25519 ssh.shaughvos.com host key
-G_CONFIG_INJECT '\[?ssh.shaughvos.com(]:29248)?[[:blank:]]' '[ssh.shaughvos.com]:29248 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdEPlagpQ+RVHNOX3jkG1Bya7Oza1dAke8h8NszVW84' /root/.ssh/known_hosts
+# Switch from RSA to shorter and modern Ed25519 ssh.dietpi.com host key
+G_CONFIG_INJECT '\[?ssh.dietpi.com(]:29248)?[[:blank:]]' '[ssh.dietpi.com]:29248 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdEPlagpQ+RVHNOX3jkG1Bya7Oza1dAke8h8NszVW84' /root/.ssh/known_hosts
 
 # We do not want G_AGP to purge the old kernel package on x86_64!
 eval "$(declare -f G_AGP | sed 's/autopurge/purge/')"

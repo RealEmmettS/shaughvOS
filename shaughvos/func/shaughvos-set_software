@@ -5,7 +5,7 @@
 	# - Enables control and applies settings for specific software and configs.
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -116,7 +116,7 @@ $FP_SCRIPT	rpi_kernel_choice		<empty> Supported on Debian Bookworm or newer on R
 		[[ $INPUT_MODE_VALUE ]] || { Unknown_Input_Mode; return 1; }
 
 		# shaughvOS repo
-		[[ -f '/etc/apt/trusted.gpg.d/shaughvos.asc' ]] || G_EXEC curl -sSf 'https://shaughvos.com/apt/key.asc' -o /etc/apt/trusted.gpg.d/shaughvos.asc
+		[[ -f '/etc/apt/trusted.gpg.d/shaughvos.asc' ]] || G_EXEC curl -sSf 'https://dietpi.com/apt/key.asc' -o /etc/apt/trusted.gpg.d/shaughvos.asc
 		# - ARMv6: Since Debian cannot distinguish between ARMv6hf and ARMv7, both armhf, we use a dedicated main component for those.
 		local components='main' all_components=''
 		(( $G_HW_ARCH == 1 )) && components='main-armv6'
@@ -295,8 +295,8 @@ $FP_SCRIPT	rpi_kernel_choice		<empty> Supported on Debian Bookworm or newer on R
 			104) all_components='nanopizero2';;
 			*) :;;
 		esac
-		G_EXEC eval "echo 'deb https://shaughvos.com/apt $G_DISTRO_NAME $components' > /etc/apt/sources.list.d/shaughvos.list"
-		[[ $all_components ]] && G_EXEC eval "echo 'deb https://shaughvos.com/apt all $all_components' >> /etc/apt/sources.list.d/shaughvos.list"
+		G_EXEC eval "echo 'deb https://dietpi.com/apt $G_DISTRO_NAME $components' > /etc/apt/sources.list.d/shaughvos.list"
+		[[ $all_components ]] && G_EXEC eval "echo 'deb https://dietpi.com/apt all $all_components' >> /etc/apt/sources.list.d/shaughvos.list"
 
 		# Exit path for quick shaughvOS-only repo updates
 		[[ $INPUT_MODE_VALUE == 'shaughvos' ]] && return 0
@@ -924,7 +924,7 @@ deb $INPUT_MODE_VALUE $G_DISTRO_NAME-backports main contrib non-free non-free-fi
 - $(uname -a)
 \nYou may report this at our GitHub page or community forum:
 - https://github.com/RealEmmettS/shaughvOS
-- https://shaughvos.com/forum/"; return 1; };;
+- https://dietpi.com/forum/"; return 1; };;
 		esac
 
 		G_WHIP_CHECKLIST_ARRAY=()

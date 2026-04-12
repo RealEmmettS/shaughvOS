@@ -36,7 +36,7 @@ export PATH="${HOME:-/root}/.cargo/bin:$PATH"
 version=$(curl -sSf 'https://api.github.com/repos/dani-garcia/vaultwarden/releases/latest' | mawk -F\" '/^ *"tag_name": "[^"]*",$/{print $4}')
 [[ $version ]] || { G_SHAUGHVOS-NOTIFY 1 'No latest vaultwarden version found, aborting ...'; exit 1; }
 # - Obtain version suffix
-G_EXEC curl -sSfo package.deb "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/vaultwarden_$G_HW_ARCH_NAME.deb"
+G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/vaultwarden_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version) || exit 1
 G_EXEC rm package.deb
 suffix=${old_version#*-shaughvos}
@@ -104,7 +104,7 @@ AmbientCapabilities=CAP_NET_BIND_SERVICE
 LimitNOFILE=1048576
 LimitNPROC=64
 WorkingDirectory=/mnt/shaughvos_userdata/vaultwarden
-# Workaround for failing systemd.automount since Bookworm: https://shaughvos.com/forum/t/17463/22
+# Workaround for failing systemd.automount since Bookworm: https://dietpi.com/forum/t/17463/22
 EnvironmentFile=-/mnt/shaughvos_userdata/vaultwarden/vaultwarden.env
 ExecStartPre=/bin/touch /mnt/shaughvos_userdata/vaultwarden/vaultwarden.env
 ExecStart=/opt/vaultwarden/vaultwarden
@@ -231,7 +231,7 @@ cat << _EOF_ > "$DIR/DEBIAN/control" || exit 1
 Package: vaultwarden
 Version: $pkg_version
 Architecture: $(dpkg --print-architecture)
-Maintainer: MichaIng <micha@shaughvos.com>
+Maintainer: MichaIng <micha@dietpi.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk "$DIR" | mawk '{print $1}')
 Depends:$DEPS_APT_VERSIONED

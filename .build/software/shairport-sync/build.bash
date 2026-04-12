@@ -364,7 +364,7 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 [[ $G_HW_ARCH_NAME == 'armv6l' ]] && DEPS_APT_VERSIONED=$(sed 's/+rp[it][0-9]\+[^)]*)/)/g' <<< "$DEPS_APT_VERSIONED") || DEPS_APT_VERSIONED=$(sed 's/+b[0-9]\+)/)/g' <<< "$DEPS_APT_VERSIONED")
 
 # - Obtain version suffix
-G_EXEC curl -sSfo package.deb "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
+G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC rm package.deb
 suffix=${old_version#*-shaughvos}
@@ -377,7 +377,7 @@ cat << _EOF_ > "$DIR/DEBIAN/control"
 Package: $NAME
 Version: $version-$suffix
 Architecture: $(dpkg --print-architecture)
-Maintainer: MichaIng <micha@shaughvos.com>
+Maintainer: MichaIng <micha@dietpi.com>
 Date: $(date -u '+%a, %d %b %Y %T %z')
 Installed-Size: $(du -sk "$DIR" | mawk '{print $1}')
 Depends:$DEPS_APT_VERSIONED
@@ -550,7 +550,7 @@ cat << _EOF_ > "$DIR/DEBIAN/control"
 Package: $NAME-airplay2
 Version: $version-$suffix
 Architecture: $(dpkg --print-architecture)
-Maintainer: MichaIng <micha@shaughvos.com>
+Maintainer: MichaIng <micha@dietpi.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk "$DIR" | mawk '{print $1}')
 Depends:$DEPS_APT_VERSIONED

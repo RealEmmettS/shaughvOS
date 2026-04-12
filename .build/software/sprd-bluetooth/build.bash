@@ -76,7 +76,7 @@ cat << _EOF_ > sprd-bluetooth/DEBIAN/control
 Package: sprd-bluetooth
 Version: 0.0.1
 Architecture: arm64
-Maintainer: MichaIng <micha@shaughvos.com>
+Maintainer: MichaIng <micha@dietpi.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk sprd-bluetooth | mawk '{print $1}')
 Section: admin

@@ -4,7 +4,7 @@
 	# shaughvOS bash init script
 	#
 	#////////////////////////////////////
-	# Created by MichaIng / micha@shaughvos.com / shaughvos.com
+	# Created by MichaIng / micha@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#

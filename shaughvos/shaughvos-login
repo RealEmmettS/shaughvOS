@@ -4,7 +4,7 @@
 	# shaughvOS Login Script
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -185,7 +185,7 @@ Would you like to restart the first run setup and installation?"
 \njournalctl -u shaughvos-fs_partition_resize
 cat /var/tmp/shaughvos/logs/fs_partition_resize.log
 \nGitHub: https://github.com/RealEmmettS/shaughvOS/issues
-Forum: https://shaughvos.com/forum/c/troubleshooting/10
+Forum: https://dietpi.com/forum/c/troubleshooting/10
 \nIf you aim to solve this yourself, the resize script is located at /var/lib/shaughvos/services/fs_partition_resize.sh. Alternatively, a journal can be added with "tune2fs -j $G_ROOTFS_DEV".
 Let us know if you actually intend to run this system without journal. This check is done on first boot only, hence adding it temporarily and removing it afterwards works.'
 

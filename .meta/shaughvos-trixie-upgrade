@@ -69,7 +69,7 @@ mapfile -t apackages < <(apt-mark showhold)
 unset -v apackages
 
 G_SHAUGHVOS-NOTIFY 2 'Migrating package lists to Trixie suite'
-# Update Microsoft list properly: https://shaughvos.com/blog/?p=3128#comment-6199
+# Update Microsoft list properly: https://dietpi.com/blog/?p=3128#comment-6199
 if dpkg-query -s 'packages-microsoft-prod' 2> /dev/null | grep -q '^Status: install ok installed$'
 then
 	G_EXEC curl -sSf 'https://packages.microsoft.com/config/debian/13/packages-microsoft-prod.deb'

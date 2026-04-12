@@ -232,7 +232,7 @@ jobs:
             ;;
             *) echo "ERROR: Invalid asset \"$ASSET\""; exit 1;;
         esac
-        if curl -fO "https://shaughvos.com/downloads/binaries/$package.deb"
+        if curl -fO "https://dietpi.com/downloads/binaries/$package.deb"
         then
             cur_version=$(dpkg-deb -f "$package.deb" Version)
             rm "$package.deb"
@@ -257,7 +257,7 @@ jobs:
 
         # Generate file lists
         files=
-        urls='"https://shaughvos.com/downloads/binaries/testing/"'
+        urls='"https://dietpi.com/downloads/binaries/testing/"'
         cd build/output/debs
         for i in *.deb
         do
@@ -265,7 +265,7 @@ jobs:
           mv -v "$i" "${i%%_*}.deb"
           i="${i%%_*}.deb"
           files="$files,$i"
-          urls="$urls,\"https://shaughvos.com/downloads/binaries/testing/$i\""
+          urls="$urls,\"https://dietpi.com/downloads/binaries/testing/$i\""
         done
         files=${files#,}
         echo "Uploading file(s) $files to URL(s) $urls ..."

@@ -4,7 +4,7 @@
 	# shaughvOS-Config Script
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -2064,7 +2064,7 @@ NB: All Ethernet connections will be temporarily dropped!' && Network_ApplyChang
 	}
 
 	INTERNET_TEST_STATE=0 # 0=not tested, 1=failed, 2=online
-	INTERNET_TEST_URL='https://shaughvos.com/'
+	INTERNET_TEST_URL='https://dietpi.com/'
 
 	Network_GetData()
 	{
@@ -2372,7 +2372,7 @@ NB: All Ethernet connections will be temporarily dropped!' && Network_ApplyChang
 			'Test')
 
 				G_WHIP_DEFAULT_ITEM=$INTERNET_TEST_URL
-				if G_WHIP_INPUTBOX 'Please enter a URL address to test, e.g.: https://shaughvos.com'; then
+				if G_WHIP_INPUTBOX 'Please enter a URL address to test, e.g.: https://dietpi.com'; then
 
 					INTERNET_TEST_URL=$G_WHIP_RETURNED_VALUE
 
@@ -3218,7 +3218,7 @@ This is mainly aimed at PINE A64 which may have a hardware issue that causes uns
 			# RPi
 			if (( $G_HW_MODEL < 10 )); then
 
-				# RPi 5 has no 3.5mm jack: https://shaughvos.com/forum/t/19760
+				# RPi 5 has no 3.5mm jack: https://dietpi.com/forum/t/19760
 				(( $G_HW_MODEL == 5 )) || G_WHIP_MENU_ARRAY+=('rpi-bcm2835-auto' ': Onboard HDMI if plugged, else 3.5mm' 'rpi-bcm2835-3.5mm' ': Onboard 3.5mm output')
 				G_WHIP_MENU_ARRAY+=(
 					'rpi-bcm2835-hdmi' ': Onboard HDMI output'

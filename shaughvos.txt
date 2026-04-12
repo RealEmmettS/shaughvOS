@@ -200,8 +200,8 @@ CONFIG_G_CHECK_URL_ATTEMPTS=2
 CONFIG_CHECK_CONNECTION_IP=9.9.9.9
 # - IPv6 address to ping when checking network connectivity. Default: 2620:fe::fe (Quad9 DNS IP)
 CONFIG_CHECK_CONNECTION_IPV6=2620:fe::fe
-# - Domain to resolve when checking DNS resolver. Default: shaughvos.com
-CONFIG_CHECK_DNS_DOMAIN=shaughvos.com
+# - Domain to resolve when checking DNS resolver. Default: dietpi.com
+CONFIG_CHECK_DNS_DOMAIN=dietpi.com
 
 # Daily check for shaughvOS updates: 0=disable | 1=enable
 # - Checks are done by downloading a file of only 7 bytes.
@@ -304,7 +304,7 @@ SOFTWARE_XORG_DPI=96
 # Chromium
 SOFTWARE_CHROMIUM_RES_X=1280
 SOFTWARE_CHROMIUM_RES_Y=720
-SOFTWARE_CHROMIUM_AUTOSTART_URL=https://shaughvos.com/
+SOFTWARE_CHROMIUM_AUTOSTART_URL=https://dietpi.com/
 
 # Home Assistant
 # - Optional Python build dependencies and modules, possibly required for certain HA components

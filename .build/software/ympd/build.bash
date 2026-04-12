@@ -146,7 +146,7 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 
 # - Obtain version
 version="$(mawk -F\" '/CPACK_PACKAGE_VERSION_MAJOR/{print $2;exit}' ympd-master/CMakeLists.txt).$(mawk -F\" '/CPACK_PACKAGE_VERSION_MINOR/{print $2;exit}' ympd-master/CMakeLists.txt).$(mawk -F\" '/CPACK_PACKAGE_VERSION_PATCH/{print $2;exit}' ympd-master/CMakeLists.txt)"
-G_EXEC curl -sSfo package.deb "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/ympd_$G_HW_ARCH_NAME.deb"
+G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/ympd_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC rm package.deb
 suffix=${old_version#*-shaughvos}
@@ -159,7 +159,7 @@ cat << _EOF_ > "$DIR/DEBIAN/control"
 Package: ympd
 Version: $version-$suffix
 Architecture: $(dpkg --print-architecture)
-Maintainer: MichaIng <micha@shaughvos.com>
+Maintainer: MichaIng <micha@dietpi.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk "$DIR" | mawk '{print $1}')
 Depends:$DEPS_APT_VERSIONED

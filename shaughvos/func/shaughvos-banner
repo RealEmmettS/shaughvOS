@@ -4,7 +4,7 @@
 	# shaughvOS Banner Script
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -231,8 +231,8 @@ $GREEN_LINE"
 		[[ -f '/boot/shaughvos/.prep_info' ]] && mawk 'NR==1 {sub(/^0$/,"shaughvOS Core Team");a=$0} NR==2 {print " Image by        : "a" (pre-image: "$0")"}' /boot/shaughvos/.prep_info
 
 		echo -e " Patreon Legends : ADSB.im, Oliver C. Radke
- Website         : https://shaughvos.com/ | https://x.com/shaughvOS_ | Bsky: @shaughvos.com
- Contribute      : https://shaughvos.com/contribute.html
+ Website         : https://dietpi.com/ | https://x.com/shaughvOS_ | Bsky: @dietpi.com
+ Contribute      : https://dietpi.com/contribute.html
  Web Hosting by  : https://login-online.com/$COLOUR_RESET\n"
 	}
 
@@ -323,7 +323,7 @@ $GREEN_LINE"
 		if (( ${aENABLED[12]} ))
 		then
 			local motd fp_motd='/run/shaughvos/.shaughvos_motd'
-			[[ -f $fp_motd ]] || curl -sSfLm 3 'https://shaughvos.com/motd' -o "$fp_motd"
+			[[ -f $fp_motd ]] || curl -sSfLm 3 'https://dietpi.com/motd' -o "$fp_motd"
 			# shellcheck disable=SC1090
 			[[ -f $fp_motd ]] && . "$fp_motd" &> /dev/null && [[ $motd ]] && echo -e "$GREEN_BULLET ${aCOLOUR[1]}${aDESCRIPTION[12]} $GREEN_SEPARATOR $motd"
 		fi

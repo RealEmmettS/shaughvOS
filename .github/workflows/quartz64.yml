@@ -79,7 +79,7 @@ jobs:
       run: |
         version=$(mawk '/^VERSION =/{a=$3};/^PATCHLEVEL =/{b=$3};/^SUBLEVEL/{c=$3};END{print a"."b"."c}' linux-rolling-stable/Makefile)
         rm -R linux-rolling-stable
-        curl -sSfO 'https://shaughvos.com/downloads/binaries/firmware-quartz64a.deb' &
+        curl -sSfO 'https://dietpi.com/downloads/binaries/firmware-quartz64a.deb' &
         curl -sSfo firmware-quartz64b/lib/firmware/brcm/brcmfmac43456-sdio.bin 'https://raw.githubusercontent.com/armbian/firmware/master/brcm/brcmfmac43456-sdio.bin' &
         curl -sSfo firmware-quartz64b/lib/firmware/brcm/brcmfmac43456-sdio.clm_blob 'https://raw.githubusercontent.com/armbian/firmware/master/brcm/brcmfmac43456-sdio.clm_blob' &
         curl -sSfo firmware-quartz64b/lib/firmware/brcm/brcmfmac43456-sdio.clm_blob 'https://raw.githubusercontent.com/armbian/firmware/master/brcm/brcmfmac43456-sdio.txt' &
@@ -152,7 +152,7 @@ jobs:
         Package: firmware-quartz64a
         Version: $version
         Architecture: arm64
-        Maintainer: MichaIng <micha@shaughvos.com>
+        Maintainer: MichaIng <micha@dietpi.com>
         Date: $(date -u '+%a, %d %b %Y %T %z')
         Installed-Size: $(du -sk 'firmware-quartz64a' | mawk '{print $1}')
         Section: kernel
@@ -177,4 +177,4 @@ jobs:
         echo '${{ secrets.SSH_KEY }}' > ~/.ssh/id_ed25519
         curl -T 'firmware-{quartz64a,quartz64b,soquartz}.deb' --key ~/.ssh/id_ed25519 '${{ secrets.UPLOAD_URL }}all/'
         curl 'https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/purge_cache' -H 'Authorization: Bearer ${{ secrets.CF_TOKEN }}' -H 'Content-Type: application/json' \
-        --data '{"files":["https://shaughvos.com/downloads/binaries/testing/","https://shaughvos.com/downloads/binaries/testing/firmware-quartz64a.deb","https://shaughvos.com/downloads/binaries/testing/firmware-quartz64b.deb","https://shaughvos.com/downloads/binaries/testing/firmware-soquartz.deb"]}'
+        --data '{"files":["https://dietpi.com/downloads/binaries/testing/","https://dietpi.com/downloads/binaries/testing/firmware-quartz64a.deb","https://dietpi.com/downloads/binaries/testing/firmware-quartz64b.deb","https://dietpi.com/downloads/binaries/testing/firmware-soquartz.deb"]}'

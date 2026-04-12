@@ -254,7 +254,7 @@ done
 DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 
 # - Obtain version suffix
-G_EXEC curl -sSfo package.deb "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
+G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC rm package.deb
 suffix=${old_version#*-shaughvos}
@@ -267,7 +267,7 @@ cat << _EOF_ > "$DIR/DEBIAN/control" || exit 1
 Package: $NAME
 Version: $version
 Architecture: $(dpkg --print-architecture)
-Maintainer: MichaIng <micha@shaughvos.com>
+Maintainer: MichaIng <micha@dietpi.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk "$DIR" | mawk '{print $1}')
 Depends:$DEPS_APT_VERSIONED

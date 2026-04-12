@@ -1,6 +1,6 @@
 [Unit]
 Description=shaughvOS-CloudShell on main screen (tty1)
-Documentation=https://shaughvos.com/docs/software/system_stats/#shaughvos-cloudshell
+Documentation=https://dietpi.com/docs/software/system_stats/#shaughvos-cloudshell
 
 [Service]
 StandardOutput=tty

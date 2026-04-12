@@ -4,8 +4,8 @@
 	# shaughvOS Image creation/finalise Script
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
-	# Updated by MichaIng / micha@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
+	# Updated by MichaIng / micha@dietpi.com / dietpi.com
 	# Clonezilla integration by sal666
 	#
 	#////////////////////////////////////
@@ -593,7 +593,7 @@ Apart of editing the existing files, you can also create the following for furth
 - shaughvos-k3s.yaml
 
 For details, please check our documentation and shaughvos.txt itself:
-https://shaughvos.com/docs/usage/#how-to-do-an-automatic-base-installation-at-first-boot-shaughvos-automation
+https://dietpi.com/docs/usage/#how-to-do-an-automatic-base-installation-at-first-boot-shaughvos-automation
 _EOF_
 			G_EXEC umount "$root_mountpoint" "$fat_mountpoint"
 			G_EXEC rmdir "$root_mountpoint" "$fat_mountpoint"
@@ -750,7 +750,7 @@ _EOF_
 			# Generate ISO file with Clonezilla Live + shaughvOS image
 			G_EXEC_DESC="Generating $FP_FINAL" G_EXEC_OUTPUT=1 G_EXEC xorriso \
 				-as mkisofs -R -r -J -joliet-long -l -iso-level 3 -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -partition_offset 16 \
-				-publisher 'shaughvOS - Lightweight justice for your SBC; https://shaughvos.com/;' -volid 'SHAUGHVOS_INSTALLER' \
+				-publisher 'shaughvOS - Lightweight justice for your SBC; https://dietpi.com/;' -volid 'SHAUGHVOS_INSTALLER' \
 				-A "clonezilla-live-$CLONEZILLA_VERSION-amd64" -b syslinux/isolinux.bin -c syslinux/boot.cat -no-emul-boot -boot-load-size 4 \
 				-boot-info-table -eltorito-alt-boot --efi-boot boot/grub/efi.img -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
 				-o "$FP_FINAL" tmpiso

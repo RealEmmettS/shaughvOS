@@ -4,7 +4,7 @@
 	# shaughvOS Lets Encrypt
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -195,7 +195,7 @@ _EOF_
 			# Apply changes by restarting Lighttpd
 			G_EXEC systemctl restart lighttpd
 
-			# Create renewal hook, since Lighttpd needs to be reloaded to serve the new certificate: https://shaughvos.com/forum/t/letsencrypt-renew-cron-issue/13471/6
+			# Create renewal hook, since Lighttpd needs to be reloaded to serve the new certificate: https://dietpi.com/forum/t/letsencrypt-renew-cron-issue/13471/6
 			[[ -d '/etc/letsencrypt/renewal-hooks/deploy' ]] || G_EXEC mkdir -p /etc/letsencrypt/renewal-hooks/deploy
 			G_EXEC eval 'echo -e '\''#!/bin/dash\nsystemctl reload lighttpd'\'' > /etc/letsencrypt/renewal-hooks/deploy/shaughvos-lighttpd.sh'
 			G_EXEC chmod +x /etc/letsencrypt/renewal-hooks/deploy/shaughvos-lighttpd.sh
@@ -206,7 +206,7 @@ _EOF_
 
 			G_SHAUGHVOS-NOTIFY 0 'Nginx webserver detected'
 
-			# Update server_name directive in case it's missing or present a single time only. Avoid errors when Certbot or admin did already add multiple vhosts with server_name: https://shaughvos.com/forum/t/nextcloud-problems-questions/15415/13
+			# Update server_name directive in case it's missing or present a single time only. Avoid errors when Certbot or admin did already add multiple vhosts with server_name: https://dietpi.com/forum/t/nextcloud-problems-questions/15415/13
 			[[ $(grep -c '^[[:blank:]]*server_name[[:blank:]]' /etc/nginx/sites-available/default) == [01] ]] && G_CONFIG_INJECT 'server_name[[:blank:]]' "	server_name $primary_domain;" /etc/nginx/sites-available/default 'listen[[:blank:]]'
 
 			# Restart Nginx to apply server_name change
@@ -240,7 +240,7 @@ _EOF_
 
 			Apply_To_Web_Applications
 
-			# Add HSTS header to software location blocks where required: https://shaughvos.com/forum/t/warnings-in-the-configuration-nextcloud/15002/13
+			# Add HSTS header to software location blocks where required: https://dietpi.com/forum/t/warnings-in-the-configuration-nextcloud/15002/13
 			if (( $LETSENCRYPT_HSTS ))
 			then
 				[[ -f '/etc/nginx/sites-shaughvos/shaughvos-owncloud.conf' ]] && G_CONFIG_INJECT 'add_header[[:blank:]]+Strict-Transport-Security[[:blank:]]' '	add_header Strict-Transport-Security "max-age=15768000; includeSubDomains" always;' /etc/nginx/sites-shaughvos/shaughvos-owncloud.conf '^[[:blank:]]*add_header[[:blank:]]'

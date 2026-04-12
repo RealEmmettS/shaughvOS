@@ -229,7 +229,7 @@ Apply_Settings()
 - GRUB
 \nPlease open an issue at our GitHub page or forum:
 - https://github.com/RealEmmettS/shaughvOS/issues
-- https://shaughvos.com/forum/'
+- https://dietpi.com/forum/'
 	fi
 	REBOOT=1
 }
@@ -297,7 +297,7 @@ Reset_Settings()
 - GRUB
 \nPlease open an issue at our GitHub page or forum:
 - https://github.com/RealEmmettS/shaughvOS/issues
-- https://shaughvos.com/forum/'
+- https://dietpi.com/forum/'
 	fi
 	REBOOT=1
 }

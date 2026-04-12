@@ -24,8 +24,8 @@
 	# - HW_MODEL=0				(must match one of the supported IDs below)
 	# - WIFI_REQUIRED=0			[01]
 	# - DISTRO_TARGET=8			[789] (Bookworm: 7, Trixie: 8, Forky: 9)
-	# - TEST_KERNEL=1			Install test kernel from https://shaughvos.com/downloads/binaries/testing/
-	# - TEST_UBOOT=1			Install test U-Boot from https://shaughvos.com/downloads/binaries/testing/
+	# - TEST_KERNEL=1			Install test kernel from https://dietpi.com/downloads/binaries/testing/
+	# - TEST_UBOOT=1			Install test U-Boot from https://dietpi.com/downloads/binaries/testing/
 	# - RK35XX_MAINLINE=1			Install mainline kernel on RK35xx based SBCs we would otherwise install the vendor kernel
 	#------------------------------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@
 	[[ -f '/etc/apt/sources.list.d/deb-multimedia.list' ]] && rm -v /etc/apt/sources.list.d/deb-multimedia.list
 	[[ -f '/etc/apt/preferences.d/deb-multimedia-pin-99' ]] && rm -v /etc/apt/preferences.d/deb-multimedia-pin-99
 	[[ -f '/etc/apt/preferences.d/backports' ]] && rm -v /etc/apt/preferences.d/backports
-	#	OMV: https://shaughvos.com/forum/t/1903
+	#	OMV: https://dietpi.com/forum/t/1903
 	[[ -f '/etc/apt/sources.list.d/openmediavault.list' ]] && rm -v /etc/apt/sources.list.d/openmediavault.list
 	# - Remove all configs except debconf pre-configuration: It does not work until apt-utils is installed but shall work as fast as it is.
 	find /etc/apt/apt.conf.d -type f ! -name '70debconf' -exec rm -v {} +
@@ -1246,8 +1246,8 @@ fi' /boot/boot.cmd
 				local suffix=
 				# Orange Pi 5 Max/Ultra: Install kernel build with bcmdhd WiFi module configured for SDIO rather than USB
 				(( $G_HW_MODEL == 91 || $G_HW_MODEL == 94 )) && suffix='_bcmdhd-sdio'
-				G_EXEC_OUTPUT=1 G_EXEC curl -fo package1.deb "https://shaughvos.com/downloads/binaries/testing/linux-image-$branch-$kernel$suffix.deb"
-				G_EXEC_OUTPUT=1 G_EXEC curl -fo package2.deb "https://shaughvos.com/downloads/binaries/testing/linux-dtb-$branch-$kernel$suffix.deb"
+				G_EXEC_OUTPUT=1 G_EXEC curl -fo package1.deb "https://dietpi.com/downloads/binaries/testing/linux-image-$branch-$kernel$suffix.deb"
+				G_EXEC_OUTPUT=1 G_EXEC curl -fo package2.deb "https://dietpi.com/downloads/binaries/testing/linux-dtb-$branch-$kernel$suffix.deb"
 				G_EXEC_OUTPUT=1 G_EXEC dpkg -i package[12].deb
 				G_EXEC rm package[12].deb
 			fi
@@ -1255,7 +1255,7 @@ fi' /boot/boot.cmd
 			# Install testing U-Boot build if requested
 			if (( $TEST_UBOOT ))
 			then
-				G_EXEC_OUTPUT=1 G_EXEC curl -fo package.deb "https://shaughvos.com/downloads/binaries/testing/linux-u-boot-$model-$branch.deb"
+				G_EXEC_OUTPUT=1 G_EXEC curl -fo package.deb "https://dietpi.com/downloads/binaries/testing/linux-u-boot-$model-$branch.deb"
 				G_EXEC_OUTPUT=1 G_EXEC dpkg -i package.deb
 				G_EXEC rm package.deb
 			fi
@@ -1402,7 +1402,7 @@ _EOF_
 			# Install testing kernel/U-Boot build if requested
 			if (( $TEST_KERNEL || $TEST_UBOOT ))
 			then
-				G_EXEC_OUTPUT=1 G_EXEC curl -fo package.deb "https://shaughvos.com/downloads/binaries/testing/firmware-$variant.deb"
+				G_EXEC_OUTPUT=1 G_EXEC curl -fo package.deb "https://dietpi.com/downloads/binaries/testing/firmware-$variant.deb"
 				G_EXEC_OUTPUT=1 G_EXEC dpkg -i package.deb
 				G_EXEC rm package.deb
 			else
@@ -1964,9 +1964,9 @@ _EOF_'
 		echo -e "Samba client: $info_use_drive_manager" > /mnt/samba/readme.txt
 		echo -e "NFS client: $info_use_drive_manager" > /mnt/nfs_client/readme.txt
 
-		G_SHAUGHVOS-NOTIFY 2 'Resetting and adding shaughvos.com SSH pub host key for shaughvOS-Bugreport uploads:'
+		G_SHAUGHVOS-NOTIFY 2 'Resetting and adding dietpi.com SSH pub host key for shaughvOS-Bugreport uploads:'
 		G_EXEC mkdir -p /root/.ssh
-		G_EXEC eval 'echo '\''[ssh.shaughvos.com]:29248 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdEPlagpQ+RVHNOX3jkG1Bya7Oza1dAke8h8NszVW84'\'' > /root/.ssh/known_hosts'
+		G_EXEC eval 'echo '\''[ssh.dietpi.com]:29248 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdEPlagpQ+RVHNOX3jkG1Bya7Oza1dAke8h8NszVW84'\'' > /root/.ssh/known_hosts'
 
 		G_EXEC_DESC='Configuring hostname and hosts'
 		G_EXEC eval 'echo '\''shaughvOS'\'' > /etc/hostname'

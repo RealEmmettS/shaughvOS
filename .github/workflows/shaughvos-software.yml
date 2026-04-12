@@ -26,7 +26,7 @@ on:
       owner:
         description: 'Override target repo owner'
       test:
-        description: 'Install test builds from shaughvos.com'
+        description: 'Install test builds from dietpi.com'
         type: boolean
         default: false
 concurrency:

@@ -4,7 +4,7 @@
 	# shaughvOS Function:
 	# - Creates a MariaDB database
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#////////////////////////////////////
 	# Usage:
 	# - /boot/shaughvos/func/create_mysql_db <DATABASE_NAME> <DATABASE_USER> <DATABASE_PW>

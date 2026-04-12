@@ -145,8 +145,8 @@ jobs:
         sudo dash -c 'umask 377; echo '\''${{ secrets.KNOWN_HOSTS }}'\'' > /root/.ssh/known_hosts; echo '\''${{ secrets.SSH_KEY }}'\'' > /root/.ssh/id_ed25519; > upload.sh; chmod 0711 upload.sh'
         echo '#!/bin/dash
         set -e
-        urls="\"https://shaughvos.com/downloads/images/testing/\""
-        for i in "$@"; do urls="$urls,\"https://shaughvos.com/downloads/images/testing/${i##*/}\""; done
+        urls="\"https://dietpi.com/downloads/images/testing/\""
+        for i in "$@"; do urls="$urls,\"https://dietpi.com/downloads/images/testing/${i##*/}\""; done
         IFS=,
         curl -T "{$*}" --key /root/.ssh/id_ed25519 '\''${{ secrets.UPLOAD_URL }}testing/'\''
         curl -H '\''Authorization: Bearer ${{ secrets.CF_TOKEN }}'\'' -H '\''Content-Type: application/json'\'' -d "{\"files\":[$urls]}" '\''https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/purge_cache'\''

@@ -4,7 +4,7 @@
 	# shaughvOS Drive Manager
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -813,7 +813,7 @@ Do you wish to ignore this warning, and, mount the drive regardless?" || return 
 	{
 		if (( $1 == 0 ))
 		then
-			G_WHIP_MSG "[FAILED]\n\nYour shaughvOS userdata is currently located on this drive:\n - $FP_USERDATA_CURRENT\n\nThe requested option for this drive is not currently possible.\n\nPlease move your userdata elsewhere, before trying again:\nhttps://shaughvos.com/docs/shaughvos_tools/#quick-selections"
+			G_WHIP_MSG "[FAILED]\n\nYour shaughvOS userdata is currently located on this drive:\n - $FP_USERDATA_CURRENT\n\nThe requested option for this drive is not currently possible.\n\nPlease move your userdata elsewhere, before trying again:\nhttps://dietpi.com/docs/shaughvos_tools/#quick-selections"
 
 		elif (( $1 == 1 ))
 		then
@@ -1286,7 +1286,7 @@ Please choose another drive or format this one with another filesystem, e.g. ext
 			then
 				G_WHIP_MSG "The fsck tool for ${aDRIVE_FSTYPE[$MENU_DRIVE_SELECTED]} filesystems does not support repairing yet on Debian ${G_DISTRO_NAME^}.
 \nWe recommend to migrate to a new Debian release which supports this feature, either by installing a new shaughvOS image or following our HowTo to upgrade your system:
-=> https://shaughvos.com/docs/usage/#how-to-upgrade-to-buster"
+=> https://dietpi.com/docs/usage/#how-to-upgrade-to-buster"
 			fi
 
 			if (( ${aDRIVE_ISMOUNTED[$MENU_DRIVE_SELECTED]} ))
@@ -1415,7 +1415,7 @@ NB: If you are planning to dedicate the drive to this system, it is recommended 
 			G_WHIP_MENU 'Please select a filesystem type for this format:
 \next4:\nHighly recommended if you plan to use this drive solely on this system (dedicated drive).
 \nNTFS:\nRecommended if you plan to use this drive on a Windows system. High CPU usage during transfers.
-\nFull list of different filesystem types:\nhttps://shaughvos.com/docs/shaughvos_tools/#shaughvos-drive-manager' || return 0
+\nFull list of different filesystem types:\nhttps://dietpi.com/docs/shaughvos_tools/#shaughvos-drive-manager' || return 0
 
 			FORMAT_FS_TYPE=$G_WHIP_RETURNED_VALUE
 

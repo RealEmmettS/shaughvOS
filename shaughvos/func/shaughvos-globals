@@ -5,7 +5,7 @@
 	# shaughvOS-Globals
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -1024,7 +1024,7 @@ Press any key to continue...'
 					echo -e '\e[41m---------------------------------------------------------------------
 - shaughvOS bug report template for GitHub or forum                    -
 - Please report at: https://github.com/RealEmmettS/shaughvOS/issues       -
-                or: https://shaughvos.com/forum/c/troubleshooting/10   -
+                or: https://dietpi.com/forum/c/troubleshooting/10   -
 - Copy and paste ONLY the BLUE lines below, replacing the template! -
 ---------------------------------------------------------------------\e[44m'
 					# Add bug report ID if sent already
@@ -1489,7 +1489,7 @@ Press any key to continue...'
 			esac
 			shift
 		done
-		curl -sSfLm "$timeout" 'https://shaughvos.com/geoip'
+		curl -sSfLm "$timeout" 'https://dietpi.com/geoip'
 	}
 
 	# $1 = directory to test permissions support
@@ -1778,8 +1778,8 @@ Press any key to continue...'
 				'/sys/devices/platform/sunxi-i2c.0/i2c-0/0-0034/temp1_input'
 				'/sys/class/hwmon/hwmon0/device/temp_label'
 				'/sys/class/hwmon/hwmon0/temp2_input'
-				'/sys/class/hwmon/hwmon0/temp1_input' # Odroid C1 Armbian legacy Linux 5.4.40: https://shaughvos.com/forum/t/3976/17
-				'/sys/class/thermal/thermal_zone1/temp' # Roseapple Pi, probably OrangePi's: https://shaughvos.com/forum/t/4993
+				'/sys/class/hwmon/hwmon0/temp1_input' # Odroid C1 Armbian legacy Linux 5.4.40: https://dietpi.com/forum/t/3976/17
+				'/sys/class/thermal/thermal_zone1/temp' # Roseapple Pi, probably OrangePi's: https://dietpi.com/forum/t/4993
 				'/sys/class/hwmon/hwmon[0-9]/temp[1-9]_input'
 			)
 
@@ -1976,7 +1976,7 @@ Press any key to continue...'
 
 		[[ $G_PROMPT_BACKUP_DISABLED == 1 ]] && return 0
 
-		G_WHIP_YESNO 'Would you like to create (or update) a "shaughvOS-Backup" of the system, before proceeding?\n\n"shaughvOS-Backup" creates a system restore point, which can be recovered if unexpected issues occur.\n\nFor more information on "shaughvOS-Backup", please use the link below:\n - https://shaughvos.com/docs/shaughvos_tools/#shaughvos-backup-backuprestore' || return 0
+		G_WHIP_YESNO 'Would you like to create (or update) a "shaughvOS-Backup" of the system, before proceeding?\n\n"shaughvOS-Backup" creates a system restore point, which can be recovered if unexpected issues occur.\n\nFor more information on "shaughvOS-Backup", please use the link below:\n - https://dietpi.com/docs/shaughvos_tools/#shaughvos-backup-backuprestore' || return 0
 
 		/boot/shaughvos/shaughvos-backup 1
 		local exit_code=$?
@@ -2041,7 +2041,7 @@ Press any key to continue...'
 		G_CHECK_ROOT_USER "$@" || return 0
 		local branch=$1 apackages=()
 		[[ $branch ]] || branch=$(uname -r) branch=${branch%-*} branch=${branch##*-}
-		mapfile -t apackages < <(dpkg-query -l | mawk -v "branch=$branch" '$1=="ii" && match($2,"^(linux-(image|dtb|headers|libc-dev)-"branch"-|linux-u-boot-.*-"branch"$|armbian-firmware$|firmware-(quartz64[ab]|soquartz)$|linux-image-(star64|visionfive2)$)") {print "https://shaughvos.com/downloads/binaries/testing/"$2".deb"}')
+		mapfile -t apackages < <(dpkg-query -l | mawk -v "branch=$branch" '$1=="ii" && match($2,"^(linux-(image|dtb|headers|libc-dev)-"branch"-|linux-u-boot-.*-"branch"$|armbian-firmware$|firmware-(quartz64[ab]|soquartz)$|linux-image-(star64|visionfive2)$)") {print "https://dietpi.com/downloads/binaries/testing/"$2".deb"}')
 		[[ ${apackages[0]} ]] || { G_SHAUGHVOS-NOTIFY 1 'No matching packages are installed on your system, aborting ...'; return 1; }
 		# Orange Pi 5 Max/Ultra: Install kernel build with bcmdhd WiFi module configured for SDIO rather than USB
 		(( $G_HW_MODEL == 91 || $G_HW_MODEL == 94 )) && apackages=("${apackages[@]/vendor-rk35xx/vendor-rk35xx_bcmdhd-sdio}")

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Created by MichaIng / micha@shaughvos.com / shaughvos.com
+# Created by MichaIng / micha@dietpi.com / dietpi.com
 {
 ##########################################
 # Load shaughvOS-Globals
@@ -378,7 +378,7 @@ G_AG_CHECK_INSTALL_PREREQ "${apackages[@]}"
 # Prepare container
 ##########################################
 # Download
-G_EXEC curl -sSfO "https://shaughvos.com/downloads/images/$image.xz"
+G_EXEC curl -sSfO "https://dietpi.com/downloads/images/$image.xz"
 G_EXEC xz -d "$image.xz"
 G_EXEC truncate -s 8G "$image"
 
@@ -416,13 +416,13 @@ then
 	G_EXEC rm keyring.deb
 fi
 
-# Install test builds from shaughvos.com if requested
+# Install test builds from dietpi.com if requested
 if [[ $TEST == 'true' ]]
 then
 	# shellcheck disable=SC2016
-	G_EXEC sed --follow-symlinks -i '/# Start shaughvOS-Software/a\G_EXEC sed --follow-symlinks -i '\''s|shaughvos.com/downloads/binaries/$G_DISTRO_NAME/|shaughvos.com/downloads/binaries/$G_DISTRO_NAME/testing/|'\'' /boot/shaughvos/shaughvos-software' rootfs/boot/shaughvos/shaughvos-login
+	G_EXEC sed --follow-symlinks -i '/# Start shaughvOS-Software/a\G_EXEC sed --follow-symlinks -i '\''s|dietpi.com/downloads/binaries/$G_DISTRO_NAME/|dietpi.com/downloads/binaries/$G_DISTRO_NAME/testing/|'\'' /boot/shaughvos/shaughvos-software' rootfs/boot/shaughvos/shaughvos-login
 	# shellcheck disable=SC2016
-	G_EXEC sed --follow-symlinks -i '/# Start shaughvOS-Software/a\G_EXEC sed --follow-symlinks -Ei '\''s@G_AGI "?(amiberry|amiberry-lite|domoticz|gmediarender|gzdoom|shairport-sync\\$airplay2|squeezelite|unbound|vaultwarden|ympd)"?@Download_Install "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/\\1""_$G_HW_ARCH_NAME.deb"@'\'' /boot/shaughvos/shaughvos-software' rootfs/boot/shaughvos/shaughvos-login
+	G_EXEC sed --follow-symlinks -i '/# Start shaughvOS-Software/a\G_EXEC sed --follow-symlinks -Ei '\''s@G_AGI "?(amiberry|amiberry-lite|domoticz|gmediarender|gzdoom|shairport-sync\\$airplay2|squeezelite|unbound|vaultwarden|ympd)"?@Download_Install "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/\\1""_$G_HW_ARCH_NAME.deb"@'\'' /boot/shaughvos/shaughvos-software' rootfs/boot/shaughvos/shaughvos-login
 	G_CONFIG_INJECT 'SOFTWARE_SHAUGHVOS_DASHBOARD_VERSION=' 'SOFTWARE_SHAUGHVOS_DASHBOARD_VERSION=Nightly' rootfs/boot/shaughvos.txt
 fi
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Created by MichaIng / micha@shaughvos.com / shaughvos.com
+# Created by MichaIng / micha@dietpi.com / dietpi.com
 {
 ##########################################
 # Load shaughvOS-Globals
@@ -112,7 +112,7 @@ G_AG_CHECK_INSTALL_PREREQ "${apackages[@]}"
 # Prepare container
 ##########################################
 # Download
-G_EXEC curl -sSfO "https://shaughvos.com/downloads/images/$image.xz"
+G_EXEC curl -sSfO "https://dietpi.com/downloads/images/$image.xz"
 G_EXEC xz -d "$image.xz"
 G_EXEC truncate -s 8G "$image"
 

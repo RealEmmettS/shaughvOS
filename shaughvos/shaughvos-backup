@@ -4,7 +4,7 @@
 	# shaughvOS Backup
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -487,7 +487,7 @@ _EOF_
 \nIf you have broken your system, or want to reset your system to an earlier date, this can all be done with shaughvOS-Backup.
 \nSimply choose a location where you want to save and restore your backups from, then, select Backup or Restore.
 \nEnable a daily system backup to run it once a day via daily cron job. The execution time can be changed in "shaughvos-cron". Note that this temporarily stops software services. Also we recommend to configure and test the backup with a manual call before enabling this feature.
-\nMore information: https://shaughvos.com/docs/shaughvos_tools/#shaughvos-backup-backuprestore';;
+\nMore information: https://dietpi.com/docs/shaughvos_tools/#shaughvos-backup-backuprestore';;
 
 			'Last log') log=1 G_WHIP_VIEWFILE "$FP_TARGET/$FP_LOG";;
 

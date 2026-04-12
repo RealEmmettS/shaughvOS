@@ -4,7 +4,7 @@
 	# shaughvOS Software
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -239,35 +239,35 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='LXDE'
 		aSOFTWARE_DESC[$software_id]='ultra lightweight desktop'
 		aSOFTWARE_CATX[$software_id]=0
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#lxde'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#lxde'
 		aSOFTWARE_DEPS[$software_id]='5 6 browser'
 		#------------------
 		software_id=24
 		aSOFTWARE_NAME[$software_id]='MATE'
 		aSOFTWARE_DESC[$software_id]='desktop enviroment'
 		aSOFTWARE_CATX[$software_id]=0
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#mate'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#mate'
 		aSOFTWARE_DEPS[$software_id]='5 6 browser'
 		#------------------
 		software_id=25
 		aSOFTWARE_NAME[$software_id]='Xfce'
 		aSOFTWARE_DESC[$software_id]='lightweight desktop'
 		aSOFTWARE_CATX[$software_id]=0
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#xfce'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#xfce'
 		aSOFTWARE_DEPS[$software_id]='5 6 browser'
 		#------------------
 		software_id=26
 		aSOFTWARE_NAME[$software_id]='GNUstep'
 		aSOFTWARE_DESC[$software_id]='lightweight desktop based on OpenStep'
 		aSOFTWARE_CATX[$software_id]=0
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#gnustep'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#gnustep'
 		aSOFTWARE_DEPS[$software_id]='5 6 browser'
 		#------------------
 		software_id=173
 		aSOFTWARE_NAME[$software_id]='LXQt'
 		aSOFTWARE_DESC[$software_id]='lightweight desktop'
 		aSOFTWARE_CATX[$software_id]=0
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#lxqt'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#lxqt'
 		aSOFTWARE_DEPS[$software_id]='5 6 browser'
 
 		# Remote Desktop
@@ -276,7 +276,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='TigerVNC Server'
 		aSOFTWARE_DESC[$software_id]='desktop for remote connection'
 		aSOFTWARE_CATX[$software_id]=1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/remote_desktop/#tigervnc-server'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/remote_desktop/#tigervnc-server'
 		aSOFTWARE_DEPS[$software_id]='6'
 		aSOFTWARE_CONFLICTS[$software_id]='120'
 		#------------------
@@ -284,14 +284,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='XRDP'
 		aSOFTWARE_DESC[$software_id]='remote desktop protocol (rdp) server'
 		aSOFTWARE_CATX[$software_id]=1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/remote_desktop/#xrdp'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/remote_desktop/#xrdp'
 		aSOFTWARE_DEPS[$software_id]='6'
 		#------------------
 		software_id=30
 		aSOFTWARE_NAME[$software_id]='NoMachine'
 		aSOFTWARE_DESC[$software_id]='multi-platform server and client access'
 		aSOFTWARE_CATX[$software_id]=1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/remote_desktop/#nomachine'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/remote_desktop/#nomachine'
 		# - RISC-V: https://downloads.nomachine.com/
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -299,7 +299,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='RealVNC Server'
 		aSOFTWARE_DESC[$software_id]='desktop for remote connection'
 		aSOFTWARE_CATX[$software_id]=1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/remote_desktop/#realvnc-server'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/remote_desktop/#realvnc-server'
 		aSOFTWARE_DEPS[$software_id]='6'
 		aSOFTWARE_CONFLICTS[$software_id]='28'
 		# RPi only (archive.raspberrypi.com repo, libraspberrypi0 dependency, license)
@@ -309,7 +309,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='RustDesk Server'
 		aSOFTWARE_DESC[$software_id]='open-source remote desktop server, written in Rust'
 		aSOFTWARE_CATX[$software_id]=1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/remote_desktop/#rustdesk-server'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/remote_desktop/#rustdesk-server'
 		# - RISC-V & ARMv6: https://github.com/rustdesk/rustdesk-server/releases
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -318,7 +318,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='RustDesk Client'
 		aSOFTWARE_DESC[$software_id]='open-source remote desktop client, written in Rust'
 		aSOFTWARE_CATX[$software_id]=1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/remote_desktop/#rustdesk-client'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/remote_desktop/#rustdesk-client'
 		aSOFTWARE_DEPS[$software_id]='6'
 		# - RISC-V & ARMv6: https://github.com/rustdesk/rustdesk/releases
 		# - ARMv7 since packages depend on non-t64 libraries
@@ -330,21 +330,21 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Kodi'
 		aSOFTWARE_DESC[$software_id]='The media centre for Linux'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#kodi'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#kodi'
 		aSOFTWARE_DEPS[$software_id]='5 152'
 		#------------------
 		software_id=32
 		aSOFTWARE_NAME[$software_id]='ympd'
 		aSOFTWARE_DESC[$software_id]='lightweight web interface music player for mpd'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#ympd'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#ympd'
 		aSOFTWARE_DEPS[$software_id]='128'
 		#------------------
 		software_id=148
 		aSOFTWARE_NAME[$software_id]='myMPD'
 		aSOFTWARE_DESC[$software_id]='fork of ympd with improved features'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#mympd'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#mympd'
 		aSOFTWARE_DEPS[$software_id]='128'
 		# - RISC-V: https://download.opensuse.org/repositories/home:/jcorporation/Debian_Testing/
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -353,21 +353,21 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='CAVA'
 		aSOFTWARE_DESC[$software_id]='Console audio visualisation for MPD'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#cava'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#cava'
 		aSOFTWARE_DEPS[$software_id]='128'
 		#------------------
 		software_id=33
 		aSOFTWARE_NAME[$software_id]='Airsonic-Advanced'
 		aSOFTWARE_DESC[$software_id]='Web interface media streaming server'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#airsonic'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#airsonic'
 		aSOFTWARE_DEPS[$software_id]='5 7 196'
 		#------------------
 		software_id=35
 		aSOFTWARE_NAME[$software_id]='Lyrion Music Server'
 		aSOFTWARE_DESC[$software_id]='formerly Logitech Media Server and Squeezebox Server'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#lyrion-music-server'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#lyrion-music-server'
 		# - RISC-V: https://lms-community.github.io/lms-server-repository/stable.xml
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -375,34 +375,34 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Squeezelite'
 		aSOFTWARE_DESC[$software_id]='audio player for LMS & Squeezebox'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#squeezelite'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#squeezelite'
 		aSOFTWARE_DEPS[$software_id]='5'
 		#------------------
 		software_id=37
 		aSOFTWARE_NAME[$software_id]='Shairport Sync'
 		aSOFTWARE_DESC[$software_id]='AirPlay audio player with multiroom sync'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#shairport-sync'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#shairport-sync'
 		aSOFTWARE_DEPS[$software_id]='5 152'
 		#------------------
 		software_id=39
 		aSOFTWARE_NAME[$software_id]='ReadyMedia'
 		aSOFTWARE_DESC[$software_id]='(MiniDLNA) media streaming server (DLNA, UPnP)'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#readymedia'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#readymedia'
 		#------------------
 		software_id=40
 		aSOFTWARE_NAME[$software_id]='Ampache'
 		aSOFTWARE_DESC[$software_id]='web interface media streaming server'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#ampache'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#ampache'
 		aSOFTWARE_DEPS[$software_id]='5 7 88 89 webserver'
 		#------------------
 		software_id=41
 		aSOFTWARE_NAME[$software_id]='Emby'
 		aSOFTWARE_DESC[$software_id]='web interface media streaming server'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#emby'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#emby'
 		# - ARMv6: https://github.com/RealEmmettS/shaughvOS/issues/534#issuecomment-416405968
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		# - RISC-V: https://github.com/MediaBrowser/Emby.Releases/releases
@@ -412,7 +412,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Plex Media Server'
 		aSOFTWARE_DESC[$software_id]='web interface media streaming server'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#plex-media-server'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#plex-media-server'
 		# - ARMv6: https://github.com/RealEmmettS/shaughvOS/issues/648
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		# - RISC-V: https://www.plex.tv/media-server-downloads/?cat=computer&plat=linux#plex-media-server
@@ -422,20 +422,20 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Mumble Server'
 		aSOFTWARE_DESC[$software_id]='(Murmur) Low latency encrypted VoIP server'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#murmur'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#murmur'
 		#------------------
 		software_id=118
 		aSOFTWARE_NAME[$software_id]='Mopidy'
 		aSOFTWARE_DESC[$software_id]='Web interface music & radio player'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#mopidy'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#mopidy'
 		aSOFTWARE_DEPS[$software_id]='5 130'
 		#------------------
 		software_id=121
 		aSOFTWARE_NAME[$software_id]='Roon Bridge'
 		aSOFTWARE_DESC[$software_id]='Turns device into Roon capable audio player'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#roon-bridge'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#roon-bridge'
 		aSOFTWARE_DEPS[$software_id]='5'
 		# - ARMv6
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
@@ -446,7 +446,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='NAA Daemon'
 		aSOFTWARE_DESC[$software_id]='Signalyst Network Audio Adaptor (NAA)'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#naa-daemon'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#naa-daemon'
 		aSOFTWARE_DEPS[$software_id]='5'
 		# - RISC-V: https://signalyst.com/bins/naa/linux/
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -461,35 +461,35 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='O!MPD'
 		aSOFTWARE_DESC[$software_id]='Feature-rich, web interface audio player for MPD'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#ompd'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#ompd'
 		aSOFTWARE_DEPS[$software_id]='88 89 128 195 webserver'
 		#------------------
 		software_id=135
 		aSOFTWARE_NAME[$software_id]='Icecast'
 		aSOFTWARE_DESC[$software_id]='Shoutcast streaming server (+DarkIce)'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#icecast'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#icecast'
 		aSOFTWARE_DEPS[$software_id]='5'
 		#------------------
 		software_id=143
 		aSOFTWARE_NAME[$software_id]='Koel'
 		aSOFTWARE_DESC[$software_id]='web interface audio streamer'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#koel'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#koel'
 		aSOFTWARE_DEPS[$software_id]='7 88 89'
 		#------------------
 		software_id=146
 		aSOFTWARE_NAME[$software_id]='Tautulli'
 		aSOFTWARE_DESC[$software_id]='monitoring and tracking tool for Plex'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#tautulli'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#tautulli'
  		aSOFTWARE_DEPS[$software_id]='17'
 		#------------------
 		software_id=154
 		aSOFTWARE_NAME[$software_id]='Roon Server'
 		aSOFTWARE_DESC[$software_id]='Roon capable audio player and core'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#roon-server'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#roon-server'
 		aSOFTWARE_DEPS[$software_id]='1 5 7'
 		# x86_64 only: https://help.roonlabs.com/portal/en/kb/articles/linux-install
 		(( $G_HW_ARCH == 10 )) || aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,$G_HW_ARCH]=0
@@ -498,7 +498,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Allo GUI full'
 		aSOFTWARE_DESC[$software_id]='Audiophile web interface with all dependencies'
 		aSOFTWARE_CATX[$software_id]=-1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/forum/t/shaughvos-allo-com-web-gui-image/1523'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/forum/t/shaughvos-allo-com-web-gui-image/1523'
 		aSOFTWARE_DEPS[$software_id]='36 37 88 89 96 128 129 152 160 163 webserver'
 		# Roon Bridge is not supported on ARMv6 and RISC-V
 		(( $G_HW_ARCH == 1 || $G_HW_ARCH == 11 )) || aSOFTWARE_DEPS[$software_id]+=' 121'
@@ -516,14 +516,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='GMediaRender'
 		aSOFTWARE_DESC[$software_id]='Resource efficient UPnP/DLNA renderer'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#gmediarender'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#gmediarender'
 		aSOFTWARE_DEPS[$software_id]='5 152'
 		#------------------
 		software_id=167
 		aSOFTWARE_NAME[$software_id]='Raspotify'
 		aSOFTWARE_DESC[$software_id]='A Spotify Connect client that mostly Just Works™'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#raspotify'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#raspotify'
 		aSOFTWARE_DEPS[$software_id]='5 152'
 		# - ARMv6: https://github.com/dtcooper/raspotify/wiki/Raspotify-on-Pi-v1's-and-Pi-Zero-v1.x
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
@@ -532,21 +532,21 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Ubooquity'
 		aSOFTWARE_DESC[$software_id]='free home server for your comics and ebooks library'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#ubooquity'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#ubooquity'
 		aSOFTWARE_DEPS[$software_id]='196'
 		#------------------
 		software_id=179
 		aSOFTWARE_NAME[$software_id]='Komga'
 		aSOFTWARE_DESC[$software_id]='free and open source comics/mangas media server with web UI'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#komga'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#komga'
 		aSOFTWARE_DEPS[$software_id]='196'
 		#------------------
 		software_id=86
 		aSOFTWARE_NAME[$software_id]='Roon Extension Manager'
 		aSOFTWARE_DESC[$software_id]='manage extensions from within Roon'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#roon-extension-manager'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#roon-extension-manager'
 		aSOFTWARE_DEPS[$software_id]='162'
 		# - ARMv6
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
@@ -555,7 +555,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Jellyfin'
 		aSOFTWARE_DESC[$software_id]='FOSS web interface media streaming server'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#jellyfin'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#jellyfin'
 		# - ARMv6: https://github.com/jellyfin/jellyfin/issues/5011
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		# - RISC-V: https://repo.jellyfin.org/?path=/server/debian/latest-unstable
@@ -567,27 +567,27 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Beets'
 		aSOFTWARE_DESC[$software_id]='music organizer and manager'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#beets'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#beets'
 		#------------------
 		software_id=191
 		aSOFTWARE_NAME[$software_id]='Snapcast Server'
 		aSOFTWARE_DESC[$software_id]='Multiroom audio server'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#snapcast-server'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#snapcast-server'
 		aSOFTWARE_DEPS[$software_id]='5'
 		#------------------
 		software_id=192
 		aSOFTWARE_NAME[$software_id]='Snapcast Client'
 		aSOFTWARE_DESC[$software_id]='Multiroom audio client'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#snapcast-client'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#snapcast-client'
 		aSOFTWARE_DEPS[$software_id]='5'
 		#------------------
 		software_id=199
 		aSOFTWARE_NAME[$software_id]='Spotifyd'
 		aSOFTWARE_DESC[$software_id]='Open source Spotify client running as UNIX daemon'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#spotifyd'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#spotifyd'
 		aSOFTWARE_DEPS[$software_id]='5'
 		# - RISC-V: https://github.com/Spotifyd/spotifyd/releases
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -596,14 +596,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Navidrome'
 		aSOFTWARE_DESC[$software_id]='Web interface media streaming server'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#navidrome'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#navidrome'
 		aSOFTWARE_DEPS[$software_id]='5 7'
 		#------------------
 		software_id=212
 		aSOFTWARE_NAME[$software_id]='Kavita'
 		aSOFTWARE_DESC[$software_id]='open source comics/mangas/ebooks media server with web reader'
 		aSOFTWARE_CATX[$software_id]=2
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/media/#kavita'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/media/#kavita'
 		# - ARMv6: ARM binaries are ARMv7+ only
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		# - RISC-V: https://github.com/Kareadita/Kavita/releases
@@ -615,53 +615,53 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Transmission'
 		aSOFTWARE_DESC[$software_id]='BitTorrent server with web interface (C)'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#transmission'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#transmission'
 		#------------------
 		software_id=45
 		aSOFTWARE_NAME[$software_id]='Deluge'
 		aSOFTWARE_DESC[$software_id]='BitTorrent server with web interface (Python)'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#deluge'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#deluge'
 		#------------------
 		software_id=46
 		aSOFTWARE_NAME[$software_id]='qBittorrent'
 		aSOFTWARE_DESC[$software_id]='BitTorrent server with web interface (C++)'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#qbittorrent'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#qbittorrent'
 		#------------------
 		software_id=107
 		aSOFTWARE_NAME[$software_id]='rTorrent'
 		aSOFTWARE_DESC[$software_id]='BitTorrent server (C++) with rutorrent web interface (PHP)'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#rtorrent'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#rtorrent'
 		aSOFTWARE_DEPS[$software_id]='89 170 webserver'
 		#------------------
 		software_id=116
 		aSOFTWARE_NAME[$software_id]='Medusa'
 		aSOFTWARE_DESC[$software_id]='Automatic video library manager for TV shows'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#medusa'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#medusa'
 		aSOFTWARE_DEPS[$software_id]='170'
 		#------------------
 		software_id=132
 		aSOFTWARE_NAME[$software_id]='Aria2'
 		aSOFTWARE_DESC[$software_id]='Download manager with web interface'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#arias'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#arias'
 		aSOFTWARE_DEPS[$software_id]='87 89 webserver'
 		#------------------
 		software_id=139
 		aSOFTWARE_NAME[$software_id]='SABnzbd'
 		aSOFTWARE_DESC[$software_id]='NZB download manager'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#sabnzbd'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#sabnzbd'
 		aSOFTWARE_DEPS[$software_id]='130 170'
 		#------------------
 		software_id=144
 		aSOFTWARE_NAME[$software_id]='Sonarr'
 		aSOFTWARE_DESC[$software_id]='Automatically download TV shows'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#sonarr'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#sonarr'
 		(( $G_HW_ARCH == 1 )) && aSOFTWARE_DEPS[$software_id]='150'
 		# - RISC-V: https://github.com/Sonarr/Sonarr/releases
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -670,7 +670,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Radarr'
 		aSOFTWARE_DESC[$software_id]='Automatically download movies'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#radarr'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#radarr'
 		(( $G_HW_ARCH == 1 )) && aSOFTWARE_DEPS[$software_id]='150'
 		# - RISC-V: https://github.com/Radarr/Radarr/releases
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -679,7 +679,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Lidarr'
 		aSOFTWARE_DESC[$software_id]='Automatically download music'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#lidarr'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#lidarr'
 		(( $G_HW_ARCH == 1 )) && aSOFTWARE_DEPS[$software_id]='150'
 		# - RISC-V: https://github.com/Lidarr/Lidarr/releases
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -688,7 +688,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Bazarr'
 		aSOFTWARE_DESC[$software_id]='Automatically download subtitles'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#bazarr'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#bazarr'
 		aSOFTWARE_DEPS[$software_id]='130'
 		# FFmpeg x86_64 binaries are shipped with Bazarr: https://github.com/morpheus65535/bazarr-binaries/tree/master/bin/Linux/x86_64/ffmpeg
 		(( $G_HW_ARCH == 10 )) || aSOFTWARE_DEPS[$software_id]+=' 7'
@@ -699,7 +699,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Jackett'
 		aSOFTWARE_DESC[$software_id]='API support for your torrent trackers'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#jackett'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#jackett'
 		(( $G_HW_ARCH == 1 )) && aSOFTWARE_DEPS[$software_id]='150'
 		# - RISC-V: https://github.com/Jackett/Jackett/releases
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -708,13 +708,13 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='NZBGet'
 		aSOFTWARE_DESC[$software_id]='NZB download manager'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#nzbget'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#nzbget'
 		#------------------
 		software_id=151
 		aSOFTWARE_NAME[$software_id]='Prowlarr'
 		aSOFTWARE_DESC[$software_id]='Indexer manager & proxy for PVR'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#prowlarr'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#prowlarr'
 		# - ARMv6
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		# - RISC-V: https://github.com/Prowlarr/Prowlarr/releases
@@ -724,7 +724,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Readarr'
 		aSOFTWARE_DESC[$software_id]='Ebook and audiobook collection manager'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#readarr'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#readarr'
 		# - ARMv6
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		# - RISC-V: https://github.com/Readarr/Readarr/releases
@@ -734,21 +734,21 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='HTPC Manager'
 		aSOFTWARE_DESC[$software_id]='Manage your HTPC from anywhere'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#htpc-manager'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#htpc-manager'
 		aSOFTWARE_DEPS[$software_id]='17 130'
 		#------------------
 		software_id=195
 		aSOFTWARE_NAME[$software_id]='youtube-dl'
 		aSOFTWARE_DESC[$software_id]='Download videos from YouTube and other sites (using yt-dlp fork)'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#youtube-dl'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#youtube-dl'
 		aSOFTWARE_DEPS[$software_id]='7'
 		#------------------
 		software_id=169
 		aSOFTWARE_NAME[$software_id]='LazyLibrarian'
 		aSOFTWARE_DESC[$software_id]='Ebook and audiobook collection manager'
 		aSOFTWARE_CATX[$software_id]=3
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/bittorrent/#lazylibrarian'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/bittorrent/#lazylibrarian'
 		aSOFTWARE_DEPS[$software_id]='130'
 
 		# Cloud & Backup
@@ -757,7 +757,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='ownCloud Infinite Scale'
 		aSOFTWARE_DESC[$software_id]='File sync & share platform (Go)'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#owncloud'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#owncloud'
 		# - RISC-V: https://github.com/owncloud/ocis/releases
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -765,21 +765,21 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Nextcloud'
 		aSOFTWARE_DESC[$software_id]='File sync, sharing and collaboration platform (PHP)'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#nextcloud'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#nextcloud'
 		aSOFTWARE_DEPS[$software_id]='88 89 91 webserver'
 		#------------------
 		software_id=168
 		aSOFTWARE_NAME[$software_id]='Nextcloud Talk'
 		aSOFTWARE_DESC[$software_id]='Video calls with configured Coturn server (PHP)'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#nextcloud-talk'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#nextcloud-talk'
 		aSOFTWARE_DEPS[$software_id]='114'
 		#------------------
 		software_id=111
 		aSOFTWARE_NAME[$software_id]='UrBackup Server'
 		aSOFTWARE_DESC[$software_id]='Full system backup server'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#urbackup'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#urbackup'
 		# - RISC-V: https://www.urbackup.org/download.html#server_debian
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -787,7 +787,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Gogs'
 		aSOFTWARE_DESC[$software_id]='Personal Git server with web interface'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#gogs'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#gogs'
 		aSOFTWARE_DEPS[$software_id]='17 88 0'
 		aSOFTWARE_CONFLICTS[$software_id]='165 177'
 		#------------------
@@ -795,13 +795,13 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Syncthing'
 		aSOFTWARE_DESC[$software_id]='Backup and sync server with web interface'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#syncthing'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#syncthing'
 		#------------------
 		software_id=158
 		aSOFTWARE_NAME[$software_id]='MinIO'
 		aSOFTWARE_DESC[$software_id]='S3 compatible distributed object server'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#minio'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#minio'
 		# - RISC-V: https://dl.minio.io/server/minio/release/
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -809,7 +809,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='FuguHub'
 		aSOFTWARE_DESC[$software_id]='Lightweight WebDAV cloud with a CMS, album and blog integration'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#fuguhub'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#fuguhub'
 		# - ARMv8
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,3]=0
 		# - RISC-V: https://fuguhub.com/download.lsp
@@ -819,7 +819,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Gitea'
 		aSOFTWARE_DESC[$software_id]='Git with a cup of tea'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#gitea'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#gitea'
 		aSOFTWARE_DEPS[$software_id]='17 88 0'
 		aSOFTWARE_CONFLICTS[$software_id]='49 177'
 		#------------------
@@ -827,7 +827,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Forgejo'
 		aSOFTWARE_DESC[$software_id]='Self-hosted lightweight software forge. Fork of Gitea.'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#forgejo'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#forgejo'
 		aSOFTWARE_DEPS[$software_id]='17 88 0'
 		aSOFTWARE_CONFLICTS[$software_id]='49 165'
 		# - RISC-V: https://codeberg.org/forgejo/forgejo/releases
@@ -837,32 +837,32 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='vaultwarden'
 		aSOFTWARE_DESC[$software_id]='Unofficial Bitwarden password manager server written in Rust'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#vaultwarden'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#vaultwarden'
 		aSOFTWARE_DEPS[$software_id]='87'
 		#------------------
 		software_id=198
 		aSOFTWARE_NAME[$software_id]='File Browser'
 		aSOFTWARE_DESC[$software_id]='web based file manager'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#filebrowser'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#filebrowser'
 		#------------------
 		software_id=202
 		aSOFTWARE_NAME[$software_id]='Rclone'
 		aSOFTWARE_DESC[$software_id]='Utility to sync your files to cloud storages'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#rclone'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#rclone'
 		#------------------
 		software_id=209
 		aSOFTWARE_NAME[$software_id]='Restic'
 		aSOFTWARE_DESC[$software_id]='Fast, efficient and secure command-line backup program'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#restic'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#restic'
 		#------------------
 		software_id=215
 		aSOFTWARE_NAME[$software_id]='Immich'
 		aSOFTWARE_DESC[$software_id]='High performance self-hosted photo and video management solution'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#immich'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#immich'
 		aSOFTWARE_DEPS[$software_id]='7 9 91 194'
 		# pgvector only available from Trixie on
 		(( $G_DISTRO < 8 )) && aSOFTWARE_AVAIL_G_DISTRO[$software_id,$G_DISTRO]=0
@@ -873,7 +873,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Immich Machine Learning'
 		aSOFTWARE_DESC[$software_id]='Machine learning server for Immich facial recognition and smart search'
 		aSOFTWARE_CATX[$software_id]=4
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#immich-machine-learning'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#immich-machine-learning'
 		aSOFTWARE_DEPS[$software_id]='130'
 		# onnxruntime wheels only available for ARMv8 and x86_64, and no source package: https://pypi.org/project/onnxruntime/#files
 		(( $G_HW_ARCH == 3 || $G_HW_ARCH == 10 )) || aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,$G_HW_ARCH]=0
@@ -884,14 +884,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Amiberry'
 		aSOFTWARE_DESC[$software_id]='Optimised Amiga emulator for multiple platforms'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#amiberry'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#amiberry'
 		aSOFTWARE_DEPS[$software_id]='5'
 		#------------------
 		software_id=10
 		aSOFTWARE_NAME[$software_id]='Amiberry-Lite'
 		aSOFTWARE_DESC[$software_id]='Optimised Amiga emulator recommended for smaller ARM/RISC-V SBCs'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#amiberry-lite'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#amiberry-lite'
 		aSOFTWARE_DEPS[$software_id]='5'
 		# - ARMv6: Compile error: "selected processor does not support `ubfx r5,r2,...' in ARM mode"
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
@@ -900,7 +900,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='OpenTyrian'
 		aSOFTWARE_DESC[$software_id]='a classic retro game, addictive'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#opentyrian'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#opentyrian'
 		aSOFTWARE_DEPS[$software_id]='5 6'
 		# RPi only
 		(( $G_HW_MODEL > 9 )) && aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
@@ -911,7 +911,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='DXX-Rebirth'
 		aSOFTWARE_DESC[$software_id]='Descent 1/2'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#dxx-rebirth'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#dxx-rebirth'
 		aSOFTWARE_DEPS[$software_id]='5'
 		# RPi only
 		(( $G_HW_MODEL > 9 )) && aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
@@ -922,7 +922,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Cuberite'
 		aSOFTWARE_DESC[$software_id]='Minecraft server with web interface (C++)'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#cuberite'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#cuberite'
 		# - RISC-V: https://cuberite.org/
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -930,14 +930,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='MineOS'
 		aSOFTWARE_DESC[$software_id]='Minecraft servers with web interface (Java/Node.js)'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#mineos'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#mineos'
 		aSOFTWARE_DEPS[$software_id]='9 17 196'
 		#------------------
 		software_id=156
 		aSOFTWARE_NAME[$software_id]='Steam'
 		aSOFTWARE_DESC[$software_id]='Valve gaming platform client'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#steam'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#steam'
 		aSOFTWARE_DEPS[$software_id]='5 6'
 		# Box86 required on ARM
 		(( $G_HW_ARCH == 2 )) && aSOFTWARE_DEPS[$software_id]+=' 62'
@@ -950,14 +950,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Nukkit'
 		aSOFTWARE_DESC[$software_id]='A nuclear-powered server for Minecraft Pocket Edition'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#nukkit'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#nukkit'
 		aSOFTWARE_DEPS[$software_id]='196'
 		#------------------
 		software_id=181
 		aSOFTWARE_NAME[$software_id]='PaperMC'
 		aSOFTWARE_DESC[$software_id]='Highly optimised Minecraft server with plugins, written in Java'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#papermc'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#papermc'
 		aSOFTWARE_DEPS[$software_id]='196'
 		# Allow unattended installs if EULA has been accepted already
 		[[ -f '/mnt/shaughvos_userdata/papermc/eula.txt' ]] || aSOFTWARE_INTERACTIVE[$software_id]=1
@@ -966,7 +966,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Box86'
 		aSOFTWARE_DESC[$software_id]='x86 userspace emulation'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#box86'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#box86'
 		# ARMv7 only
 		(( $G_HW_ARCH == 2 )) || aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,$G_HW_ARCH]=0
 		#------------------
@@ -974,7 +974,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Box64'
 		aSOFTWARE_DESC[$software_id]='x86_64 userspace emulation'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#box64'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#box64'
 		# ARMv8 and RISC-V only
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,2]=0
@@ -984,7 +984,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Moonlight (CLI)'
 		aSOFTWARE_DESC[$software_id]='CLI game streaming client for Sunshine and NVIDIA GameStream'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#moonlight-cli'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#moonlight-cli'
 		# RPi only
 		(( $G_HW_MODEL > 9 )) && aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
 		# - ARMv6: https://github.com/moonlight-stream/moonlight-embedded/issues/832
@@ -994,7 +994,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Moonlight (GUI)'
 		aSOFTWARE_DESC[$software_id]='GUI game streaming client for Sunshine and NVIDIA GameStream'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#moonlight-gui'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#moonlight-gui'
 		# - ARMv6: https://github.com/moonlight-stream/moonlight-embedded/issues/832
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		# - x86_64: https://dl.cloudsmith.io/public/moonlight-game-streaming/moonlight-qt/deb/debian/dists/trixie/Release
@@ -1004,7 +1004,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='GZDoom'
 		aSOFTWARE_DESC[$software_id]='Modder-friendly OpenGL and Vulkan source port based on the DOOM engine'
 		aSOFTWARE_CATX[$software_id]=5
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/gaming/#gzdoom'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/gaming/#gzdoom'
 		aSOFTWARE_DEPS[$software_id]='5'
 		# - ARMv6/7: https://github.com/ZDoom/gzdoom/commit/1dedcee
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
@@ -1016,42 +1016,42 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='phpBB'
 		aSOFTWARE_DESC[$software_id]='bulletin board forum software'
 		aSOFTWARE_CATX[$software_id]=6
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/social/#phpbb'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/social/#phpbb'
 		aSOFTWARE_DEPS[$software_id]='88 89 webserver'
 		#------------------
 		software_id=55
 		aSOFTWARE_NAME[$software_id]='WordPress'
 		aSOFTWARE_DESC[$software_id]='website blog and publishing platform'
 		aSOFTWARE_CATX[$software_id]=6
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/social/#wordpress'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/social/#wordpress'
 		aSOFTWARE_DEPS[$software_id]='88 89 webserver'
 		#------------------
 		software_id=38
 		aSOFTWARE_NAME[$software_id]='FreshRSS'
 		aSOFTWARE_DESC[$software_id]='self-hosted RSS feed aggregator'
 		aSOFTWARE_CATX[$software_id]=6
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/social/#freshrss'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/social/#freshrss'
 		aSOFTWARE_DEPS[$software_id]='88 89 webserver'
 		#------------------
 		software_id=56
 		aSOFTWARE_NAME[$software_id]='Single File PHP Gallery'
 		aSOFTWARE_DESC[$software_id]='Website to host and browse your images'
 		aSOFTWARE_CATX[$software_id]=6
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/social/#single-file-php-gallery'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/social/#single-file-php-gallery'
 		aSOFTWARE_DEPS[$software_id]='89 webserver'
 		#------------------
 		software_id=57
 		aSOFTWARE_NAME[$software_id]='Baïkal'
 		aSOFTWARE_DESC[$software_id]='lightweight caldav + carddav server'
 		aSOFTWARE_CATX[$software_id]=6
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/social/#baikal'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/social/#baikal'
 		aSOFTWARE_DEPS[$software_id]='88 89 webserver'
 		#------------------
 		software_id=125
 		aSOFTWARE_NAME[$software_id]='Synapse'
 		aSOFTWARE_DESC[$software_id]='Matrix homeserver implementation'
 		aSOFTWARE_CATX[$software_id]=6
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/social/#synapse'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/social/#synapse'
 		aSOFTWARE_DEPS[$software_id]='130 194'
 		#-----------------
 		software_id=16
@@ -1059,20 +1059,20 @@ Available commands:
 		aSOFTWARE_DESC[$software_id]='A self-hosted, single-user, ActivityPub powered microblog.'
 		aSOFTWARE_CATX[$software_id]=6
 		aSOFTWARE_DEPS[$software_id]='17'
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/social/#microblogpub'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/social/#microblogpub'
 		#------------------
 		software_id=210
 		aSOFTWARE_NAME[$software_id]='MediaWiki'
 		aSOFTWARE_DESC[$software_id]='A collaboration and documentation platform'
 		aSOFTWARE_CATX[$software_id]=6
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/social/#mediawiki'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/social/#mediawiki'
 		aSOFTWARE_DEPS[$software_id]='88 89 webserver'
 		#------------------
 		software_id=213
 		aSOFTWARE_NAME[$software_id]='soju'
 		aSOFTWARE_DESC[$software_id]='A user-friendly IRC bouncer'
 		aSOFTWARE_CATX[$software_id]=6
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/social/#soju'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/social/#soju'
 		aSOFTWARE_DEPS[$software_id]='188'
 
 		# Camera & Surveillance
@@ -1081,20 +1081,20 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='motionEye'
 		aSOFTWARE_DESC[$software_id]='Web interface & surveillance for your camera'
 		aSOFTWARE_CATX[$software_id]=7
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/camera/#motioneye'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/camera/#motioneye'
  		aSOFTWARE_DEPS[$software_id]='7 130'
 		#------------------
 		software_id=137
 		aSOFTWARE_NAME[$software_id]='mjpg-streamer'
 		aSOFTWARE_DESC[$software_id]='Simple camera streaming tool with HTML plugin'
 		aSOFTWARE_CATX[$software_id]=7
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/camera/#mjpg-streamer'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/camera/#mjpg-streamer'
 		#------------------
 		software_id=127
 		aSOFTWARE_NAME[$software_id]='BirdNET-Go'
 		aSOFTWARE_DESC[$software_id]='Continuous avian monitoring and identification'
 		aSOFTWARE_CATX[$software_id]=7
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/camera/#birdnet-go'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/camera/#birdnet-go'
 		aSOFTWARE_DEPS[$software_id]='7 87'
 		# - ARMv6/7/RISC-V: https://github.com/tphakala/birdnet-go/releases
 		(( $G_HW_ARCH == 3 || $G_HW_ARCH == 10 )) || aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,$G_HW_ARCH]=0
@@ -1110,21 +1110,21 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='LinuxDash'
 		aSOFTWARE_DESC[$software_id]='web interface system stats'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#linuxdash'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#linuxdash'
 		aSOFTWARE_DEPS[$software_id]='89 webserver'
 		#------------------
 		software_id=64
 		aSOFTWARE_NAME[$software_id]='phpSysInfo'
 		aSOFTWARE_DESC[$software_id]='web interface system stats'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#phpsysinfo'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#phpsysinfo'
 		aSOFTWARE_DEPS[$software_id]='89 webserver'
 		#------------------
 		software_id=65
 		aSOFTWARE_NAME[$software_id]='Netdata'
 		aSOFTWARE_DESC[$software_id]='real-time performance monitoring'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#netdata'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#netdata'
 		# - Trixie: https://bugs.debian.org/1107082
 		(( $G_DISTRO > 7 )) && aSOFTWARE_AVAIL_G_DISTRO[$software_id,$G_DISTRO]=0
 		#------------------
@@ -1132,7 +1132,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='RPi-Monitor'
 		aSOFTWARE_DESC[$software_id]='Web interface for Raspberry Pi real-time monitoring'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#rpi-monitor'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#rpi-monitor'
 		# RPi only
 		(( $G_HW_MODEL > 9 )) && aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
 		#------------------
@@ -1140,21 +1140,21 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Webmin'
 		aSOFTWARE_DESC[$software_id]='web interface system management'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#webmin'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#webmin'
 		#------------------
 		software_id=162
 		aSOFTWARE_NAME[$software_id]='Docker'
 		aSOFTWARE_DESC[$software_id]='Build, ship, and run distributed applications'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#docker'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#docker'
 		#------------------
 		software_id=185
 		aSOFTWARE_NAME[$software_id]='Portainer'
 		aSOFTWARE_DESC[$software_id]='Simplifies container management in Docker (standalone host)'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#portainer'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#portainer'
 		aSOFTWARE_DEPS[$software_id]='162'
-		# - ARMv6: https://shaughvos.com/forum/t/16380/11
+		# - ARMv6: https://dietpi.com/forum/t/16380/11
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		# - RISC-V: https://hub.docker.com/r/portainer/portainer/tags
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -1163,14 +1163,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Docker Compose'
 		aSOFTWARE_DESC[$software_id]='Manage multi-container Docker applications'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#docker-compose'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#docker-compose'
 		aSOFTWARE_DEPS[$software_id]='162'
 		#------------------
 		software_id=193
 		aSOFTWARE_NAME[$software_id]='K3s'
 		aSOFTWARE_DESC[$software_id]='The certified Kubernetes distribution built for IoT & Edge computing'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#k3s'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#k3s'
 		# - RISC-V: https://get.k3s.io/
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -1178,7 +1178,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='MicroK8s'
 		aSOFTWARE_DESC[$software_id]='The simplest production-grade upstream K8s, light and focused'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/cloud/#microk8s'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/cloud/#microk8s'
 		# - ARMv6/7/RISC-V: https://snapcraft.io/microk8s
 		(( $G_HW_ARCH == 3 || $G_HW_ARCH == 10 )) || aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,$G_HW_ARCH]=0
 		#------------------
@@ -1186,26 +1186,26 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='shaughvOS-Dashboard'
 		aSOFTWARE_DESC[$software_id]='(rework beta!) Official lightweight shaughvOS web interface (Rust)'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#shaughvos-dashboard'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#shaughvos-dashboard'
 		#------------------
 		software_id=99
 		aSOFTWARE_NAME[$software_id]='Prometheus Node Exporter'
 		aSOFTWARE_DESC[$software_id]='Prometheus exporter for hardware and OS metrics'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#prometheus_node_exporter'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#prometheus_node_exporter'
 		#------------------
 		software_id=205
 		aSOFTWARE_NAME[$software_id]='Homer'
 		aSOFTWARE_DESC[$software_id]='Simple HOMepage for your servER to keep your services on hand'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#homer'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#homer'
 		aSOFTWARE_DEPS[$software_id]='webserver'
 		#------------------
 		software_id=176
 		aSOFTWARE_NAME[$software_id]='Uptime Kuma'
 		aSOFTWARE_DESC[$software_id]='A fancy self-hosted monitoring tool'
 		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_stats/#uptime-kuma'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#uptime-kuma'
 		aSOFTWARE_DEPS[$software_id]='9' # Node.js
 		# - ARMv6/RISC-V: https://github.com/louislam/node-sqlite3/releases
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
@@ -1247,7 +1247,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Remote.It'
 		aSOFTWARE_DESC[$software_id]='Provides secure connections to your networked devices'
 		aSOFTWARE_CATX[$software_id]=9
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/remote_desktop/#remot3it'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/remote_desktop/#remot3it'
 		# - RISC-V: https://www.remote.it/download-list
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -1255,7 +1255,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='VirtualHere'
 		aSOFTWARE_DESC[$software_id]='server: share USB devices over the network'
 		aSOFTWARE_CATX[$software_id]=9
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/remote_desktop/#virtualhere'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/remote_desktop/#virtualhere'
 		aSOFTWARE_DEPS[$software_id]='152'
 		# - RISC-V: https://github.com/virtualhere/script/blob/main/install_server
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
@@ -1266,7 +1266,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Python 3 RPi.GPIO'
 		aSOFTWARE_DESC[$software_id]='Control Raspberry Pi GPIO channels in Python 3'
 		aSOFTWARE_CATX[$software_id]=10
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/hardware_projects/#rpigpio'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/hardware_projects/#rpigpio'
 		# RPi only
 		(( $G_HW_MODEL > 9 )) && aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
 		#------------------
@@ -1274,7 +1274,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='WiringPi'
 		aSOFTWARE_DESC[$software_id]='GPIO interface library (C)'
 		aSOFTWARE_CATX[$software_id]=10
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/hardware_projects/#wiringpi'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/hardware_projects/#wiringpi'
 		# RPi, Odroids and Orange Pi only
 		(( $G_HW_MODEL > 19 )) && [[ ! $G_HW_MODEL =~ ^(80|82|83|87|88|89|91|93|94|95|96|97|98)$ ]] && aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
 		#------------------
@@ -1282,7 +1282,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='WebIOPi'
 		aSOFTWARE_DESC[$software_id]='Web interface to control RPi GPIO channels'
 		aSOFTWARE_CATX[$software_id]=10
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/hardware_projects/#webiopi'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/hardware_projects/#webiopi'
 		aSOFTWARE_DEPS[$software_id]='69'
 		# RPi only
 		(( $G_HW_MODEL > 9 )) && aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
@@ -1298,7 +1298,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='PiJuice'
 		aSOFTWARE_DESC[$software_id]='pisupply ups'
 		aSOFTWARE_CATX[$software_id]=10
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/hardware_projects/#pijuice'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/hardware_projects/#pijuice'
 		aSOFTWARE_DEPS[$software_id]='72'
 		# RPi only
 		(( $G_HW_MODEL > 9 )) && aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
@@ -1307,7 +1307,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Node-RED'
 		aSOFTWARE_DESC[$software_id]='tool for wiring devices, APIs and online services'
 		aSOFTWARE_CATX[$software_id]=10
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/hardware_projects/#node-red'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/hardware_projects/#node-red'
 		aSOFTWARE_DEPS[$software_id]='9'
 		(( $G_HW_MODEL > 9 )) || aSOFTWARE_DEPS[$software_id]+=' 69'
 		#------------------
@@ -1315,20 +1315,20 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Mosquitto'
 		aSOFTWARE_DESC[$software_id]='MQTT messaging broker'
 		aSOFTWARE_CATX[$software_id]=10
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/hardware_projects/#mosquitto'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/hardware_projects/#mosquitto'
 		#------------------
 		software_id=131
 		aSOFTWARE_NAME[$software_id]='Blynk Server'
 		aSOFTWARE_DESC[$software_id]='msg controller for blynk mobile app and sbcs'
 		aSOFTWARE_CATX[$software_id]=10
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/hardware_projects/#blynk-server'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/hardware_projects/#blynk-server'
 		aSOFTWARE_DEPS[$software_id]='196 9'
 		#------------------
 		software_id=166
 		aSOFTWARE_NAME[$software_id]='Audiophonics PI-SPC'
 		aSOFTWARE_DESC[$software_id]='Raspberry Pi power management module'
 		aSOFTWARE_CATX[$software_id]=10
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/hardware_projects/#audiophonics-pi-spc'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/hardware_projects/#audiophonics-pi-spc'
 		aSOFTWARE_DEPS[$software_id]='70'
 		# RPi only
 		(( $G_HW_MODEL > 9 )) && aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
@@ -1337,7 +1337,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Grafana'
 		aSOFTWARE_DESC[$software_id]='platform for analytics and monitoring'
 		aSOFTWARE_CATX[$software_id]=10
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/hardware_projects/#grafana'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/hardware_projects/#grafana'
 		# - RISC-V: https://apt.grafana.com/dists/stable/main/binary-riscv64/Packages
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 
@@ -1347,13 +1347,13 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Fail2Ban'
 		aSOFTWARE_DESC[$software_id]='prevents brute-force attacks with ip ban'
 		aSOFTWARE_CATX[$software_id]=11
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_security/#fail2ban'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_security/#fail2ban'
 		#------------------
 		software_id=92
 		aSOFTWARE_NAME[$software_id]='Certbot'
 		aSOFTWARE_DESC[$software_id]="Obtain and renew Let's Encrypt SSL certs for HTTPS"
 		aSOFTWARE_CATX[$software_id]=11
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system_security/#lets-encrypt'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_security/#lets-encrypt'
 
 		# Webserver Stacks
 		#--------------------------------------------------------------------------------
@@ -1361,7 +1361,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='LASP'
 		aSOFTWARE_DESC[$software_id]='Apache   + SQLite  + PHP'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#lasp-web-stack'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#lasp-web-stack'
 		aSOFTWARE_DEPS[$software_id]='83 87 89'
 		aSOFTWARE_CONFLICTS[$software_id]='78 79 81 82 84 85'
 		#------------------
@@ -1369,7 +1369,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='LAMP'
 		aSOFTWARE_DESC[$software_id]='Apache   + MariaDB + PHP'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#lamp-web-stack'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#lamp-web-stack'
 		aSOFTWARE_DEPS[$software_id]='83 88 89'
 		aSOFTWARE_CONFLICTS[$software_id]='78 79 81 82 84 85'
 		#------------------
@@ -1377,7 +1377,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='LESP'
 		aSOFTWARE_DESC[$software_id]='Nginx    + SQLite  + PHP'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#lesp-web-stack'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#lesp-web-stack'
 		aSOFTWARE_DEPS[$software_id]='85 87 89'
 		aSOFTWARE_CONFLICTS[$software_id]='75 76 81 82 83 84'
 		#------------------
@@ -1385,7 +1385,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='LEMP'
 		aSOFTWARE_DESC[$software_id]='Nginx    + MariaDB + PHP'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#lemp-web-stack'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#lemp-web-stack'
 		aSOFTWARE_DEPS[$software_id]='85 88 89'
 		aSOFTWARE_CONFLICTS[$software_id]='75 76 81 82 83 84'
 		#------------------
@@ -1393,7 +1393,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='LLSP'
 		aSOFTWARE_DESC[$software_id]='Lighttpd + SQLite  + PHP'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#llsp-web-stack'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#llsp-web-stack'
 		aSOFTWARE_DEPS[$software_id]='84 87 89'
 		aSOFTWARE_CONFLICTS[$software_id]='75 76 78 79 83 85'
 		#------------------
@@ -1401,7 +1401,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='LLMP'
 		aSOFTWARE_DESC[$software_id]='Lighttpd + MariaDB + PHP'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#llmp-web-stack'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#llmp-web-stack'
 		aSOFTWARE_DEPS[$software_id]='84 88 89'
 		aSOFTWARE_CONFLICTS[$software_id]='75 76 78 79 83 85'
 		#------------------
@@ -1409,28 +1409,28 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Apache'
 		aSOFTWARE_DESC[$software_id]='Popular webserver'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#apache2'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#apache2'
 		aSOFTWARE_CONFLICTS[$software_id]='78 79 81 82 84 85'
 		#------------------
 		software_id=84
 		aSOFTWARE_NAME[$software_id]='Lighttpd'
 		aSOFTWARE_DESC[$software_id]='Extremely lightweight webserver'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#lighttpd'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#lighttpd'
 		aSOFTWARE_CONFLICTS[$software_id]='75 76 78 79 83 85'
 		#------------------
 		software_id=85
 		aSOFTWARE_NAME[$software_id]='Nginx'
 		aSOFTWARE_DESC[$software_id]='Lightweight webserver'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#nginx'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#nginx'
 		aSOFTWARE_CONFLICTS[$software_id]='75 76 81 82 83 84'
 		#------------------
 		software_id=89
 		aSOFTWARE_NAME[$software_id]='PHP'
 		aSOFTWARE_DESC[$software_id]='Hypertext Preprocessor for dynamic web content'
 		aSOFTWARE_CATX[$software_id]=12
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/webserver_stack/#php'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/webserver_stack/#php'
 
 		# DNS Servers
 		#--------------------------------------------------------------------------------
@@ -1438,7 +1438,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Pi-hole'
 		aSOFTWARE_DESC[$software_id]='block adverts for any device on your network'
 		aSOFTWARE_CATX[$software_id]=13
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/dns_servers/#pi-hole'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/dns_servers/#pi-hole'
 		aSOFTWARE_DEPS[$software_id]='17'
 		aSOFTWARE_INTERACTIVE[$software_id]=1
 		aSOFTWARE_CONFLICTS[$software_id]='126'
@@ -1447,14 +1447,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='AdGuard Home'
 		aSOFTWARE_DESC[$software_id]='powerful network-wide ads & trackers blocking DNS server'
 		aSOFTWARE_CATX[$software_id]=13
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/dns_servers/#adguard-home'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/dns_servers/#adguard-home'
 		aSOFTWARE_CONFLICTS[$software_id]='93'
 		#------------------
 		software_id=182
 		aSOFTWARE_NAME[$software_id]='Unbound'
 		aSOFTWARE_DESC[$software_id]='validating, recursive, caching DNS resolver'
 		aSOFTWARE_CATX[$software_id]=13
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/dns_servers/#unbound'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/dns_servers/#unbound'
 
 		# File Servers
 		#--------------------------------------------------------------------------------
@@ -1462,27 +1462,27 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='ProFTPD'
 		aSOFTWARE_DESC[$software_id]='Feature-rich FTP server with Apache-like config and FTPS+SFTP modules'
 		aSOFTWARE_CATX[$software_id]=14
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/file_servers/#proftpd'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/file_servers/#proftpd'
 		aSOFTWARE_CONFLICTS[$software_id]='95'
 		#------------------
 		software_id=95
 		aSOFTWARE_NAME[$software_id]='vsftpd'
 		aSOFTWARE_DESC[$software_id]='Lightweight FTP/FTPS server'
 		aSOFTWARE_CATX[$software_id]=14
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/file_servers/#vsftpd'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/file_servers/#vsftpd'
 		aSOFTWARE_CONFLICTS[$software_id]='94'
 		#------------------
 		software_id=96
 		aSOFTWARE_NAME[$software_id]='Samba Server'
 		aSOFTWARE_DESC[$software_id]='Feature-rich SMB/CIFS server'
 		aSOFTWARE_CATX[$software_id]=14
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/file_servers/#samba'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/file_servers/#samba'
 		#------------------
 		software_id=109
 		aSOFTWARE_NAME[$software_id]='NFS Server'
 		aSOFTWARE_DESC[$software_id]='Network File System server'
 		aSOFTWARE_CATX[$software_id]=14
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/file_servers/#nfs'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/file_servers/#nfs'
 
 		# VPN Servers
 		#--------------------------------------------------------------------------------
@@ -1490,21 +1490,21 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='OpenVPN'
 		aSOFTWARE_DESC[$software_id]='vpn server'
 		aSOFTWARE_CATX[$software_id]=15
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/vpn/#openvpn'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/vpn/#openvpn'
 		#------------------
 		software_id=172
 		aSOFTWARE_NAME[$software_id]='WireGuard'
 		aSOFTWARE_DESC[$software_id]='an extremely simple yet fast and modern VPN'
 		aSOFTWARE_CATX[$software_id]=15
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/vpn/#wireguard'
-		# Requires the WireGuard kernel module: We do not support DKMS builds anymore, which were required only for legacy kernel versions, not supported by WireGuard anymore: https://shaughvos.com/forum/t/15173
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/vpn/#wireguard'
+		# Requires the WireGuard kernel module: We do not support DKMS builds anymore, which were required only for legacy kernel versions, not supported by WireGuard anymore: https://dietpi.com/forum/t/15173
 		(( $G_HW_MODEL == 75 )) || modprobe -nq wireguard || aSOFTWARE_AVAIL_G_HW_MODEL[$software_id,$G_HW_MODEL]=0
 		#------------------
 		software_id=117
 		aSOFTWARE_NAME[$software_id]='PiVPN'
 		aSOFTWARE_DESC[$software_id]='openvpn/wireguard server install & management tool'
 		aSOFTWARE_CATX[$software_id]=15
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/vpn/#pivpn'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/vpn/#pivpn'
 		aSOFTWARE_DEPS[$software_id]='17'
 		# Require interactive install if no config file containing options for unattended install is present
 		[[ -f '/boot/unattended_pivpn.conf' ]] || aSOFTWARE_INTERACTIVE[$software_id]=1
@@ -1513,13 +1513,13 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Tailscale'
 		aSOFTWARE_DESC[$software_id]='Zero config VPN'
 		aSOFTWARE_CATX[$software_id]=15
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/vpn/#tailscale'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/vpn/#tailscale'
 		#-----------------
 		software_id=201
 		aSOFTWARE_NAME[$software_id]='ZeroTier'
 		aSOFTWARE_DESC[$software_id]='Free easy to deploy cloud-hosted VPN service'
 		aSOFTWARE_CATX[$software_id]=15
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/vpn/#zerotier'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/vpn/#zerotier'
 
 		# Advanced Networking
 		#--------------------------------------------------------------------------------
@@ -1527,13 +1527,13 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='WiFi Hotspot'
 		aSOFTWARE_DESC[$software_id]='turn your device into a WiFi hotspot'
 		aSOFTWARE_CATX[$software_id]=16
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/advanced_networking/#wifi-hotspot'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/advanced_networking/#wifi-hotspot'
 		#------------------
 		software_id=61
 		aSOFTWARE_NAME[$software_id]='Tor Hotspot'
 		aSOFTWARE_DESC[$software_id]='optional: route hotspot traffic through tor'
 		aSOFTWARE_CATX[$software_id]=16
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/advanced_networking/#tor-hotspot'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/advanced_networking/#tor-hotspot'
 		aSOFTWARE_DEPS[$software_id]='60'
 		aSOFTWARE_CONFLICTS[$software_id]='184'
 		#------------------
@@ -1541,7 +1541,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='HAProxy'
 		aSOFTWARE_DESC[$software_id]='high performance TCP/HTTP load balancer'
 		aSOFTWARE_CATX[$software_id]=16
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/advanced_networking/#haproxy'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/advanced_networking/#haproxy'
 		#------------------
 		software_id=152
 		aSOFTWARE_NAME[$software_id]='Avahi-Daemon'
@@ -1552,7 +1552,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='frp'
 		aSOFTWARE_DESC[$software_id]='reverse proxy'
 		aSOFTWARE_CATX[$software_id]=16
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/advanced_networking/#frp'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/advanced_networking/#frp'
 
 		# Home Automation
 		#--------------------------------------------------------------------------------
@@ -1560,33 +1560,33 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Home Assistant'
 		aSOFTWARE_DESC[$software_id]='Open source home automation platform'
 		aSOFTWARE_CATX[$software_id]=17
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/home_automation/#home-assistant'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/home_automation/#home-assistant'
 		#------------------
 		software_id=140
 		aSOFTWARE_NAME[$software_id]='Domoticz'
 		aSOFTWARE_DESC[$software_id]='Open source home automation platform'
 		aSOFTWARE_CATX[$software_id]=17
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/home_automation/#domoticz'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/home_automation/#domoticz'
 		#------------------
 		software_id=27
 		aSOFTWARE_NAME[$software_id]='TasmoAdmin'
 		aSOFTWARE_DESC[$software_id]='Website to manage ESP8266 devices flashed with Tasmota'
 		aSOFTWARE_CATX[$software_id]=17
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/home_automation/#tasmoadmin'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/home_automation/#tasmoadmin'
 		aSOFTWARE_DEPS[$software_id]='89 webserver'
 		#------------------
 		software_id=206
 		aSOFTWARE_NAME[$software_id]='openHAB'
 		aSOFTWARE_DESC[$software_id]='Vendor and technology agnostic FLOSS home automation software'
 		aSOFTWARE_CATX[$software_id]=17
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/home_automation/#openhab'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/home_automation/#openhab'
 		aSOFTWARE_DEPS[$software_id]='196'
 		#------------------
 		software_id=211
 		aSOFTWARE_NAME[$software_id]='Homebridge'
 		aSOFTWARE_DESC[$software_id]='Bringing HomeKit support where there is none'
 		aSOFTWARE_CATX[$software_id]=17
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/home_automation/#homebridge'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/home_automation/#homebridge'
 		# - RISC-V: https://repo.homebridge.io/dists/stable/Release
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -1597,14 +1597,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='OctoPrint'
 		aSOFTWARE_DESC[$software_id]='web interface for controlling 3d printers'
 		aSOFTWARE_CATX[$software_id]=18
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/printing/#octoprint'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/printing/#octoprint'
 		aSOFTWARE_DEPS[$software_id]='130'
 		#------------------
 		software_id=187
 		aSOFTWARE_NAME[$software_id]='CUPS'
 		aSOFTWARE_DESC[$software_id]='common UNIX printing system'
 		aSOFTWARE_CATX[$software_id]=18
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/printing/#cups'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/printing/#cups'
 		aSOFTWARE_DEPS[$software_id]='152'
 
 		# Distributed Projects
@@ -1613,7 +1613,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Folding@Home'
 		aSOFTWARE_DESC[$software_id]='Help disease research with your computing power!'
 		aSOFTWARE_CATX[$software_id]=19
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/distributed_projects/#foldinghome'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/distributed_projects/#foldinghome'
 		# - ARMv6/7/RISC-V: No package: https://download.foldingathome.org/releases/public/release/fahclient/
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,2]=0
@@ -1623,28 +1623,28 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='YaCy'
 		aSOFTWARE_DESC[$software_id]='decentralised open source search engine'
 		aSOFTWARE_CATX[$software_id]=19
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/distributed_projects/#yacy'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/distributed_projects/#yacy'
 		aSOFTWARE_DEPS[$software_id]='196'
 		#------------------
 		software_id=141
 		aSOFTWARE_NAME[$software_id]='ADS-B Feeder'
 		aSOFTWARE_DESC[$software_id]='track airplanes using SDRs and feed the data to ADS-B aggregators'
 		aSOFTWARE_CATX[$software_id]=19
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/distributed_projects/#adsb-feeder'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/distributed_projects/#adsb-feeder'
 		aSOFTWARE_DEPS[$software_id]='17 134 162' # Git, Docker & Docker Compose
 		#------------------
 		software_id=184
 		aSOFTWARE_NAME[$software_id]='Tor Relay'
 		aSOFTWARE_DESC[$software_id]='add a node to the Tor network'
 		aSOFTWARE_CATX[$software_id]=19
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/distributed_projects/#tor-relay'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/distributed_projects/#tor-relay'
 		aSOFTWARE_CONFLICTS[$software_id]='61'
 		#------------------
 		software_id=186
 		aSOFTWARE_NAME[$software_id]='Kubo'
 		aSOFTWARE_DESC[$software_id]='(IPFS Node) contribute to a decentralized Internet'
 		aSOFTWARE_CATX[$software_id]=19
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/distributed_projects/#ipfs-node'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/distributed_projects/#ipfs-node'
 		# - RISC-V: https://dist.ipfs.io/kubo/
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 
@@ -1695,7 +1695,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='fish'
 		aSOFTWARE_DESC[$software_id]='friendly interactive shell'
 		aSOFTWARE_CATX[$software_id]=22
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/system/#fish'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system/#fish'
 
 		# Databases & Data Stores
 		#--------------------------------------------------------------------------------
@@ -1703,44 +1703,44 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='SQLite'
 		aSOFTWARE_DESC[$software_id]='Persistent single-file database system'
 		aSOFTWARE_CATX[$software_id]=23
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/databases/#sqlite'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/databases/#sqlite'
 		#------------------
 		software_id=88
 		aSOFTWARE_NAME[$software_id]='MariaDB'
 		aSOFTWARE_DESC[$software_id]='Persistent cached file-per-table database server'
 		aSOFTWARE_CATX[$software_id]=23
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/databases/#mariadb'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/databases/#mariadb'
 		#------------------
 		software_id=90
 		aSOFTWARE_NAME[$software_id]='phpMyAdmin'
 		aSOFTWARE_DESC[$software_id]='Optional MariaDB web interface admin tools'
 		aSOFTWARE_CATX[$software_id]=23
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/databases/#phpmyadmin'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/databases/#phpmyadmin'
 		aSOFTWARE_DEPS[$software_id]='88 89 webserver'
 		#------------------
 		software_id=91
 		aSOFTWARE_NAME[$software_id]='Redis'
 		aSOFTWARE_DESC[$software_id]='Volatile in-memory non-SQL database server'
 		aSOFTWARE_CATX[$software_id]=23
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/databases/#redis'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/databases/#redis'
 		#------------------
 		software_id=74
 		aSOFTWARE_NAME[$software_id]='InfluxDB'
 		aSOFTWARE_DESC[$software_id]='Persistent time-series database server'
 		aSOFTWARE_CATX[$software_id]=23
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/databases/#influxdb'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/databases/#influxdb'
 		#------------------
 		software_id=194
 		aSOFTWARE_NAME[$software_id]='PostgreSQL'
 		aSOFTWARE_DESC[$software_id]='Persistent advanced object-relational database server'
 		aSOFTWARE_CATX[$software_id]=23
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/databases/#postgresql'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/databases/#postgresql'
 		#------------------
 		software_id=214
 		aSOFTWARE_NAME[$software_id]='WhoDB'
 		aSOFTWARE_DESC[$software_id]='Database management tool with AI-powered chat interface'
 		aSOFTWARE_CATX[$software_id]=23
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/databases/#whodb'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/databases/#whodb'
 
 		# Development & Programming
 		#--------------------------------------------------------------------------------
@@ -1753,7 +1753,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Python 3'
 		aSOFTWARE_DESC[$software_id]='Runtime system, venv, and development headers'
 		aSOFTWARE_CATX[$software_id]=24
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/programming/#python-3'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/programming/#python-3'
 		#------------------
 		software_id=217
 		aSOFTWARE_NAME[$software_id]='uv'
@@ -1765,7 +1765,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='VSCodium'
 		aSOFTWARE_DESC[$software_id]='FLOSS version of MS VSCode'
 		aSOFTWARE_CATX[$software_id]=24
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/programming/#vscodium'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/programming/#vscodium'
 		aSOFTWARE_DEPS[$software_id]='5 6 17'
 		# - ARMv6/7/RISC-V: https://download.vscodium.com/debs/dists/vscodium/Release
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
@@ -1776,33 +1776,33 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Go'
 		aSOFTWARE_DESC[$software_id]='Runtime environment and package installer'
 		aSOFTWARE_CATX[$software_id]=24
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/programming/#go'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/programming/#go'
 		aSOFTWARE_DEPS[$software_id]='17'
 		#------------------
 		software_id=8
 		aSOFTWARE_NAME[$software_id]='Java JDK'
 		aSOFTWARE_DESC[$software_id]='OpenJDK Development Kit'
 		aSOFTWARE_CATX[$software_id]=24
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/programming/#java'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/programming/#java'
 		aSOFTWARE_DEPS[$software_id]='196'
 		#------------------
 		software_id=196
 		aSOFTWARE_NAME[$software_id]='Java JRE'
 		aSOFTWARE_DESC[$software_id]='OpenJDK Runtime Environment'
 		aSOFTWARE_CATX[$software_id]=24
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/programming/#java'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/programming/#java'
 		#------------------
 		software_id=9
 		aSOFTWARE_NAME[$software_id]='Node.js'
 		aSOFTWARE_DESC[$software_id]='JavaScript runtime environment'
 		aSOFTWARE_CATX[$software_id]=24
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/programming/#nodejs'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/programming/#nodejs'
 		#------------------
 		software_id=150
 		aSOFTWARE_NAME[$software_id]='Mono'
 		aSOFTWARE_DESC[$software_id]='Runtime libraries and repository'
 		aSOFTWARE_CATX[$software_id]=24
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/programming/#mono'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/programming/#mono'
 		# - RISC-V: https://download.mono-project.com/repo/debian/dists/buster/main/, https://packages.debian.org/trixie/mono-runtime
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 		#------------------
@@ -1810,7 +1810,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='PHP Composer'
 		aSOFTWARE_DESC[$software_id]='Package manager for PHP'
 		aSOFTWARE_CATX[$software_id]=24
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/programming/#php-composer'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/programming/#php-composer'
 		aSOFTWARE_DEPS[$software_id]='89'
 
 		# Desktop Utilities
@@ -1819,7 +1819,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='QuiteRSS'
 		aSOFTWARE_DESC[$software_id]='cross-platform, free rss reader'
 		aSOFTWARE_CATX[$software_id]=25
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#quiterss'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#quiterss'
 		aSOFTWARE_DEPS[$software_id]='6'
 		# - Trixie: https://bugs.debian.org/1093725
 		(( $G_DISTRO > 7 )) && aSOFTWARE_AVAIL_G_DISTRO[$software_id,$G_DISTRO]=0
@@ -1828,7 +1828,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Chromium'
 		aSOFTWARE_DESC[$software_id]='web browser for desktop or autostart'
 		aSOFTWARE_CATX[$software_id]=25
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#chromium'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#chromium'
 		aSOFTWARE_DEPS[$software_id]='5 6'
 		# - ARMv6: https://github.com/RPi-Distro/chromium-browser/issues/21
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
@@ -1839,7 +1839,7 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Firefox'
 		aSOFTWARE_DESC[$software_id]='web browser for desktop'
 		aSOFTWARE_CATX[$software_id]=25
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#firefox'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#firefox'
 		aSOFTWARE_DEPS[$software_id]='5 6'
 		# - ARMv6: https://github.com/RPi-Distro/chromium-browser/issues/21#issuecomment-997044303
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
@@ -1848,14 +1848,14 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='GIMP'
 		aSOFTWARE_DESC[$software_id]='mspaint on steroids'
 		aSOFTWARE_CATX[$software_id]=25
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#gimp'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#gimp'
 		aSOFTWARE_DEPS[$software_id]='6'
 		#------------------
  		software_id=175
  		aSOFTWARE_NAME[$software_id]='Xfce Power Manager'
  		aSOFTWARE_DESC[$software_id]='with brightness control, recommended for LXDE/LXQt'
  		aSOFTWARE_CATX[$software_id]=25
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/desktop/#xfce-power-manager'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/desktop/#xfce-power-manager'
  		aSOFTWARE_DEPS[$software_id]='6'
 
 		#--------------------------------------------------------------------------------
@@ -1865,19 +1865,19 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Logrotate'
 		aSOFTWARE_DESC[$software_id]='Rotates and compresses old log files in /var/log'
 		aSOFTWARE_CATX[$software_id]=-1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/log_system/#full-logging'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/log_system/#full-logging'
 		#------------------
 		software_id=102
 		aSOFTWARE_NAME[$software_id]='Rsyslog'
 		aSOFTWARE_DESC[$software_id]='Writes system logs (journalctl) as plain text files to /var/log'
 		aSOFTWARE_CATX[$software_id]=-1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/log_system/#full-logging'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/log_system/#full-logging'
 		#------------------
 		software_id=103
 		aSOFTWARE_NAME[$software_id]='shaughvOS-RAMlog'
 		aSOFTWARE_DESC[$software_id]='Makes /var/log a RAM disk, preserves file structure on reboot'
 		aSOFTWARE_CATX[$software_id]=-1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/log_system/#shaughvos-ramlog'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/log_system/#shaughvos-ramlog'
 
 		#--------------------------------------------------------------------------------
 		# SSH Servers (hidden)
@@ -1886,13 +1886,13 @@ Available commands:
 		aSOFTWARE_NAME[$software_id]='Dropbear'
 		aSOFTWARE_DESC[$software_id]='Lightweight SSH server'
 		aSOFTWARE_CATX[$software_id]=-1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/ssh/#dropbear'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/ssh/#dropbear'
 		#------------------
 		software_id=105
 		aSOFTWARE_NAME[$software_id]='OpenSSH Server'
 		aSOFTWARE_DESC[$software_id]='Feature-rich SSH server with SFTP and SCP support'
 		aSOFTWARE_CATX[$software_id]=-1
-		aSOFTWARE_DOCS[$software_id]='https://shaughvos.com/docs/software/ssh/#openssh'
+		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/ssh/#openssh'
 		aSOFTWARE_DEPS[$software_id]='0'
 
 		#--------------------------------------------------------------------------------
@@ -2020,7 +2020,7 @@ Available commands:
 \n- Apache: Feature-rich and popular. Recommended for beginners and users who are looking to follow Apache based guides.
 \n- Nginx: Lightweight alternative to Apache. Nginx claims faster webserver performance compared to Apache.
 \n- Lighttpd: Extremely lightweight and is generally considered to offer the \"best\" webserver performance for SBCs. Recommended for users who expect low webserver traffic.
-\n- More info: https://shaughvos.com/docs/software/webserver_stack/"
+\n- More info: https://dietpi.com/docs/software/webserver_stack/"
 		do
 			[[ $G_WHIP_RETURNED_VALUE ]] && break
 			Menu_Exit
@@ -2254,7 +2254,7 @@ _EOF_
 	Download_Test_Media()
 	{
 		[[ -f '/mnt/shaughvos_userdata/Music/fourdee_tech.ogg' ]] && return
-		G_EXEC curl -sSf 'https://shaughvos.com/downloads/audio/fourdee_tech.ogg' -o /mnt/shaughvos_userdata/Music/fourdee_tech.ogg
+		G_EXEC curl -sSf 'https://dietpi.com/downloads/audio/fourdee_tech.ogg' -o /mnt/shaughvos_userdata/Music/fourdee_tech.ogg
 		getent passwd shaughvos > /dev/null && G_EXEC chown shaughvos:shaughvos /mnt/shaughvos_userdata/Music/fourdee_tech.ogg
 		G_EXEC chmod 0664 /mnt/shaughvos_userdata/Music/fourdee_tech.ogg
 	}
@@ -2654,7 +2654,7 @@ sudo sysctl -p /etc/sysctl.d/shaughvos-$1.conf"
 						# Optional to suppress warnings: libbz2-dev libreadline-dev libsqlite3-dev liblzma-dev
 						# libffi-dev for the optional _ctypes module, needed at least for Home Assistant => include it in all pyenv builds to avoid surprises
 						aDEPS+=('gcc' 'libc6-dev' 'make' 'libssl-dev' 'zlib1g-dev' 'libbz2-dev' 'libreadline-dev' 'libsqlite3-dev' 'liblzma-dev' 'libffi-dev')
-						# Python < 3.12: https://shaughvos.com/forum/t/24975/2
+						# Python < 3.12: https://dietpi.com/forum/t/24975/2
 						(( $python_version < 312 )) && aDEPS+=('patch')
 					;;
 					'pymicro-vad') aDEPS+=('g++');;
@@ -2773,7 +2773,7 @@ _EOF_
 			# Generic X server and utilities
 			aDEPS=('xserver-xorg-core' 'xserver-xorg-input-libinput' 'xinit' 'dbus-user-session' 'xfonts-base' 'x11-xserver-utils' 'x11-utils')
 
-			# Pre-create config dir: https://shaughvos.com/forum/t/19963
+			# Pre-create config dir: https://dietpi.com/forum/t/19963
 			G_EXEC mkdir -p /etc/X11/xorg.conf.d
 
 			# RPi
@@ -3143,7 +3143,7 @@ _EOF_"
 
 		if To_Install 9 # Node.js
 		then
-			# Deps (verified 2025-10-22): https://github.com/RealEmmettS/shaughvOS/issues/3614, https://shaughvos.com/forum/t/24574
+			# Deps (verified 2025-10-22): https://github.com/RealEmmettS/shaughvOS/issues/3614, https://dietpi.com/forum/t/24574
 			(( $G_HW_ARCH == 1 )) || aDEPS=('libatomic1')
 
 			# Download installer
@@ -3250,7 +3250,7 @@ _EOF_"
 
 			elif (( $G_RASPBIAN ))
 			then
-				Download_Install "https://shaughvos.com/downloads/binaries/rpi/unrar-armhf-$G_DISTRO_NAME.deb"
+				Download_Install "https://dietpi.com/downloads/binaries/rpi/unrar-armhf-$G_DISTRO_NAME.deb"
 			else
 				G_AGI unrar
 			fi
@@ -3309,7 +3309,7 @@ _EOF_"
 		if To_Install 173 # LXQt
 		then
 			# Trixie: SpeedCrunch has been removed: https://tracker.debian.org/pkg/speedcrunch
-			# - Instead, Adwaita does not work as icon theme anymore: https://shaughvos.com/blog/?p=4014#comment-6172
+			# - Instead, Adwaita does not work as icon theme anymore: https://dietpi.com/blog/?p=4014#comment-6172
 			local extra=('speedcrunch')
 			(( $G_DISTRO > 7 )) && extra=('tango-icon-theme')
 			# lxqt-archiver is the default dependency from Trixie on, but our config uses Archiver=xarchiver.
@@ -4184,7 +4184,7 @@ sudo sysctl -p /etc/sysctl.d/98-shaughvos-redis.conf'
 			G_CONFIG_INJECT 'opcache.revalidate_freq[[:blank:]=]' 'opcache.revalidate_freq=60' "$target_php_ini" # 1 minute
 			# - JIT is available since PHP 8.0 for x86_64 and since PHP 8.2 for ARMv8. Enable it with 2 MiB size, since we never saw usage far above 1 MiB with tracing JIT (default) for whatever reason.
 			# - Skip on ARMv8 for now, since it produces segmentation faults there: https://github.com/php/php-src/issues/7817
-			# - On shaughvos.com x86_64 server, we suffered from segmentation faults as well for a while, but there it seems to have been solved.
+			# - On dietpi.com x86_64 server, we suffered from segmentation faults as well for a while, but there it seems to have been solved.
 			if (( $G_HW_ARCH == 10 ))
 			then
 				G_CONFIG_INJECT 'opcache.jit[[:blank:]=]' 'opcache.jit=1' "$target_php_ini" # 1/on = "tracing", follow default for now: https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.jit
@@ -5509,7 +5509,7 @@ _EOF_
 		if To_Install 112 # DXX-Rebirth
 		then
 			aDEPS=('libsdl-mixer1.2' 'libsdl1.2debian' 'libphysfs1' 'libgl1' 'libglu1-mesa')
-			Download_Install 'https://shaughvos.com/downloads/binaries/rpi/dxx-rebirth.7z' /mnt/shaughvos_userdata
+			Download_Install 'https://dietpi.com/downloads/binaries/rpi/dxx-rebirth.7z' /mnt/shaughvos_userdata
 
 			# Symlink savegames to root
 			# - Remove existing symlinks
@@ -5573,7 +5573,7 @@ _EOF_"
 		if To_Install 51 # OpenTyrian
 		then
 			aDEPS=('libsdl1.2debian' 'libsdl-net1.2')
-			Download_Install 'https://shaughvos.com/downloads/binaries/rpi/opentyrian_armhf.zip' /
+			Download_Install 'https://dietpi.com/downloads/binaries/rpi/opentyrian_armhf.zip' /
 
 			# Move to /usr/games
 			G_EXEC cp -a /usr/local/games/opentyrian /usr/games/
@@ -6122,7 +6122,7 @@ _EOF_
 				fi
 			fi
 
-			# Plex Media Server: Fix secure remote access: https://shaughvos.com/forum/t/cant-connect-to-plex-directly-due-to-unbound/5199
+			# Plex Media Server: Fix secure remote access: https://dietpi.com/forum/t/cant-connect-to-plex-directly-due-to-unbound/5199
 			(( ${aSOFTWARE_INSTALL_STATE[42]} > 0 )) && echo -e 'server:\n\tprivate-domain: "plex.direct"' > /etc/unbound/unbound.conf.d/shaughvos-plex.conf
 		fi
 
@@ -6155,7 +6155,7 @@ _EOF_
 			# - Skip final completion dialogue since we show our own
 			# shellcheck disable=SC2016
 			G_EXEC sed --follow-symlinks -i '/^[[:blank:]]*pihole setpassword "${pw}"/,/^[[:blank:]]*dialog --no-shadow --keep-tite/s/dialog --no-shadow --keep-tite/true/' install.sh
-			# - Workaround for shaughvos-software call from shaughvos-login for 1st run setup with STDOUT/STDERR piped into "tee": https://shaughvos.com/forum/t/24889
+			# - Workaround for shaughvos-software call from shaughvos-login for 1st run setup with STDOUT/STDERR piped into "tee": https://dietpi.com/forum/t/24889
 			if (( $G_SHAUGHVOS_INSTALL_STAGE == 1 ))
 			then
 				local parent_process
@@ -6202,7 +6202,7 @@ _EOF_
 - The Pi-hole web UI is secured with the global software password you chose during first run setup, default: \"shaughvos\"
 - DNS query logging to /var/log/pihole/pihole.log has been disabled. This does not affect the query logs in the web UI and database, but the \"pihole -t\"/\"pihole tail\" command does not show DNS queries anymore. If you want to use this command or need query logs in /var/log/pihole/pihole.log for other reasons, it can be re-enabled via web UI privacy settings or \"sudo pihole-FTL --config dns.queryLogging true\".
 - DNS query logging to database (as shown in web UI) has been reduced to 2 days. This can be changed via web UI privacy settings or e.g. \"sudo pihole-FTL --config database.maxDBdays 7\" to raise it to 7 days.
-\nFor further details, read our online docs: https://shaughvos.com/docs/software/dns_servers/#pi-hole"
+\nFor further details, read our online docs: https://dietpi.com/docs/software/dns_servers/#pi-hole"
 			fi
 		fi
 
@@ -7695,7 +7695,7 @@ _EOF_
 
 			# Create test galleries
 			G_EXEC mkdir -p /var/www/gallery/shaughvOS
-			[[ -f '/var/www/gallery/shaughvOS/logo_256.png' ]] || G_THREAD_START curl -sSf 'https://shaughvos.com/images/shaughvos-logo_256x256.png' -o /var/www/gallery/shaughvOS/logo_256.png
+			[[ -f '/var/www/gallery/shaughvOS/logo_256.png' ]] || G_THREAD_START curl -sSf 'https://dietpi.com/images/shaughvos-logo_256x256.png' -o /var/www/gallery/shaughvOS/logo_256.png
 			G_EXEC mkdir -p /var/www/gallery/Tr-Zero
 			[[ -f '/var/www/gallery/Tr-Zero/SS_0.jpg' ]] || G_THREAD_START curl -sSfL 'https://media.indiedb.com/images/games/1/25/24673/SS_0.jpg' -o /var/www/gallery/Tr-Zero/SS_0.jpg
 			[[ -f '/var/www/gallery/Tr-Zero/SS_1.jpg' ]] || G_THREAD_START curl -sSfL 'https://media.indiedb.com/images/games/1/25/24673/SS_44.jpg' -o /var/www/gallery/Tr-Zero/SS_1.jpg
@@ -7846,7 +7846,7 @@ set_var EASYRSA_REQ_COUNTRY	"UK"
 set_var EASYRSA_REQ_PROVINCE	"shaughvOS"
 set_var EASYRSA_REQ_CITY	"shaughvOS"
 set_var EASYRSA_REQ_ORG		"shaughvOS"
-set_var EASYRSA_REQ_EMAIL	"noreply@shaughvos.com"
+set_var EASYRSA_REQ_EMAIL	"noreply@dietpi.com"
 set_var EASYRSA_REQ_OU		"shaughvOS"
 set_var EASYRSA_BATCH		"1"
 _EOF_
@@ -8357,7 +8357,7 @@ location = /.well-known/caldav  { return 301 /baikal/html/dav.php; }' > /etc/ngi
 			# Disable DB logging
 			G_CONFIG_INJECT 'logdays=' 'logdays=-1' "$conf"
 
-			# Set Superuser passwd: https://shaughvos.com/forum/t/1371
+			# Set Superuser passwd: https://dietpi.com/forum/t/1371
 			"$cli" -ini "$conf" -supw "$GLOBAL_PW"
 		fi
 
@@ -8405,7 +8405,7 @@ _EOF_'
 			G_EXEC mkdir -p /etc/systemd/system/plexmediaserver.service.d
 			G_EXEC eval 'echo -e '\''[Service]\nGroup='\'' > /etc/systemd/system/plexmediaserver.service.d/shaughvos-group.conf'
 
-			# Unbound: Fix secure remote access: https://shaughvos.com/forum/t/cant-connect-to-plex-directly-due-to-unbound/5199
+			# Unbound: Fix secure remote access: https://dietpi.com/forum/t/cant-connect-to-plex-directly-due-to-unbound/5199
 			(( ${aSOFTWARE_INSTALL_STATE[182]} == 2 )) && G_EXEC eval 'echo -e '\''server:\n\tprivate-domain: "plex.direct"'\'' > /etc/unbound/unbound.conf.d/shaughvos-plex.conf'
 
 			Download_Test_Media
@@ -9176,7 +9176,7 @@ URL=$(sed -n '/^[[:blank:]]*SOFTWARE_CHROMIUM_AUTOSTART_URL=/{s/^[^=]*=//p;q}' /
 STARTX='xinit'
 [ "$USER" = 'root' ] || STARTX='startx'
 
-exec "$STARTX" /usr/bin/chromium $CHROMIUM_OPTS "${URL:-https://shaughvos.com/}"
+exec "$STARTX" /usr/bin/chromium $CHROMIUM_OPTS "${URL:-https://dietpi.com/}"
 _EOF_
 			G_EXEC chmod +x /var/lib/shaughvos/shaughvos-software/installed/chromium-autostart.sh
 		fi
@@ -10305,7 +10305,7 @@ _EOF_
 			cat << '_EOF_' > /etc/systemd/system/octoprint.service
 [Unit]
 Description=OctoPrint (shaughvOS)
-Documentation=https://shaughvos.com/docs/software/printing/#octoprint
+Documentation=https://dietpi.com/docs/software/printing/#octoprint
 Wants=network-online.target
 After=network-online.target mjpg-streamer.service
 
@@ -10436,7 +10436,7 @@ _EOF_
 			then
 				# Allow non-interactive install
 				G_EXEC eval 'debconf-set-selections <<< '\''steam steam/question select I AGREE'\'
-				Download_Install "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/steam_$G_HW_ARCH_NAME.deb"
+				Download_Install "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/steam_$G_HW_ARCH_NAME.deb"
 			fi
 
 			# Move data dir to shaughvos_userdata
@@ -10713,7 +10713,7 @@ _EOF_
 			# ARMv6/ARMv7/RISC-V: No pre-compiled binaries available, so we host our own.
 			if (( $G_HW_ARCH == 1 || $G_HW_ARCH == 2 || $G_HW_ARCH == 11 ))
 			then
-				local url="https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/gogs_$G_HW_ARCH_NAME.7z"
+				local url="https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/gogs_$G_HW_ARCH_NAME.7z"
 
 			# Else install latest binaries from GitHub
 			else
@@ -15875,7 +15875,7 @@ _EOF_
 		G_WHIP_BUTTON_OK_TEXT='Confirm'
 		G_WHIP_CHECKLIST 'Please use the spacebar to select the software you wish to install. Then press ENTER/RETURN or select <Confirm> to confirm.
  - Press ESC or select <Cancel> to discard changes made.
- - Software and usage details: https://shaughvos.com/docs/software/' || return 0
+ - Software and usage details: https://dietpi.com/docs/software/' || return 0
 
 		# Unmark all listed pending state items, so deselected items are not installed.
 		for i in "${reset[@]}"
@@ -15915,7 +15915,7 @@ We allow it to take up to 30 minutes, it's process can be followed, please be pa
 \nYou can configure a password protection, but this will break embedding the stream into other web interfaces, like OctoPrint.
 \nWe hence recommend to not forward port 8082 through your NAT and/or block public access via firewall.
 \nIf you require access from outside your local network to a web interface that embeds the camera stream, we recommend to setup a VPN connection for this.
-\nRead more about this matter and how to configure mjpg-streamer at our online documentation: https://shaughvos.com/docs/software/camera/#mjpg-streamer
+\nRead more about this matter and how to configure mjpg-streamer at our online documentation: https://dietpi.com/docs/software/camera/#mjpg-streamer
 \n[ INFO ] mjpg-streamer will not be compiled with all available plugins by default.
 \nIf you require other input or output plugins, simply install the required dependencies. Plugins will be compiled automatically if dependencies are met.
 \nFor available plugins and their dependencies, watch the info printed during the build and check out the official GitHub repository: https://github.com/jacksonliam/mjpg-streamer'
@@ -15991,7 +15991,7 @@ We allow it to take up to 30 minutes, it's process can be followed, please be pa
 
 		# Let's Encrypt
 		(( ${aSOFTWARE_INSTALL_STATE[92]} == 1 )) && G_WHIP_MSG 'The shaughvOS installation of Certbot supports all offered web servers.\n\nOnce the installation has finished, you can setup your free SSL cert with:
- - shaughvOS-LetsEncrypt\n\nThis is an easy to use frontend for Certbot and allows integration into shaughvOS systems.\n\nMore information:\n - https://shaughvos.com/docs/software/system_security/#lets-encrypt'
+ - shaughvOS-LetsEncrypt\n\nThis is an easy to use frontend for Certbot and allows integration into shaughvOS systems.\n\nMore information:\n - https://dietpi.com/docs/software/system_security/#lets-encrypt'
 
 		# Steam on ARMv7 via Box86 warning
 		(( ${aSOFTWARE_INSTALL_STATE[156]} == 1 && $G_HW_ARCH == 2 )) && G_WHIP_MSG '[WARNING] Steam natively only runs on the x86 systems.\n\nBox86 will be used to run it on ARM, however there may be performance and compatibility issues.'
@@ -16001,7 +16001,7 @@ We allow it to take up to 30 minutes, it's process can be followed, please be pa
 \nThe install process of Home Assistant, especially the pyenv Python build, can take more than one hour, especially on slower SBCs like RPi Zero and similar.
 \nAlso after the installation finished, on first service start, it will install and in case compile some more Python modules, which can take another longer time. Watch "htop" and wait until CPU usage for the related "hass" process goes down, before accessing the web interface.
 \nPlease be patient. In the meantime you may study the documentation:
- - https://shaughvos.com/docs/software/home_automation/#home-assistant'
+ - https://dietpi.com/docs/software/home_automation/#home-assistant'
 	}
 
 	Menu_Main()
@@ -16082,9 +16082,9 @@ Welcome to shaughvOS:
 Use PageUp/Down or Arrow Up/Down to scroll this help screen.
 Press ESC, or TAB then ENTER to exit this help screen.\n
 Easy to follow, step by step guides for installing shaughvOS:
-https://shaughvos.com/docs/install/\n
+https://dietpi.com/docs/install/\n
 For a list of all installation options and their details:
-https://shaughvos.com/docs/software/\n
+https://dietpi.com/docs/software/\n
 ───────────────────────────────────────────────────────────────
 List of installed software and their online documentation URLs:
 ───────────────────────────────────────────────────────────────\n'
@@ -16229,7 +16229,7 @@ List of installed software and their online documentation URLs:
 
 				G_WHIP_BUTTON_CANCEL_TEXT='Back'
 				G_WHIP_MENU 'Choose where to store your user data. User data includes software such as Nextcloud data store, BitTorrent downloads etc.
-\nMore information on user data in shaughvOS:\n- https://shaughvos.com/docs/shaughvos_tools/#quick-selections
+\nMore information on user data in shaughvOS:\n- https://dietpi.com/docs/shaughvos_tools/#quick-selections
 \n- shaughvOS-Drive_Manager: Launch shaughvOS-Drive_Manager to setup external drives, and, move user data to different locations.' || return 0
 
 				# Launch shaughvOS-Drive_Manager
@@ -16323,7 +16323,7 @@ List of installed software and their online documentation URLs:
 
 			G_WHIP_DEFAULT_ITEM='ok'
 			G_WHIP_YESNO "shaughvOS is now ready to apply your software choices:$tobeinstalled_text$toberemoved_text$summary_text
-\nSoftware details, usernames, passwords etc:\n - https://shaughvos.com/docs/software/\n\nWould you like to begin?" || return 0
+\nSoftware details, usernames, passwords etc:\n - https://dietpi.com/docs/software/\n\nWould you like to begin?" || return 0
 
 			# If due to choice changes only uninstalls are done and it is not the first run setup, skip the install function and call the uninstall function directly.
 			if [[ $G_SHAUGHVOS_INSTALL_STAGE == 2 && ! $tobeinstalled_text ]]

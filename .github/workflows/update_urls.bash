@@ -1,5 +1,5 @@
 #!/bin/bash
-# Created by MichaIng / micha@shaughvos.com / shaughvos.com
+# Created by MichaIng / micha@dietpi.com / dietpi.com
 # shellcheck disable=SC2016
 {
 set -e

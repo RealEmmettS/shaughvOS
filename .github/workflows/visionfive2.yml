@@ -38,7 +38,7 @@ jobs:
       run: |
         version=$(mawk '/^VERSION =/{a=$3};/^PATCHLEVEL =/{b=$3};/^SUBLEVEL/{c=$3};END{print a"."b"."c}' linux-rolling-stable/Makefile)
         rm -R linux-rolling-stable
-        curl -sSfO 'https://shaughvos.com/downloads/binaries/linux-image-visionfive2.deb' &
+        curl -sSfO 'https://dietpi.com/downloads/binaries/linux-image-visionfive2.deb' &
         curl -sSfo linux-image-visionfive2/lib/firmware/brcm/brcmfmac43455-sdio.txt 'https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/brcm/brcmfmac43455-sdio.AW-CM256SM.txt' &
         wait
         cur_version=$(dpkg-deb -f linux-image-visionfive2.deb Version)
@@ -60,7 +60,7 @@ jobs:
         Package: linux-image-visionfive2
         Version: $version
         Architecture: arm64
-        Maintainer: MichaIng <micha@shaughvos.com>
+        Maintainer: MichaIng <micha@dietpi.com>
         Date: $(date -u '+%a, %d %b %Y %T %z')
         Installed-Size: $(du -sk 'linux-image-visionfive2' | mawk '{print $1}')
         Section: kernel
@@ -79,4 +79,4 @@ jobs:
         echo '${{ secrets.SSH_KEY }}' > ~/.ssh/id_ed25519
         curl -T linux-image-visionfive2.deb --key ~/.ssh/id_ed25519 '${{ secrets.UPLOAD_URL }}all/'
         curl 'https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/purge_cache' -H 'Authorization: Bearer ${{ secrets.CF_TOKEN }}' -H 'Content-Type: application/json' \
-        --data '{"files":["https://shaughvos.com/downloads/binaries/testing/","https://shaughvos.com/downloads/binaries/testing/linux-image-visionfive2.deb"]}'
+        --data '{"files":["https://dietpi.com/downloads/binaries/testing/","https://dietpi.com/downloads/binaries/testing/linux-image-visionfive2.deb"]}'

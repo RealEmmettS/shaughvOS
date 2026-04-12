@@ -86,12 +86,12 @@ jobs:
 
         # Generate file lists
         files=
-        urls='"https://shaughvos.com/downloads/binaries/${{ matrix.dist }}/testing/"'
+        urls='"https://dietpi.com/downloads/binaries/${{ matrix.dist }}/testing/"'
         cd rootfs/output
         for i in *
         do
           files="$files,$i"
-          urls="$urls,\"https://shaughvos.com/downloads/binaries/${{ matrix.dist }}/testing/$i\""
+          urls="$urls,\"https://dietpi.com/downloads/binaries/${{ matrix.dist }}/testing/$i\""
         done
         files=${files#,}
         echo "Uploading file(s) $files to URL(s) $urls ..."

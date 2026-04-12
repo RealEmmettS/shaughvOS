@@ -174,7 +174,7 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 [[ $G_HW_ARCH_NAME == 'armv6l' ]] && DEPS_APT_VERSIONED=$(sed 's/+rp[it][0-9]\+[^)]*)/)/g' <<< "$DEPS_APT_VERSIONED") || DEPS_APT_VERSIONED=$(sed 's/+b[0-9]\+)/)/g' <<< "$DEPS_APT_VERSIONED")
 
 # - Obtain version suffix
-G_EXEC curl -sSfo package.deb "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/${name}_$G_HW_ARCH_NAME.deb"
+G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/${name}_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version) || exit 1
 G_EXEC rm package.deb
 suffix=${old_version#*-shaughvos}
@@ -187,7 +187,7 @@ cat << _EOF_ > "$DIR/DEBIAN/control"
 Package: $name
 Version: $version
 Architecture: $(dpkg --print-architecture)
-Maintainer: MichaIng <micha@shaughvos.com>
+Maintainer: MichaIng <micha@dietpi.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk "$DIR" | mawk '{print $1}')
 Depends:$DEPS_APT_VERSIONED

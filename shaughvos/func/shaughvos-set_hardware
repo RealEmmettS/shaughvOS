@@ -5,7 +5,7 @@
 	# - Enables control and applies settings for specific hardware.
 	#
 	#////////////////////////////////////
-	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	# Created by Daniel Knight / daniel.knight@dietpi.com / dietpi.com
 	#
 	#////////////////////////////////////
 	#
@@ -1219,7 +1219,7 @@ _EOF_
 				G_AG_CHECK_INSTALL_PREREQ pi-bluetooth
 			else
 				# bluez-firmware: BCM203x dongles: https://packages.debian.org/bluez-firmware
-				# - Conflicts with armbian-firmware: https://shaughvos.com/forum/t/15963/16
+				# - Conflicts with armbian-firmware: https://dietpi.com/forum/t/15963/16
 				local firmware=()
 				dpkg-query -s armbian-firmware &> /dev/null || dpkg-query -s orangepi-firmware &> /dev/null || firmware+=('bluez-firmware')
 
@@ -1706,7 +1706,7 @@ _EOF_
 		local kms=$(grep -Em1 '^[[:blank:]]*dtoverlay=vc4-kms-v3d(-pi4)?(,|$)' /boot/firmware/config.txt)
 		[[ $kms && ! $kms =~ ',noaudio'(,|$) ]] && G_EXEC sed --follow-symlinks -Ei '/^[[:blank:]]*dtoverlay=vc4-kms-v3d(-pi4)?(,|$)/s/$/,noaudio/' /boot/firmware/config.txt
 
-		# On RPi 5, use "hdmi" by default, else "auto": https://shaughvos.com/forum/t/19760
+		# On RPi 5, use "hdmi" by default, else "auto": https://dietpi.com/forum/t/19760
 		if [[ $INPUT_DEVICE_VALUE == 'default' ]]
 		then
 			if (( $G_HW_MODEL == 5 ))
@@ -1866,7 +1866,7 @@ _EOF_
 				# RPi 5: Enable KMS as the snd_bcm2835 driver does not work on Raspberry Pi 5. It has no 3.5mm jack, hence the only supported onboard audio is HDMI.
 				(( $G_HW_MODEL == 5 )) && INPUT_DEVICE_VALUE='vc4-kms-v3d' RPi_OpenGL_Main
 
-				# Enable VC4 HDMI audio if onboard HDMI is enabled and KMS used, as the bcm2835 HDMI audio driver and KMS conflict: https://shaughvos.com/forum/t/19568, https://github.com/raspberrypi/linux/issues/4651
+				# Enable VC4 HDMI audio if onboard HDMI is enabled and KMS used, as the bcm2835 HDMI audio driver and KMS conflict: https://dietpi.com/forum/t/19568, https://github.com/raspberrypi/linux/issues/4651
 				if [[ $INPUT_DEVICE_VALUE != *'3.5mm' ]] && grep -Eq '^[[:blank:]]*dtoverlay=vc4-kms-v3d(-pi4)?,(noaudio|.+,noaudio)(,|$)' /boot/firmware/config.txt
 				then
 					G_EXEC sed --follow-symlinks -Ei '/^[[:blank:]]*dtoverlay=vc4-kms-v3d(-pi4)?,/s/,noaudio(,|$)/\1/' /boot/firmware/config.txt
@@ -1898,7 +1898,7 @@ _EOF_
 						(( $G_HW_MODEL > 3 )) && G_CONFIG_INJECT 'hdmi_drive:1=' 'hdmi_drive:1=2' /boot/firmware/config.txt 'hdmi_drive='
 					fi
 
-				# If only VC4 HDMI audio is used, return here to skip /etc/asound.conf generation and remove potential root user config: https://shaughvos.com/forum/t/19568
+				# If only VC4 HDMI audio is used, return here to skip /etc/asound.conf generation and remove potential root user config: https://dietpi.com/forum/t/19568
 				else
 					[[ -f '/root/.asoundrc' ]] && G_EXEC rm /root/.asoundrc
 					return 0

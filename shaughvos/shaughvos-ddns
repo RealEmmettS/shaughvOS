@@ -3,7 +3,7 @@
 # shaughvOS-DDNS
 # Setup background jobs to regularly update dynamic IPs against DDNS providers
 # --------------------------------------------
-# Created by MichaIng / micha@shaughvos.com / shaughvos.com
+# Created by MichaIng / micha@dietpi.com / dietpi.com
 # Content by nonnorm / https://github.com/nonnorm
 # License: https://github.com/RealEmmettS/shaughvOS/blob/master/LICENSE
 # --------------------------------------------

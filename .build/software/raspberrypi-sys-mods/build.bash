@@ -77,7 +77,7 @@ cat << _EOF_ > DEBIAN/control
 Package: raspberrypi-sys-mods
 Version: 2:20251027-shaughvos1
 Architecture: all
-Maintainer: MichaIng <micha@shaughvos.com>
+Maintainer: MichaIng <micha@dietpi.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk | mawk '{print $1}')
 Section: admin

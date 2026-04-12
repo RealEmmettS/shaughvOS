@@ -1,7 +1,7 @@
 #!/bin/bash
 {
 # shaughvOS-Update pre-patches that need to run before new scripts are downloaded and/or before APT upgrades
-# Created by MichaIng / micha@shaughvos.com / https://shaughvos.com/
+# Created by MichaIng / micha@dietpi.com / https://dietpi.com/
 # License: GPLv2 / https://github.com/RealEmmettS/shaughvOS#license
 
 # Load shaughvOS-Globals
@@ -290,7 +290,7 @@ fi
 # v9.8
 if (( $G_SHAUGHVOS_VERSION_CORE < 9 || ( $G_SHAUGHVOS_VERSION_CORE == 9 && $G_SHAUGHVOS_VERSION_SUB < 8 ) ))
 then
-	# https://shaughvos.com/forum/t/20771
+	# https://dietpi.com/forum/t/20771
 	if [[ $G_HW_MODEL == 72 && -f '/etc/apt/sources.list.d/shaughvos.list' ]]
 	then
 		G_SHAUGHVOS-NOTIFY 2 'Fix ROCK 4 APT component'
@@ -306,8 +306,8 @@ then
 		then
 			all_components='rock4cplus'
 		fi
-		G_EXEC sed --follow-symlinks -i '\|^deb https://shaughvos.com/apt all |d' /etc/apt/sources.list.d/shaughvos.list
-		G_EXEC eval "echo 'deb https://shaughvos.com/apt all $all_components' >> /etc/apt/sources.list.d/shaughvos.list"
+		G_EXEC sed --follow-symlinks -i '\|^deb https://dietpi.com/apt all |d' /etc/apt/sources.list.d/shaughvos.list
+		G_EXEC eval "echo 'deb https://dietpi.com/apt all $all_components' >> /etc/apt/sources.list.d/shaughvos.list"
 	fi
 fi
 
@@ -352,7 +352,7 @@ then
 	if [[ $G_HW_MODEL == 1[0-6] ]] && [[ $(find /etc/apt/sources.list.d -name 'meveric*.list') ]]
 	then
 		G_SHAUGHVOS-NOTIFY 2 'Migrating legacy Odroid systems back to ODROID Project Hosting APT repo, as we removed our mirror'
-		G_EXEC sed --follow-symlinks -i 's|https://shaughvos.com/meveric|https://oph.mdrjr.net/meveric|' /etc/apt/sources.list.d/meveric*.list
+		G_EXEC sed --follow-symlinks -i 's|https://dietpi.com/meveric|https://oph.mdrjr.net/meveric|' /etc/apt/sources.list.d/meveric*.list
 	fi
 fi
 
@@ -431,7 +431,7 @@ _EOF_'
 	if [[ -f '/etc/apt/sources.list.d/shaughvos-armbian.list' ]]
 	then
 		# Remove Armbian APT repository from all systems which have an "all" component for kernel/bootloader/firmware packages form our APT repository
-		if [[ -f '/etc/apt/sources.list.d/shaughvos.list' ]] && grep -q 'shaughvos.com/apt all' /etc/apt/sources.list.d/shaughvos.list
+		if [[ -f '/etc/apt/sources.list.d/shaughvos.list' ]] && grep -q 'dietpi.com/apt all' /etc/apt/sources.list.d/shaughvos.list
 		then
 			G_SHAUGHVOS-NOTIFY 2 'Removing obsolete Armbian APT repository'
 			G_EXEC rm /etc/apt/sources.list.d/shaughvos-armbian.list

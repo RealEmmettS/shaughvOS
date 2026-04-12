@@ -41,7 +41,7 @@
 	if [[ ! -f '/boot/shaughvos/.shaughvos-banner' ]] || grep -q '^[[:blank:]]*aENABLED\[12\]=1' /boot/shaughvos/.shaughvos-banner
 	then
 		[[ -f '/run/shaughvos/.shaughvos_motd' ]] && rm /run/shaughvos/.shaughvos_motd
-		curl -sSfL 'https://shaughvos.com/motd' -o /run/shaughvos/.shaughvos_motd
+		curl -sSfL 'https://dietpi.com/motd' -o /run/shaughvos/.shaughvos_motd
 	fi
 	#----------------------------------------------------------------
 	# shaughvOS-Backup daily
