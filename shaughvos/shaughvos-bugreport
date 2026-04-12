@@ -11,7 +11,7 @@
 	# Info:
 	# - Location: /boot/shaughvos/shaughvos-bugreport
 	# - Called from G_EXEC
-	# - Generates and uploads a bug report as $G_HW_UUID.tar.xz/gz to dietpi.com
+	# - Generates a bug report as $G_HW_UUID.tar.xz/gz and saves it locally
 	readonly USAGE='
 Usage: shaughvos-bugreport <command>
 Available commands:
@@ -31,7 +31,7 @@ Available commands:
 	# Grab input
 	INPUT=$*
 
-	readonly SFTP_ADDR='ssh.dietpi.com:29248'
+	readonly SFTP_ADDR='localhost' # Bug report upload disabled — shaughvOS saves reports locally
 	readonly SFTP_USER='shaughvos-survey'
 	readonly SFTP_PASS='upload2shaughvos'
 	ext='gz'
@@ -158,38 +158,27 @@ Available commands:
 
 	Upload_Bug_Report()
 	{
-		# Check if our ssh.dietpi.com SSH host key is present
-		if [[ ! -f '/root/.ssh/known_hosts' ]] || ! grep -Eq '^\[?ssh.dietpi.com(]:29248)?[[:blank:]]' /root/.ssh/known_hosts
+		# Save bug report locally (remote upload is not available for shaughvOS)
+		local report_dir='/var/tmp/shaughvos/bugreports'
+		G_EXEC mkdir -p "$report_dir"
+
+		if [[ $INPUT == 1 ]]
 		then
-			# If missing, offer to re-add it
-			if G_WHIP_YESNO '[WARNING] ssh.dietpi.com SSH host key is missing\n\nOur ssh.dietpi.com SSH host key, required to send or purge bug reports, is missing in /root/.ssh/known_hosts. Shall we re-create it to proceed with sending/purging the bug report?'
-			then
-				[[ -d '/root/.ssh' ]] || G_EXEC mkdir /root/.ssh
-				[[ -f '/root/.ssh/known_hosts' ]] || > /root/.ssh/known_hosts
-				if (( $G_DISTRO < 7 ))
-				then
-					G_CONFIG_INJECT '\[?ssh.dietpi.com(]:29248)?[[:blank:]]' '[ssh.dietpi.com]:29248 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDE6aw3r6aOEqendNu376iiCHr9tGBIWPgfrLkzjXjEsHGyVSUFNnZt6pftrDeK7UX+qX4FxOwQlugG4fymOHbimRCFiv6cf7VpYg1Ednquq9TLb7/cIIbX8a6AuRmX4fjdGuqwmBq3OG7ZksFcYEFKt5U4mAJIaL8hXiM2iXjgY02LqiQY/QWATsHI4ie9ZOnwrQE+Rr6mASN1BVFuIgyHIbwX54jsFSnZ/7CdBMkuAd9B8JkxppWVYpYIFHE9oWNfjh/epdK8yv9Oo6r0w5Rb+4qaAc5g+RAaknHeV6Gp75d2lxBdCm5XknKKbGma2+/DfoE8WZTSgzXrYcRlStYN' /root/.ssh/known_hosts
-				else
-					G_CONFIG_INJECT '\[?ssh.dietpi.com(]:29248)?[[:blank:]]' '[ssh.dietpi.com]:29248 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdEPlagpQ+RVHNOX3jkG1Bya7Oza1dAke8h8NszVW84' /root/.ssh/known_hosts
-				fi
-			else
-				G_SHAUGHVOS-NOTIFY 1 'Skipping sending/purging the bug report as our ssh.dietpi.com SSH host key is missing in /root/.ssh/known_hosts...'
-				exit 1
-			fi
+			G_EXEC_DESC='Saving bug report locally'
+			G_EXEC cp "$UPLOAD_FILENAME" "$report_dir/"
+		else
+			G_EXEC_DESC='Removing local bug report'
+			G_EXEC rm -f "$report_dir/$UPLOAD_FILENAME"
+			return 0
 		fi
 
-		[[ $INPUT == 1 ]] && G_EXEC_DESC='Sending bug report' || G_EXEC_DESC='Purging bug report'
-
-		G_EXEC curl --connect-timeout 8 --retry 1 --retry-delay 4 -sSvT "$UPLOAD_FILENAME" "sftp://$SFTP_USER:$SFTP_PASS@$SFTP_ADDR/bugreport/"
-
-		[[ $INPUT == 1 ]] || return 0
-
-		G_SHAUGHVOS-NOTIFY 0 "Your bug report has been successfully uploaded.
+		G_SHAUGHVOS-NOTIFY 0 "Your bug report has been saved locally.
+- Location: \e[33m$report_dir/$UPLOAD_FILENAME\e[0m
 - Reference code: \e[33m$G_HW_UUID\e[0m
-\nPlease file a related bug report at GitHub or our forum:
+\nPlease file a related bug report at GitHub:
 - https://github.com/RealEmmettS/shaughvOS/issues
-- https://dietpi.com/forum/c/troubleshooting/10
-\nThe uploaded file will be removed automatically after 48 hours or when your issue has been solved. Additionally you can remove it by running:
+\nAttach the bug report file from the location above to your GitHub issue.
+\nTo remove the saved report, run:
 - shaughvos-bugreport -1"
 	}
 

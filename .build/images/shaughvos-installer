@@ -24,8 +24,8 @@
 	# - HW_MODEL=0				(must match one of the supported IDs below)
 	# - WIFI_REQUIRED=0			[01]
 	# - DISTRO_TARGET=8			[789] (Bookworm: 7, Trixie: 8, Forky: 9)
-	# - TEST_KERNEL=1			Install test kernel from https://dietpi.com/downloads/binaries/testing/
-	# - TEST_UBOOT=1			Install test U-Boot from https://dietpi.com/downloads/binaries/testing/
+	# - TEST_KERNEL=1			Install test kernel (requires dietpi.com test binary hosting — not available for shaughvOS)
+	# - TEST_UBOOT=1			Install test U-Boot (requires dietpi.com test binary hosting — not available for shaughvOS)
 	# - RK35XX_MAINLINE=1			Install mainline kernel on RK35xx based SBCs we would otherwise install the vendor kernel
 	#------------------------------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@
 	[[ -f '/etc/apt/sources.list.d/deb-multimedia.list' ]] && rm -v /etc/apt/sources.list.d/deb-multimedia.list
 	[[ -f '/etc/apt/preferences.d/deb-multimedia-pin-99' ]] && rm -v /etc/apt/preferences.d/deb-multimedia-pin-99
 	[[ -f '/etc/apt/preferences.d/backports' ]] && rm -v /etc/apt/preferences.d/backports
-	#	OMV: https://dietpi.com/forum/t/1903
+	#	OMV: https://github.com/RealEmmettS/shaughvOS/issues
 	[[ -f '/etc/apt/sources.list.d/openmediavault.list' ]] && rm -v /etc/apt/sources.list.d/openmediavault.list
 	# - Remove all configs except debconf pre-configuration: It does not work until apt-utils is installed but shall work as fast as it is.
 	find /etc/apt/apt.conf.d -type f ! -name '70debconf' -exec rm -v {} +
@@ -1964,9 +1964,9 @@ _EOF_'
 		echo -e "Samba client: $info_use_drive_manager" > /mnt/samba/readme.txt
 		echo -e "NFS client: $info_use_drive_manager" > /mnt/nfs_client/readme.txt
 
-		G_SHAUGHVOS-NOTIFY 2 'Resetting and adding dietpi.com SSH pub host key for shaughvOS-Bugreport uploads:'
+		G_SHAUGHVOS-NOTIFY 2 'Preparing SSH directory for root user'
 		G_EXEC mkdir -p /root/.ssh
-		G_EXEC eval 'echo '\''[ssh.dietpi.com]:29248 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJdEPlagpQ+RVHNOX3jkG1Bya7Oza1dAke8h8NszVW84'\'' > /root/.ssh/known_hosts'
+		> /root/.ssh/known_hosts
 
 		G_EXEC_DESC='Configuring hostname and hosts'
 		G_EXEC eval 'echo '\''shaughvOS'\'' > /etc/hostname'

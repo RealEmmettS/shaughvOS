@@ -185,7 +185,7 @@ Would you like to restart the first run setup and installation?"
 \njournalctl -u shaughvos-fs_partition_resize
 cat /var/tmp/shaughvos/logs/fs_partition_resize.log
 \nGitHub: https://github.com/RealEmmettS/shaughvOS/issues
-Forum: https://dietpi.com/forum/c/troubleshooting/10
+Discussions: https://github.com/RealEmmettS/shaughvOS/discussions
 \nIf you aim to solve this yourself, the resize script is located at /var/lib/shaughvos/services/fs_partition_resize.sh. Alternatively, a journal can be added with "tune2fs -j $G_ROOTFS_DEV".
 Let us know if you actually intend to run this system without journal. This check is done on first boot only, hence adding it temporarily and removing it afterwards works.'
 
@@ -200,6 +200,21 @@ Let us know if you actually intend to run this system without journal. This chec
 			# 1st run shaughvos-update
 			if (( $G_SHAUGHVOS_INSTALL_STAGE == 0 ))
 			then
+				# Wait for network connectivity before attempting update (VMs may need time for DHCP)
+				local max_wait=60 waited=0
+				while (( waited < max_wait ))
+				do
+					# Check if we can resolve GitHub (lightweight DNS+TCP check)
+					curl -sSfLm 5 -o /dev/null 'https://raw.githubusercontent.com' 2>/dev/null && break
+					G_SHAUGHVOS-NOTIFY 2 "Waiting for network connectivity... (${waited}s/${max_wait}s)"
+					G_SLEEP 5
+					((waited+=5))
+				done
+				if (( waited >= max_wait ))
+				then
+					G_SHAUGHVOS-NOTIFY 1 'Network connectivity not established after 60s. Attempting update anyway...'
+				fi
+
 				# Start shaughvOS-Update
 				/boot/shaughvos/shaughvos-update 1 2>&1 | tee "$FP_SHAUGHVOS_FIRSTRUNSETUP_LOG" # Sets /boot/shaughvos/.install_stage > G_SHAUGHVOS_INSTALL_STAGE=1
 

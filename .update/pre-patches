@@ -19,6 +19,16 @@ G_INIT
 # - Pre-v6.29: Create G_EXEC as G_RUN_CMD wrapper
 declare -F G_EXEC > /dev/null || G_EXEC(){ G_RUN_CMD "$@"; }
 
+# shaughvOS v1.x: Skip all DietPi-era migration patches (v7.0 through v10.1)
+# These patches only apply when upgrading from DietPi versions 6.17-10.x.
+# shaughvOS versions go 1.x -> 2.x and will never need v7-v10 migration logic.
+# They also reference dietpi.com infrastructure (APT repos, URLs) that shaughvOS does not use.
+if (( ${1:-$G_SHAUGHVOS_VERSION_CORE} < 2 ))
+then
+	G_SHAUGHVOS-NOTIFY 2 'shaughvOS v1.x detected, skipping DietPi-era migration patches'
+	exit 0
+fi
+
 # v7.0
 if (( $G_SHAUGHVOS_VERSION_CORE < 7 || ( $G_SHAUGHVOS_VERSION_CORE == 7 && $G_SHAUGHVOS_VERSION_SUB < 0 ) )) && [[ -f '/etc/apt/trusted.gpg.d/shaughvos-jellyfin.gpg' ]] && (( $(date -u '+%Y%m%d' -r '/etc/apt/trusted.gpg.d/shaughvos-jellyfin.gpg') < 20201216 ))
 then

@@ -1,21 +1,31 @@
 #!/bin/bash
 # shellcheck disable=SC2329
 {
-# DietPi-Update incremental patches to apply system and software migrations and fixes
-# Created by MichaIng / micha@dietpi.com / https://dietpi.com/
-# License: GPLv2 / https://github.com/MichaIng/DietPi#license
+# shaughvOS-Update incremental patches to apply system and software migrations and fixes
+# Originally created by MichaIng / micha@dietpi.com / https://dietpi.com/
+# License: GPLv2 / https://github.com/RealEmmettS/shaughvOS#license
 
-# Load DietPi-Globals
-/boot/dietpi/func/dietpi-obtain_hw_model # Always update
-. /boot/dietpi/func/dietpi-globals
-readonly G_PROGRAM_NAME='DietPi-Patch'
+# Load shaughvOS-Globals
+/boot/shaughvos/func/shaughvos-obtain_hw_model # Always update
+. /boot/shaughvos/func/shaughvos-globals
+readonly G_PROGRAM_NAME='shaughvOS-Patch'
 G_CHECK_ROOT_USER "$@"
 G_CHECK_ROOTFS_RW
 G_INIT
 
-# Prevent backup prompts during patching e.g. from DietPi-Software reinstalls
+# shaughvOS v1.x: Skip all DietPi-era migration patches (Patch_8_0 through Patch_10_2)
+# These patches only apply when upgrading from DietPi versions 8.0-10.2.
+# shaughvOS versions go 1.x -> 2.x and will never need v8-v10 migration logic.
+# They also reference /boot/dietpi/ paths and dietpi.com infrastructure that shaughvOS does not use.
+if (( $G_SHAUGHVOS_VERSION_CORE < 2 ))
+then
+	G_SHAUGHVOS-NOTIFY 2 'shaughvOS v1.x detected, skipping DietPi-era migration patches'
+	exit 0
+fi
+
+# Prevent backup prompts during patching e.g. from shaughvOS-Software reinstalls
 export G_PROMPT_BACKUP_DISABLED=1
-# Prevent initial and final service control during DietPi-Software reinstalls
+# Prevent initial and final service control during shaughvOS-Software reinstalls
 export G_SERVICE_CONTROL=0
 
 # ToDo: On RPi 4, the 64-bit kernel is now used by default, without "arm_64bit=1" set: https://forums.raspberrypi.com/viewtopic.php?p=2088935#p2088935
@@ -2417,42 +2427,42 @@ Patch_10_2()
 }
 
 # Failsafe: Error out on invalid version
-if ! (( $G_DIETPI_VERSION_CORE > 7 ))
+if ! (( $G_SHAUGHVOS_VERSION_CORE > 7 ))
 then
-	G_DIETPI-NOTIFY 1 "Unsupported DietPi version $G_DIETPI_VERSION_CORE.$G_DIETPI_VERSION_SUB.$G_DIETPI_VERSION_RC. Aborting ..."
-	G_DIETPI-NOTIFY 2 'Please run "dietpi-update" to repeat the regular update path.'
+	G_SHAUGHVOS-NOTIFY 1 "Unsupported shaughvOS version $G_SHAUGHVOS_VERSION_CORE.$G_SHAUGHVOS_VERSION_SUB.$G_SHAUGHVOS_VERSION_RC. Aborting ..."
+	G_SHAUGHVOS-NOTIFY 2 'Please run "shaughvos-update" to repeat the regular update path.'
 	exit 1
 fi
 
 # Main loop
-G_DIETPI_VERSION_RC=0
+G_SHAUGHVOS_VERSION_RC=0
 while :
 do
-	if declare -F "Patch_${G_DIETPI_VERSION_CORE}_$(( $G_DIETPI_VERSION_SUB + 1 ))" > /dev/null
+	if declare -F "Patch_${G_SHAUGHVOS_VERSION_CORE}_$(( $G_SHAUGHVOS_VERSION_SUB + 1 ))" > /dev/null
 	then
-		((G_DIETPI_VERSION_SUB++))
+		((G_SHAUGHVOS_VERSION_SUB++))
 
-	elif declare -F "Patch_$(( $G_DIETPI_VERSION_CORE + 1 ))_0" > /dev/null
+	elif declare -F "Patch_$(( $G_SHAUGHVOS_VERSION_CORE + 1 ))_0" > /dev/null
 	then
-		((G_DIETPI_VERSION_CORE++))
-		G_DIETPI_VERSION_SUB=0
+		((G_SHAUGHVOS_VERSION_CORE++))
+		G_SHAUGHVOS_VERSION_SUB=0
 	else
 		break
 	fi
-	G_DIETPI-NOTIFY 2 "Patching to DietPi v$G_DIETPI_VERSION_CORE.$G_DIETPI_VERSION_SUB ..."
-	"Patch_${G_DIETPI_VERSION_CORE}_$G_DIETPI_VERSION_SUB"
+	G_SHAUGHVOS-NOTIFY 2 "Patching to shaughvOS v$G_SHAUGHVOS_VERSION_CORE.$G_SHAUGHVOS_VERSION_SUB ..."
+	"Patch_${G_SHAUGHVOS_VERSION_CORE}_$G_SHAUGHVOS_VERSION_SUB"
 	G_VERSIONDB_SAVE
-	G_DIETPI-NOTIFY 0 "Patched to DietPi v$G_DIETPI_VERSION_CORE.$G_DIETPI_VERSION_SUB"
+	G_SHAUGHVOS-NOTIFY 0 "Patched to shaughvOS v$G_SHAUGHVOS_VERSION_CORE.$G_SHAUGHVOS_VERSION_SUB"
 done
 
 # Performing reinstalls
-if [[ -f '/var/tmp/dietpi/dietpi-update_reinstalls' ]]
+if [[ -f '/var/tmp/shaughvos/shaughvos-update_reinstalls' ]]
 then
-	G_DIETPI-NOTIFY 2 'Performing DietPi-Software reinstalls...'
+	G_SHAUGHVOS-NOTIFY 2 'Performing shaughvOS-Software reinstalls...'
 	# Coders NB: Assigning to array is not easily possible here since we need to split at newline AND space.
 	# shellcheck disable=SC2046
-	(( $G_DIETPI_INSTALL_STAGE == 2 )) && /boot/dietpi/dietpi-software reinstall $(</var/tmp/dietpi/dietpi-update_reinstalls)
-	G_EXEC rm /var/tmp/dietpi/dietpi-update_reinstalls
+	(( $G_SHAUGHVOS_INSTALL_STAGE == 2 )) && /boot/shaughvos/shaughvos-software reinstall $(</var/tmp/shaughvos/shaughvos-update_reinstalls)
+	G_EXEC rm /var/tmp/shaughvos/shaughvos-update_reinstalls
 fi
 
 exit 0

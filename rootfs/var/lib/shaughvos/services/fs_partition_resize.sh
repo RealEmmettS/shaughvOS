@@ -22,6 +22,19 @@
 
 	Reboot_to_load_Partition_table()
 	{
+		# Prevent infinite reboot loops: track reboot count
+		local reboot_count=0 reboot_counter='/shaughvos_partition_reboot_count'
+		[[ -f $reboot_counter ]] && read -r reboot_count < "$reboot_counter"
+		if (( reboot_count >= 3 ))
+		then
+			echo "[FAILED] Partition resize has triggered $reboot_count reboots without completing. Skipping to prevent infinite loop."
+			echo '[ INFO ] The root partition may not be fully expanded. You can run resize2fs manually after boot.'
+			rm -f "$reboot_counter"
+			return 1
+		fi
+		echo "$(( reboot_count + 1 ))" > "$reboot_counter"
+		sync
+
 		echo '[ INFO ] Performing intermediate reboot to load new partition table'
 		echo '[ INFO ] Re-enabling this service to continue with filesystem expansion on next boot'
 		> /shaughvos_skip_partition_resize
@@ -173,6 +186,9 @@
 			EXIT_CODE=1
 		;;
 	esac
+
+	# Clean up reboot counter on successful completion
+	rm -f /shaughvos_partition_reboot_count
 	# ---------------------------------------------------------
 	} &> >(tee -a /var/tmp/shaughvos/logs/fs_partition_resize.log); wait $! # Method from shaughvos-update to avoid commands running in a subshell, breaking script exits and implying variable changes remaining local
 

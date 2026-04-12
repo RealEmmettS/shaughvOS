@@ -11,6 +11,22 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.4.0] — 2026-04-12
+
+### Fixed
+- **CRITICAL**: Fixed `.update/patches` file completely missed during rebrand — it still referenced `/boot/dietpi/func/dietpi-globals` (path doesn't exist on shaughvOS), causing every `shaughvos-update` to crash during the incremental patching phase. This was the root cause of VM installation crashes after partition table editing.
+- **CRITICAL**: Fixed fallback version defaults in `shaughvos-globals` — defaults were DietPi-era `10.2.3` instead of shaughvOS `1.3.0`. If `/boot/shaughvos/.version` was missing (e.g., during filesystem corruption), the system would think it was at v10.2.3, breaking the entire update flow.
+- **CRITICAL**: Added version guard in `.update/pre-patches` — all DietPi-era patches (v7.0-v10.1) would fire on shaughvOS v1.x due to version numbering mismatch, including patches that inject `dietpi.com/apt` into APT sources.
+- Fixed `shaughvos-login` first-run update failing on VMs with slow network — added 60-second network connectivity wait loop before calling `shaughvos-update`
+- Fixed `fs_partition_resize.sh` infinite reboot loop — added reboot counter (max 3) to prevent VMs from getting stuck in boot loops during partition resize
+- Fixed `shaughvos-bugreport` attempting to upload to DietPi's SFTP server (`ssh.dietpi.com:29248`) — now saves reports locally to `/var/tmp/shaughvos/bugreports/`
+- Fixed `G_GET_WAN_IP()` GeoIP function calling `dietpi.com/geoip` — replaced with `ifconfig.co`
+- Fixed `G_DEV_TEST_FIRMWARE()` trying to download test packages from `dietpi.com` — disabled with clear error message
+- Fixed installer writing DietPi SSH known_hosts to `/root/.ssh/known_hosts`
+- Replaced all user-facing `dietpi.com/forum` URLs with `github.com/RealEmmettS/shaughvOS` links (bug report template, backup prompt, login error messages)
+
+---
+
 ## [1.3.0] — 2026-04-12
 
 ### Changed
