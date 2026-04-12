@@ -13,7 +13,7 @@
 
 shaughvOS is a custom, lightweight operating system built on a Debian foundation. It ships with a polished Xfce desktop, powerful diagnostic tools, and a streamlined terminal experience — all pre-configured and ready to use out of the box.
 
-Designed for Raspberry Pi 2/3/4/5, x86_64 PCs and laptops, Intel Macs, and virtual machines.
+Designed for Raspberry Pi 2/3/4/5, x86_64 PCs and laptops, Intel Macs, and virtual machines. Can also run just as easily off of a live-boot flash drive.
 
 ## Features
 
