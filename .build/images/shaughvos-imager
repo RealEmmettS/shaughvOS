@@ -402,7 +402,7 @@
 		Run_fsck
 		local last_part_dev=$(sfdisk -lqo Device "$FP_SOURCE" | tail -1)
 		# - If this is a tailing shaughvOS setup partition, remove it and let it be recreated freshly in case. This makes it easier for shaughvos-build to reuse the same image for multiple variants.
-		if [[ $(blkid -s LABEL -o value "$last_part_dev") == 'SHAUGHVOSSETUP' ]]
+		if [[ $(blkid -s LABEL -o value "$last_part_dev") == 'SHAUGHVOS' ]]
 		then
 			G_EXEC_OUTPUT=1 G_EXEC sfdisk --delete "$FP_SOURCE" "${last_part_dev: -1}"
 			last_part_dev=$(sfdisk -lqo Device "$FP_SOURCE" | tail -1)
@@ -567,12 +567,12 @@
 			G_EXEC eval "sfdisk -a '$FP_SOURCE' <<< 'start=$start,size=2048,type=$type'" # size in sectors
 			# Create a FAT filesystem and add config files to it
 			local new_fat_part=$(sfdisk -l "$FP_SOURCE" | mawk "/ $start /{print \$1;exit}")
-			G_EXEC_OUTPUT=1 G_EXEC mkfs.fat -n SHAUGHVOSSETUP "$new_fat_part"
+			G_EXEC_OUTPUT=1 G_EXEC mkfs.fat -n SHAUGHVOS "$new_fat_part"
 			local fat_mountpoint=$(mktemp -d)
 			local root_mountpoint=$(mktemp -d)
 			G_EXEC mount "$new_fat_part" "$fat_mountpoint"
 			G_EXEC mount "$FP_ROOT_DEV" "$root_mountpoint"
-			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvos.txt and other config files to the SHAUGHVOSSETUP partition'
+			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvos.txt and other config files to the SHAUGHVOS partition'
 			for f in 'shaughvos.txt' 'shaughvos-wifi.txt' 'shaughvosEnv.txt' 'boot.ini' 'extlinux/extlinux.conf' 'Automation_Custom_PreScript.sh' 'Automation_Custom_Script.sh' 'unattended_pivpn.conf' 'shaughvos-k3s.yaml'
 			do
 				[[ -f $root_mountpoint/boot/$f ]] || continue

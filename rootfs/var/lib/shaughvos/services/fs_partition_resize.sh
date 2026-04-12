@@ -79,10 +79,10 @@
 	then
 		echo '[ INFO ] Skipping partition expansion since detected root drive device node does not exist, assuming container system'
 	else
-		echo '[ INFO ] Checking if the last partition contains a filesystem with SHAUGHVOSSETUP label'
+		echo '[ INFO ] Checking if the last partition contains a filesystem with SHAUGHVOS label'
 		SETUP_PART=$(sfdisk -lqo Device "$ROOT_DRIVE" | tail -1)
 		# - Probe via blkid instead of lsblk=udev, since systemd-udevd does not run yet at this boot stage. From Trixie on, "lsblk --properties-by blkid" can be used.
-		if [[ $(blkid -s LABEL -o value "$SETUP_PART") == 'SHAUGHVOSSETUP' ]]
+		if [[ $(blkid -s LABEL -o value "$SETUP_PART") == 'SHAUGHVOS' ]]
 		then
 			echo "[ INFO ] Detected trailing shaughvOS setup partition $SETUP_PART"
 			echo '[ INFO ] Mounting it and importing files if present and newer'

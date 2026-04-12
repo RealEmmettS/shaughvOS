@@ -60,6 +60,7 @@ First release of shaughvOS — a complete OS rebrand built on the DietPi foundat
 - Release image build: ensure DNS resolution inside chroot container
 - Release image build: use branch name instead of tag name for GitHub archive extraction
 - Release image build: add missing LICENSE file required by installer
+- Release image build: shorten FAT volume label from 14 to 9 chars (FAT max is 11)
 
 ### Removed
 - `dietpi-survey` — DietPi telemetry system (sent data to DietPi servers)
