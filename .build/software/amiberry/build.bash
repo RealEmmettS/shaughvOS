@@ -1,7 +1,7 @@
 #!/bin/bash
 {
-. /boot/dietpi/func/dietpi-globals || exit 1
-Error_Exit(){ G_DIETPI-NOTIFY 1 "$1, aborting ..."; exit 1; }
+. /boot/shaughvos/func/shaughvos-globals || exit 1
+Error_Exit(){ G_SHAUGHVOS-NOTIFY 1 "$1, aborting ..."; exit 1; }
 
 # Apply GitHub token if set
 header=()
@@ -67,7 +67,7 @@ NAME='SDL3'
 PRETTY=$NAME
 version=$(curl -sSf "${header[@]}" 'https://api.github.com/repos/libsdl-org/SDL/releases/latest' | grep -Po '"name": *"\K[0-9.]+(?=")')
 [[ $version ]] || Error_Exit "No latest $PRETTY version found"
-G_DIETPI-NOTIFY 2 "Building $PRETTY version \e[33m$version"
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/libsdl-org/SDL/releases/download/release-$version/$NAME-$version.tar.gz"
 [[ -d $NAME-$version ]] && G_EXEC rm -R "$NAME-$version"
@@ -88,7 +88,7 @@ NAME='SDL3_image'
 PRETTY=$NAME
 version=$(curl -sSf "${header[@]}" 'https://api.github.com/repos/libsdl-org/SDL_image/releases/latest' | grep -Po '"name": *"\K[0-9.]+(?=")')
 [[ $version ]] || Error_Exit "No latest $PRETTY version found"
-G_DIETPI-NOTIFY 2 "Building $PRETTY version \e[33m$version"
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/libsdl-org/SDL_image/releases/download/release-$version/$NAME-$version.tar.gz"
 [[ -d $NAME-$version ]] && G_EXEC rm -R "$NAME-$version"
@@ -110,7 +110,7 @@ NAME='SDL3_ttf'
 PRETTY=$NAME
 version=$(curl -sSf "${header[@]}" 'https://api.github.com/repos/libsdl-org/SDL_ttf/releases/latest' | grep -Po '"name": *"\K[0-9.]+(?=")')
 [[ $version ]] || Error_Exit "No latest $PRETTY version found"
-G_DIETPI-NOTIFY 2 "Building $PRETTY version \e[33m$version"
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/libsdl-org/SDL_ttf/releases/download/release-$version/$NAME-$version.tar.gz"
 [[ -d $NAME-$version ]] && G_EXEC rm -R "$NAME-$version"
@@ -131,7 +131,7 @@ ORGA='BlitterStudio'
 version=$(curl -sSf "${header[@]}" "https://api.github.com/repos/$ORGA/$NAME/releases/latest" | grep -Po '"tag_name": *"\K[^"]+(?=")')
 [[ $version ]] || Error_Exit "No latest $PRETTY version found"
 version=${version#v}
-G_DIETPI-NOTIFY 2 "Building $PRETTY version \e[33m$version"
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY version \e[33m$version"
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO "https://github.com/$ORGA/$NAME/archive/v$version.tar.gz"
 [[ -d $NAME-$version ]] && G_EXEC rm -R "$NAME-$version"
@@ -151,11 +151,11 @@ G_EXEC_OUTPUT=1 G_EXEC cmake --build build
 G_EXEC strip --remove-section=.comment --remove-section=.note "build/$NAME"
 
 # Prepare DEB package
-G_DIETPI-NOTIFY 2 "Building $PRETTY DEB package"
+G_SHAUGHVOS-NOTIFY 2 "Building $PRETTY DEB package"
 G_EXEC cd /tmp
 DIR="${NAME}_$G_HW_ARCH_NAME"
 [[ -d $DIR ]] && G_EXEC rm -R "$DIR"
-G_EXEC mkdir -p "$DIR/"{DEBIAN,"mnt/dietpi_userdata/$NAME",lib/systemd/system}
+G_EXEC mkdir -p "$DIR/"{DEBIAN,"mnt/shaughvos_userdata/$NAME",lib/systemd/system}
 
 # - Copy files in place
 G_EXEC_OUTPUT=1 G_EXEC cmake --install "$NAME-$version/build" --prefix "$DIR/usr"
@@ -166,17 +166,17 @@ G_EXEC cp -aL /tmp/deps/lib/libSDL3{,_image,_ttf}.so.0 "$LIB_DIR/"
 # - systemd service: Workaround invisible cursor: https://github.com/libsdl-org/SDL/issues/15242
 cat << _EOF_ > "$DIR/lib/systemd/system/$NAME.service" || exit 1
 [Unit]
-Description=$PRETTY Amiga Emulator (DietPi)
+Description=$PRETTY Amiga Emulator (shaughvOS)
 Documentation=https://github.com/BlitterStudio/amiberry/wiki
 
 [Service]
-Environment=HOME=/mnt/dietpi_userdata/$NAME
-Environment=XDG_DATA_HOME=/mnt/dietpi_userdata
-Environment=XDG_CONFIG_HOME=/mnt/dietpi_userdata
-Environment=AMIBERRY_HOME_DIR=/mnt/dietpi_userdata/$NAME
-Environment=AMIBERRY_CONFIG_DIR=/mnt/dietpi_userdata/$NAME/conf
+Environment=HOME=/mnt/shaughvos_userdata/$NAME
+Environment=XDG_DATA_HOME=/mnt/shaughvos_userdata
+Environment=XDG_CONFIG_HOME=/mnt/shaughvos_userdata
+Environment=AMIBERRY_HOME_DIR=/mnt/shaughvos_userdata/$NAME
+Environment=AMIBERRY_CONFIG_DIR=/mnt/shaughvos_userdata/$NAME/conf
 Environment=SDL_KMSDRM_ATOMIC=0
-WorkingDirectory=/mnt/dietpi_userdata/$NAME
+WorkingDirectory=/mnt/shaughvos_userdata/$NAME
 StandardInput=tty
 TTYPath=/dev/tty3
 ExecStartPre=/bin/chvt 3
@@ -192,31 +192,31 @@ if [[ $NAME == 'amiberry' ]]
 then
 	cat << '_EOF_' > "$DIR/DEBIAN/preinst" || exit 1
 #!/bin/dash -e
-if [ -d '/mnt/dietpi_userdata/amiberry' ] && [ ! -d '/mnt/dietpi_userdata/amiberry_v5_bak' ] && dpkg --compare-versions "$2" lt-nl '5.7.5'
+if [ -d '/mnt/shaughvos_userdata/amiberry' ] && [ ! -d '/mnt/shaughvos_userdata/amiberry_v5_bak' ] && dpkg --compare-versions "$2" lt-nl '5.7.5'
 then
-	echo 'Backing up Amiberry v5 config/data dir to /mnt/dietpi_userdata/amiberry_v5_bak ...'
-	rm -Rf /mnt/dietpi_userdata/amiberry/amiberry /mnt/dietpi_userdata/amiberry/data /mnt/dietpi_userdata/amiberry/lib
-	cp -a /mnt/dietpi_userdata/amiberry /mnt/dietpi_userdata/amiberry_v5_bak
+	echo 'Backing up Amiberry v5 config/data dir to /mnt/shaughvos_userdata/amiberry_v5_bak ...'
+	rm -Rf /mnt/shaughvos_userdata/amiberry/amiberry /mnt/shaughvos_userdata/amiberry/data /mnt/shaughvos_userdata/amiberry/lib
+	cp -a /mnt/shaughvos_userdata/amiberry /mnt/shaughvos_userdata/amiberry_v5_bak
 	echo 'Migrating Amiberry v5 config/data directory ...'
-	[ -f '/mnt/dietpi_userdata/amiberry/conf/amiberry.conf' ] && mv -v /mnt/dietpi_userdata/amiberry/conf/amiberry.conf /mnt/dietpi_userdata/amiberry/amiberry.conf
-	rm -fv /mnt/dietpi_userdata/amiberry/conf/amiberry.conf.dpkg-*
-	[ -d '/mnt/dietpi_userdata/amiberry/kickstarts' ] && [ ! -d '/mnt/dietpi_userdata/amiberry/roms' ] && mv -v /mnt/dietpi_userdata/amiberry/kickstarts /mnt/dietpi_userdata/amiberry/roms
-	sed --follow-symlinks -Ei '/^(rom_path|floppy_sounds_dir|saveimage_dir|data_dir|plugins_dir|saveimage_dir)=/d' /mnt/dietpi_userdata/amiberry/amiberry.conf
+	[ -f '/mnt/shaughvos_userdata/amiberry/conf/amiberry.conf' ] && mv -v /mnt/shaughvos_userdata/amiberry/conf/amiberry.conf /mnt/shaughvos_userdata/amiberry/amiberry.conf
+	rm -fv /mnt/shaughvos_userdata/amiberry/conf/amiberry.conf.dpkg-*
+	[ -d '/mnt/shaughvos_userdata/amiberry/kickstarts' ] && [ ! -d '/mnt/shaughvos_userdata/amiberry/roms' ] && mv -v /mnt/shaughvos_userdata/amiberry/kickstarts /mnt/shaughvos_userdata/amiberry/roms
+	sed --follow-symlinks -Ei '/^(rom_path|floppy_sounds_dir|saveimage_dir|data_dir|plugins_dir|saveimage_dir)=/d' /mnt/shaughvos_userdata/amiberry/amiberry.conf
 fi
 _EOF_
 else
 	cat << '_EOF_' > "$DIR/DEBIAN/preinst" || exit 1
 #!/bin/dash -e
-if [ -d '/mnt/dietpi_userdata/amiberry_v5_bak' ] && [ ! -d '/mnt/dietpi_userdata/amiberry-lite' ]
+if [ -d '/mnt/shaughvos_userdata/amiberry_v5_bak' ] && [ ! -d '/mnt/shaughvos_userdata/amiberry-lite' ]
 then
 	echo 'Using Amiberry v5 config/data backup for Amiberry-Lite ...'
-	mv /mnt/dietpi_userdata/amiberry_v5_bak /mnt/dietpi_userdata/amiberry-lite
+	mv /mnt/shaughvos_userdata/amiberry_v5_bak /mnt/shaughvos_userdata/amiberry-lite
 	echo 'Migrating Amiberry v5 config/data directory ...'
-	[ -f '/mnt/dietpi_userdata/amiberry-lite/conf/amiberry.conf' ] && mv -v /mnt/dietpi_userdata/amiberry-lite/conf/amiberry.conf /mnt/dietpi_userdata/amiberry-lite/amiberry.conf
-	rm -fv /mnt/dietpi_userdata/amiberry-lite/conf/amiberry.conf.dpkg-*
-	[ -d '/mnt/dietpi_userdata/amiberry-lite/kickstarts' ] && [ ! -d '/mnt/dietpi_userdata/amiberry-lite/roms' ] && mv -v /mnt/dietpi_userdata/amiberry-lite/kickstarts /mnt/dietpi_userdata/amiberry-lite/roms
-	sed --follow-symlinks -Ei '/^(rom_path|floppy_sounds_dir|saveimage_dir|data_dir|plugins_dir|saveimage_dir)=/d' /mnt/dietpi_userdata/amiberry-lite/amiberry.conf
-	sed --follow-symlinks -Ei 's#dietpi_userdata/amiberry(/|$)#dietpi_userdata/amiberry-lite\1#' /mnt/dietpi_userdata/amiberry-lite/amiberry.conf
+	[ -f '/mnt/shaughvos_userdata/amiberry-lite/conf/amiberry.conf' ] && mv -v /mnt/shaughvos_userdata/amiberry-lite/conf/amiberry.conf /mnt/shaughvos_userdata/amiberry-lite/amiberry.conf
+	rm -fv /mnt/shaughvos_userdata/amiberry-lite/conf/amiberry.conf.dpkg-*
+	[ -d '/mnt/shaughvos_userdata/amiberry-lite/kickstarts' ] && [ ! -d '/mnt/shaughvos_userdata/amiberry-lite/roms' ] && mv -v /mnt/shaughvos_userdata/amiberry-lite/kickstarts /mnt/shaughvos_userdata/amiberry-lite/roms
+	sed --follow-symlinks -Ei '/^(rom_path|floppy_sounds_dir|saveimage_dir|data_dir|plugins_dir|saveimage_dir)=/d' /mnt/shaughvos_userdata/amiberry-lite/amiberry.conf
+	sed --follow-symlinks -Ei 's#shaughvos_userdata/amiberry(/|$)#shaughvos_userdata/amiberry-lite\1#' /mnt/shaughvos_userdata/amiberry-lite/amiberry.conf
 fi
 _EOF_
 fi
@@ -254,20 +254,20 @@ done
 DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 
 # - Obtain version suffix
-G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
+G_EXEC curl -sSfo package.deb "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/${NAME}_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC rm package.deb
-suffix=${old_version#*-dietpi}
-[[ $old_version == "$version-"* ]] && version+="-dietpi$((suffix+1))" || version+='-dietpi1'
-G_DIETPI-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
-G_DIETPI-NOTIFY 2 "Building new package version: \e[33m$version"
+suffix=${old_version#*-shaughvos}
+[[ $old_version == "$version-"* ]] && version+="-shaughvos$((suffix+1))" || version+='-shaughvos1'
+G_SHAUGHVOS-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
+G_SHAUGHVOS-NOTIFY 2 "Building new package version: \e[33m$version"
 
 # - control
 cat << _EOF_ > "$DIR/DEBIAN/control" || exit 1
 Package: $NAME
 Version: $version
 Architecture: $(dpkg --print-architecture)
-Maintainer: MichaIng <micha@dietpi.com>
+Maintainer: MichaIng <micha@shaughvos.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk "$DIR" | mawk '{print $1}')
 Depends:$DEPS_APT_VERSIONED

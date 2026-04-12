@@ -1,6 +1,6 @@
 #!/bin/bash
 {
-. /boot/dietpi/func/dietpi-globals
+. /boot/shaughvos/func/shaughvos-globals
 
 # Build deps
 G_AGUP
@@ -11,28 +11,28 @@ adeps=('libc6' 'libasound2' 'libmad0' 'libvorbisfile3' 'libmpg123-0' 'libsoxr0' 
 case $G_DISTRO in
 	7) adeps+=('libflac12' 'libavformat59');;
 	8|9) adeps+=('libflac14' 'libavformat61');;
-	*) G_DIETPI-NOTIFY 1 "Unsupported distro version: $G_DISTRO_NAME (ID=$G_DISTRO)"; exit 1;;
+	*) G_SHAUGHVOS-NOTIFY 1 "Unsupported distro version: $G_DISTRO_NAME (ID=$G_DISTRO)"; exit 1;;
 esac
 for i in "${adeps[@]}"
 do
 	# Temporarily allow lib*t64 packages, while the 64-bit time_t transition is ongoing on Trixie: https://bugs.debian.org/1065394
 	dpkg-query -s "$i" &> /dev/null || dpkg-query -s "${i}t64" &> /dev/null && continue
-	G_DIETPI-NOTIFY 1 "Expected dependency package was not installed: $i"
+	G_SHAUGHVOS-NOTIFY 1 "Expected dependency package was not installed: $i"
 	exit 1
 done
 
-G_DIETPI-NOTIFY 2 'Downloading source code ...'
+G_SHAUGHVOS-NOTIFY 2 'Downloading source code ...'
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO 'https://github.com/ralph-irving/squeezelite/archive/master.tar.gz'
 [[ -d 'squeezelite-master' ]] && G_EXEC rm -R squeezelite-master
 G_EXEC tar xf master.tar.gz
 G_EXEC rm master.tar.gz
-G_DIETPI-NOTIFY 2 'Compiling binary ...'
+G_SHAUGHVOS-NOTIFY 2 'Compiling binary ...'
 G_EXEC cd squeezelite-master
 G_EXEC_OUTPUT=1 G_EXEC make CFLAGS='-g0 -O3' OPTS='-DDSD -DFFMPEG -DRESAMPLE -DVISEXPORT -DLINKALL -DIR -DUSE_SSL'
 G_EXEC strip --remove-section=.comment --remove-section=.note squeezelite
 
-G_DIETPI-NOTIFY 2 'Starting packaging ...'
+G_SHAUGHVOS-NOTIFY 2 'Starting packaging ...'
 
 # Package dir
 G_EXEC cd /tmp
@@ -54,13 +54,13 @@ G_EXEC cp squeezelite-master/LICENSE.txt "$DIR/usr/share/doc/squeezelite/copyrig
 # - Environment file
 cat << '_EOF_' > "$DIR/etc/default/squeezelite"
 # Squeezelite command-line arguments: https://ralph-irving.github.io/squeezelite.html
-ARGS='-W -C 5 -n DietPi-Squeezelite'
+ARGS='-W -C 5 -n shaughvOS-Squeezelite'
 _EOF_
 
 # - systemd service
 cat << '_EOF_' > "$DIR/lib/systemd/system/squeezelite.service"
 [Unit]
-Description=Squeezelite (DietPi)
+Description=Squeezelite (shaughvOS)
 Documentation=man:squeezelite(1) https://ralph-irving.github.io/squeezelite.html
 Wants=network-online.target
 After=network-online.target sound.target
@@ -151,19 +151,19 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 
 # - Obtain version
 version="$(mawk -F\" '/MAJOR_VERSION/{print $2;exit}' squeezelite-master/squeezelite.h).$(mawk -F\" '/MINOR_VERSION/{print $2;exit}' squeezelite-master/squeezelite.h)-$(mawk -F\" '/MICRO_VERSION/{print $2;exit}' squeezelite-master/squeezelite.h)"
-G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/squeezelite_$G_HW_ARCH_NAME.deb"
+G_EXEC curl -sSfo package.deb "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/squeezelite_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC rm package.deb
-suffix=${old_version#*-dietpi}
-[[ $old_version == "$version-"* ]] && suffix="dietpi$((suffix+1))" || suffix="dietpi1"
-G_DIETPI-NOTIFY 2 "Building package version $version-$suffix ..."
+suffix=${old_version#*-shaughvos}
+[[ $old_version == "$version-"* ]] && suffix="shaughvos$((suffix+1))" || suffix="shaughvos1"
+G_SHAUGHVOS-NOTIFY 2 "Building package version $version-$suffix ..."
 
 # - control
 cat << _EOF_ > "$DIR/DEBIAN/control"
 Package: squeezelite
 Version: $version-$suffix
 Architecture: $(dpkg --print-architecture)
-Maintainer: MichaIng <micha@dietpi.com>
+Maintainer: MichaIng <micha@shaughvos.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk "$DIR" | mawk '{print $1}')
 Depends:$DEPS_APT_VERSIONED

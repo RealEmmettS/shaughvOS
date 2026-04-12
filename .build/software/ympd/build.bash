@@ -1,6 +1,6 @@
 #!/bin/bash
 {
-. /boot/dietpi/func/dietpi-globals
+. /boot/shaughvos/func/shaughvos-globals
 
 # Build deps
 G_AGUP
@@ -11,29 +11,29 @@ adeps=('libc6')
 case $G_DISTRO in
 	7) adeps+=('libssl3' 'libmpdclient2');;
 	8|9) adeps+=('libssl3t64' 'libmpdclient2t64');;
-	*) G_DIETPI-NOTIFY 1 "Unsupported distro version: $G_DISTRO_NAME (ID=$G_DISTRO)"; exit 1;;
+	*) G_SHAUGHVOS-NOTIFY 1 "Unsupported distro version: $G_DISTRO_NAME (ID=$G_DISTRO)"; exit 1;;
 esac
 for i in "${adeps[@]}"
 do
 	dpkg-query -s "$i" &> /dev/null && continue
-	G_DIETPI-NOTIFY 1 "Expected dependency package was not installed: $i"
+	G_SHAUGHVOS-NOTIFY 1 "Expected dependency package was not installed: $i"
 	exit 1
 done
 
-G_DIETPI-NOTIFY 2 'Downloading source code...'
+G_SHAUGHVOS-NOTIFY 2 'Downloading source code...'
 G_EXEC cd /tmp
 G_EXEC curl -sSfLO 'https://github.com/SuperBFG7/ympd/archive/master.tar.gz'
 [[ -d 'ympd-master' ]] && G_EXEC rm -R ympd-master
 G_EXEC tar xf master.tar.gz
 G_EXEC rm master.tar.gz
-G_DIETPI-NOTIFY 2 'Compiling binary...'
+G_SHAUGHVOS-NOTIFY 2 'Compiling binary...'
 G_EXEC mkdir ympd-master/build
 G_EXEC cd ympd-master/build
 G_EXEC_OUTPUT=1 G_EXEC cmake ..
 G_EXEC_OUTPUT=1 G_EXEC make CFLAGS='-g0 -O3'
 G_EXEC strip --remove-section=.comment --remove-section=.note ympd
 
-G_DIETPI-NOTIFY 2 'Starting packaging...'
+G_SHAUGHVOS-NOTIFY 2 'Starting packaging...'
 
 # Package dir
 G_EXEC cd /tmp
@@ -52,7 +52,7 @@ G_EXEC eval 'gzip -c ympd-master/ympd.1 > $DIR/usr/share/man/man1/ympd.1.gz'
 # - systemd service
 cat << '_EOF_' > "$DIR/lib/systemd/system/ympd.service"
 [Unit]
-Description=ympd (DietPi)
+Description=ympd (shaughvOS)
 After=mpd.service mpd.socket
 
 [Service]
@@ -81,16 +81,16 @@ then
 	if getent passwd ympd > /dev/null
 	then
 		echo 'Configuring ympd service user "ympd" ...'
-		usermod -g dietpi -d /nonexistent -s /usr/sbin/nologin ympd
+		usermod -g shaughvos -d /nonexistent -s /usr/sbin/nologin ympd
 	else
 		echo 'Creating ympd service user "ympd" ...'
-		useradd -rMN -g dietpi -d /nonexistent -s /usr/sbin/nologin ympd
+		useradd -rMN -g shaughvos -d /nonexistent -s /usr/sbin/nologin ympd
 	fi
 
 	echo 'Configuring ympd systemd service ...'
 	systemctl --no-reload unmask ympd
 	systemctl enable ympd
-	pgrep -x 'dietpi-software' || systemctl restart ympd
+	pgrep -x 'shaughvos-software' || systemctl restart ympd
 fi
 _EOF_
 
@@ -146,20 +146,20 @@ DEPS_APT_VERSIONED=${DEPS_APT_VERSIONED%,}
 
 # - Obtain version
 version="$(mawk -F\" '/CPACK_PACKAGE_VERSION_MAJOR/{print $2;exit}' ympd-master/CMakeLists.txt).$(mawk -F\" '/CPACK_PACKAGE_VERSION_MINOR/{print $2;exit}' ympd-master/CMakeLists.txt).$(mawk -F\" '/CPACK_PACKAGE_VERSION_PATCH/{print $2;exit}' ympd-master/CMakeLists.txt)"
-G_EXEC curl -sSfo package.deb "https://dietpi.com/downloads/binaries/$G_DISTRO_NAME/ympd_$G_HW_ARCH_NAME.deb"
+G_EXEC curl -sSfo package.deb "https://shaughvos.com/downloads/binaries/$G_DISTRO_NAME/ympd_$G_HW_ARCH_NAME.deb"
 old_version=$(dpkg-deb -f package.deb Version)
 G_EXEC rm package.deb
-suffix=${old_version#*-dietpi}
-[[ $old_version == "$version-"* ]] && suffix="dietpi$((suffix+1))" || suffix="dietpi1"
-G_DIETPI-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
-G_DIETPI-NOTIFY 2 "Building new package version: \e[33m$version-$suffix"
+suffix=${old_version#*-shaughvos}
+[[ $old_version == "$version-"* ]] && suffix="shaughvos$((suffix+1))" || suffix="shaughvos1"
+G_SHAUGHVOS-NOTIFY 2 "Old package version is:       \e[33m${old_version:-N/A}"
+G_SHAUGHVOS-NOTIFY 2 "Building new package version: \e[33m$version-$suffix"
 
 # - control
 cat << _EOF_ > "$DIR/DEBIAN/control"
 Package: ympd
 Version: $version-$suffix
 Architecture: $(dpkg --print-architecture)
-Maintainer: MichaIng <micha@dietpi.com>
+Maintainer: MichaIng <micha@shaughvos.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk "$DIR" | mawk '{print $1}')
 Depends:$DEPS_APT_VERSIONED

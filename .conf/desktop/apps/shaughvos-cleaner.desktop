@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-Cleaner
+Type=Application
+Comment=Removes unwanted junk from your system.
+Terminal=true
+Exec=/boot/shaughvos/shaughvos-cleaner
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+Categories=ConsoleOnly;System;
+GenericName=shaughvOS-Cleaner

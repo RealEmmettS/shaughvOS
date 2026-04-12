@@ -1,13 +1,13 @@
 #!/bin/bash
 {
-if [[ -f '/boot/dietpi/func/dietpi-globals' ]]
+if [[ -f '/boot/shaughvos/func/shaughvos-globals' ]]
 then
-	. /boot/dietpi/func/dietpi-globals || exit 1
+	. /boot/shaughvos/func/shaughvos-globals || exit 1
 else
-	curl -sSf "https://raw.githubusercontent.com/${G_GITOWNER:-MichaIng}/DietPi/${G_GITBRANCH:-master}/dietpi/func/dietpi-globals" -o /tmp/dietpi-globals || exit 1
+	curl -sSf "https://raw.githubusercontent.com/${G_GITOWNER:-MichaIng}/shaughvOS/${G_GITBRANCH:-master}/shaughvos/func/shaughvos-globals" -o /tmp/shaughvos-globals || exit 1
 	# shellcheck disable=SC1091
-	. /tmp/dietpi-globals || exit 1
-	G_EXEC_NOHALT=1 G_EXEC rm /tmp/dietpi-globals
+	. /tmp/shaughvos-globals || exit 1
+	G_EXEC_NOHALT=1 G_EXEC rm /tmp/shaughvos-globals
 fi
 
 G_EXEC mkdir -p sprd-bluetooth/{DEBIAN,usr/bin,lib/systemd/system}
@@ -76,7 +76,7 @@ cat << _EOF_ > sprd-bluetooth/DEBIAN/control
 Package: sprd-bluetooth
 Version: 0.0.1
 Architecture: arm64
-Maintainer: MichaIng <micha@dietpi.com>
+Maintainer: MichaIng <micha@shaughvos.com>
 Date: $(date -uR)
 Installed-Size: $(du -sk sprd-bluetooth | mawk '{print $1}')
 Section: admin

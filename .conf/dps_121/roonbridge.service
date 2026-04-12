@@ -1,12 +1,12 @@
 [Unit]
-Description=Roon Bridge (DietPi)
+Description=Roon Bridge (shaughvOS)
 Wants=network-online.target
 After=network-online.target sound.target
 
 [Service]
 SyslogIdentifier=Roon Bridge
-Environment=ROON_DATAROOT=/mnt/dietpi_userdata/roon
-Environment=ROON_ID_DIR=/mnt/dietpi_userdata/roon
+Environment=ROON_DATAROOT=/mnt/shaughvos_userdata/roon
+Environment=ROON_ID_DIR=/mnt/shaughvos_userdata/roon
 ExecStart=/etc/roonbridge/start.sh
 Restart=on-abort
 

@@ -1,0 +1,103 @@
+#!/bin/bash
+{
+	#////////////////////////////////////
+	# shaughvOS Launcher
+	#
+	#////////////////////////////////////
+	# Created by Daniel Knight / daniel.knight@shaughvos.com / shaughvos.com
+	#
+	#////////////////////////////////////
+	#
+	# Info:
+	# - Location: /boot/shaughvos/shaughvos-launcher
+	# - Whiptail menu with list of most shaughvOS programs
+	#
+	#////////////////////////////////////
+	# Import shaughvOS-Globals --------------------------------------------------------------
+	. /boot/shaughvos/func/shaughvos-globals
+	readonly G_PROGRAM_NAME='shaughvOS-Launcher'
+	G_CHECK_ROOT_USER "$@"
+	# Import shaughvOS-Globals --------------------------------------------------------------
+
+	#/////////////////////////////////////////////////////////////////////////////////////
+	# MENUS
+	#/////////////////////////////////////////////////////////////////////////////////////
+	G_WHIP_DEFAULT_ITEM_NEXT='shaughvOS-Config'
+
+	Menu_Main()
+	{
+		G_WHIP_MENU_ARRAY=(
+
+			'' '●─ Install Optimized Software '
+			'shaughvOS-Software' ': Install optimised ready-to-run software'
+			'shaughvOS-LetsEncrypt' ': Frontend for Lets Encrypt, free SSL certs'
+			'shaughvOS-VPN' ': GUI to setup a VPN connection'
+			'shaughvOS-DDNS' ': Manage domains for your dynamic IP'
+			'' '●─ Configuration '
+			'shaughvOS-Config' ': Feature rich config tool for your device'
+			'shaughvOS-Drive_Manager' ': Setup and control multiple external drives'
+			'shaughvOS-AutoStart' ': Choose what software runs after boot'
+			'shaughvOS-Services' ': Service and process tool control'
+			'shaughvOS-Display' ': Set the console display mode and rotation'
+			'shaughvOS-LED_control' ': Adjust board LED triggers'
+			'shaughvOS-Cron' ': Modify the start times of cron jobs'
+			'shaughvOS-JustBoom' ': Launch EQ and MPD audio options menu'
+			'shaughvOS-Banner' ': Configuration of the banner, displayed on logon'
+			'' '●─ Maintenance '
+			'shaughvOS-Update' ': Keep your shaughvOS system up to date'
+			'shaughvOS-Backup' ': Backup and restore your shaughvOS system'
+			'shaughvOS-Sync' ': Duplicate (sync) one directory to another'
+			'shaughvOS-Explorer' ': File explorer and manager'
+			'shaughvOS-Cleaner' ': Remove unwanted junk from your system'
+			'' '●─ Misc '
+			'shaughvOS-CPUinfo' ': Displays CPU temp, frequencies, type etc.'
+			'shaughvOS-Benchmark' ': Run system benchmarks (e.g. for shaughvOS-Survey)'
+			'shaughvOS-Survey' ': Join or leave our usage program, or view upload file'
+			'shaughvOS-CloudShell' ': Adjust update rate, scene settings and more'
+			'shaughvOS-Servarr_to_RAM' ': Link Servarr databases to RAM for better I/O performance'
+			'shaughvOS-BugReport' ': Found a bug? Let us know!'
+		)
+
+		G_WHIP_DEFAULT_ITEM=$G_WHIP_DEFAULT_ITEM_NEXT
+		G_WHIP_BUTTON_CANCEL_TEXT='Exit'
+		G_WHIP_MENU 'Please select a program to run:' || exit 0
+
+		[[ $G_WHIP_RETURNED_VALUE ]] || return 0
+
+		G_WHIP_DEFAULT_ITEM_NEXT=$G_WHIP_RETURNED_VALUE
+
+		# Convert to lowercase
+		local command=${G_WHIP_RETURNED_VALUE,,} error=0
+
+		# Run
+		if [[ -f '/boot/shaughvos/'$command ]]
+		then
+			"/boot/shaughvos/$command" || error=1
+
+		# - different location
+		elif [[ -f '/boot/shaughvos/misc/'$command ]]
+		then
+			"/boot/shaughvos/misc/$command" || error=1
+
+		# - different location
+		elif [[ -f '/boot/shaughvos/func/'$command ]]
+		then
+			"/boot/shaughvos/func/$command" || error=1
+		else
+			G_SHAUGHVOS-NOTIFY 1 "The chosen program $G_WHIP_RETURNED_VALUE could not be found on your system."
+			read -rp " - Press Enter or Return to return to $G_PROGRAM_NAME..."
+			return
+		fi
+
+		# Wait for user input
+		[[ $error == 1 || $command == 'shaughvos-cpuinfo' || $command == 'shaughvos-update' || $command == 'shaughvos-morsecode' ]] && read -rp " - Press Enter or Return to return to $G_PROGRAM_NAME..."
+	}
+
+	#/////////////////////////////////////////////////////////////////////////////////////
+	# Main Loop
+	#/////////////////////////////////////////////////////////////////////////////////////
+	while :; do Menu_Main; done
+	#-------------------------------------------------------------------------------------
+	exit 0
+	#-------------------------------------------------------------------------------------
+}

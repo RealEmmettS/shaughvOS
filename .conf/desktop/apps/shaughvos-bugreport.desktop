@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=shaughvOS-BugReport
+Type=Application
+Comment=Found an issue or bug? Let us know!
+Terminal=true
+Exec=/boot/shaughvos/shaughvos-bugreport
+Icon=/var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+Categories=ConsoleOnly;System;
+GenericName=shaughvOS-BugReport

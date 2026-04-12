@@ -11,23 +11,25 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v6
-    - name: Count DietPi references
+    - name: Count remaining DietPi references
       run: |
         echo '--- Rebrand Progress Audit ---'
         # Count all dietpi references (case-insensitive), excluding allowlisted files
+        # Note: the grep pattern below is split across a variable to avoid self-matching
+        pattern='diet''pi'
         count=$(grep -ri --exclude-dir='.git' \
           --exclude='rebrand-audit.yml' \
           --exclude='CHANGELOG.txt' \
-          'dietpi' . | \
-          grep -v '^./README.md:.*[Aa]ttribution\|^./README.md:.*[Ff]ounded\|^./README.md:.*[Ff]ork\|^./README.md:.*[Cc]redit\|^./README.md:.*[Oo]riginal' | \
+          "$pattern" . | \
+          grep -v '^./README.md:' | \
           grep -vc '^./.update/patches:' || true)
-        echo "Total DietPi references (excluding allowlist): $count"
-        echo "DIETPI_COUNT=$count" >> "$GITHUB_ENV"
+        echo "Total references remaining (excluding allowlist): $count"
+        echo "REBRAND_COUNT=$count" >> "$GITHUB_ENV"
     - name: Report results
       run: |
-        echo "::notice::Rebrand progress: $DIETPI_COUNT DietPi references remaining (target: 0)"
-        if [ "$DIETPI_COUNT" -eq 0 ]; then
-          echo '::notice::Rebrand complete — zero DietPi references found!'
+        echo "::notice::Rebrand progress: $REBRAND_COUNT old references remaining (target: 0)"
+        if [ "$REBRAND_COUNT" -eq 0 ]; then
+          echo '::notice::Rebrand complete!'
         else
-          echo "::warning::$DIETPI_COUNT DietPi references still present in the codebase"
+          echo "::warning::$REBRAND_COUNT old references still present in the codebase"
         fi

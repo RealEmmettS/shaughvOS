@@ -49,7 +49,7 @@ jobs:
             git commit --amend --no-edit
             git push -f origin update_urls
         else
-            git commit -m 'dietpi-software: update software URLs'
+            git commit -m 'shaughvos-software: update software URLs'
             git push origin update_urls
             gh pr create -B dev -H update_urls -f -l 'Upstream change'
         fi

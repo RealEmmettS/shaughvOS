@@ -6,7 +6,7 @@
 	#////////////////////////////////////
 
 	# Import globals
-	. /boot/dietpi/func/dietpi-globals
+	. /boot/shaughvos/func/shaughvos-globals
 	readonly G_PROGRAM_NAME='desktop'
 	G_CHECK_ROOT_USER "$@"
 
@@ -27,36 +27,36 @@ Options:
 
 	case ${1,,} in
 		'on')
-			G_DIETPI-NOTIFY 2 'Switching to desktop mode ...'
-			echo 2 > /boot/dietpi/.dietpi-autostart_index
-			systemctl start lightdm 2>/dev/null || G_DIETPI-NOTIFY 1 'Failed to start display manager. Is Xfce installed?'
-			G_DIETPI-NOTIFY 0 'Desktop mode enabled. Will persist across reboots.'
+			G_SHAUGHVOS-NOTIFY 2 'Switching to desktop mode ...'
+			echo 2 > /boot/shaughvos/.shaughvos-autostart_index
+			systemctl start lightdm 2>/dev/null || G_SHAUGHVOS-NOTIFY 1 'Failed to start display manager. Is Xfce installed?'
+			G_SHAUGHVOS-NOTIFY 0 'Desktop mode enabled. Will persist across reboots.'
 		;;
 		'off')
-			G_DIETPI-NOTIFY 2 'Switching to console mode ...'
-			echo 7 > /boot/dietpi/.dietpi-autostart_index
+			G_SHAUGHVOS-NOTIFY 2 'Switching to console mode ...'
+			echo 7 > /boot/shaughvos/.shaughvos-autostart_index
 			systemctl stop lightdm 2>/dev/null
-			G_DIETPI-NOTIFY 0 'Console mode enabled. Will persist across reboots.'
+			G_SHAUGHVOS-NOTIFY 0 'Console mode enabled. Will persist across reboots.'
 		;;
 		'status')
 			local index=0
-			[[ -f '/boot/dietpi/.dietpi-autostart_index' ]] && read -r index < /boot/dietpi/.dietpi-autostart_index
+			[[ -f '/boot/shaughvos/.shaughvos-autostart_index' ]] && read -r index < /boot/shaughvos/.shaughvos-autostart_index
 			case $index in
-				2|16) G_DIETPI-NOTIFY 0 'Current mode: Desktop';;
-				*) G_DIETPI-NOTIFY 0 'Current mode: Console';;
+				2|16) G_SHAUGHVOS-NOTIFY 0 'Current mode: Desktop';;
+				*) G_SHAUGHVOS-NOTIFY 0 'Current mode: Console';;
 			esac
 			if systemctl is-active lightdm &>/dev/null
 			then
-				G_DIETPI-NOTIFY 2 'Display manager: running'
+				G_SHAUGHVOS-NOTIFY 2 'Display manager: running'
 			else
-				G_DIETPI-NOTIFY 2 'Display manager: stopped'
+				G_SHAUGHVOS-NOTIFY 2 'Display manager: stopped'
 			fi
 		;;
 		'--help'|'-h'|'')
 			Usage
 		;;
 		*)
-			G_DIETPI-NOTIFY 1 "Unknown command: $1"
+			G_SHAUGHVOS-NOTIFY 1 "Unknown command: $1"
 			Usage
 			exit 1
 		;;

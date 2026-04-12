@@ -1,4 +1,4 @@
-# DietPi ProFTPD default config
+# shaughvOS ProFTPD default config
 # Location: /etc/proftpd/proftpd.conf
 # Docs: http://www.proftpd.org/docs/directives/linked/configuration.html
 
@@ -10,7 +10,7 @@ UseIPv6 on
 # If set "on" you can experience a longer connection delay in many cases.
 UseReverseDNS off
 
-ServerName "DietPi FTP"
+ServerName "shaughvOS FTP"
 ServerType standalone
 DeferWelcome off
 
@@ -30,14 +30,14 @@ ListOptions "-l"
 
 DenyFilter \*.*/
 
-DefaultRoot /mnt/dietpi_userdata
+DefaultRoot /mnt/shaughvos_userdata
 
 Port 21
 MaxInstances 8
 
 RootLogin off
-User dietpi
-Group dietpi
+User shaughvos
+Group shaughvos
 Umask 002 002
 AllowOverwrite on
 

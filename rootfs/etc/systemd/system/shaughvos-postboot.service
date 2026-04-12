@@ -1,0 +1,12 @@
+[Unit]
+Description=shaughvOS-PostBoot
+After=shaughvos-preboot.service
+
+[Service]
+Type=idle
+RemainAfterExit=yes
+StandardOutput=tty
+ExecStart=/boot/shaughvos/postboot
+
+[Install]
+WantedBy=multi-user.target

@@ -1,2 +1,2 @@
-# /etc/cron.minutely/ is implemented by DietPi and allows to run scripts every chosen amount of minutes.
-# Run "dietpi-cron" to enable and configure this feature.
+# /etc/cron.minutely/ is implemented by shaughvOS and allows to run scripts every chosen amount of minutes.
+# Run "shaughvos-cron" to enable and configure this feature.
