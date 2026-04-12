@@ -9,7 +9,14 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+---
+
+## [1.0.0] — 2026-04-12
+
+First release of shaughvOS — a complete OS rebrand built on the DietPi foundation.
+
 ### Added
+- GPL-2.0 license (upstream compliance with DietPi)
 - QubeTX 300 Series integration (software IDs 218-220):
   - TR-300 (`tr300`) — machine report with system info and resource graphs
   - ND-300 (`nd300` + `speedqx`) — network diagnostics and quad-provider speed test
@@ -23,6 +30,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - ASCII art terminal splash with TR-300 auto-run (`rootfs/etc/bashrc.d/shaughvos.bash`)
 - Man pages: `desktop(1)`, `shaughvos(1)`
 - Rebrand audit CI workflow (`.github/workflows/rebrand-audit.yml`)
+- Release image build workflow for RPi4, x86 PC, and x86 VM targets
 - Xfce bottom panel layout (app menu, tasklist, systray, clock, actions)
 - Xfce Terminal Dracula color scheme
 
@@ -36,6 +44,7 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - Replaced all function names (G_DIETPI-NOTIFY -> G_SHAUGHVOS-NOTIFY, etc.)
   - Updated all GitHub URLs to `RealEmmettS/shaughvOS`
   - Updated all GITOWNER defaults to `RealEmmettS`
+- Restored `dietpi.com` for upstream infrastructure URLs (package downloads, forums, APIs)
 - Version reset from DietPi v10.2 RC3 to shaughvOS v1.0.0
 - Default hostname: `shaughvOS`
 - Default password: `shaughvos`
@@ -45,6 +54,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - README rewritten with shaughvOS branding and DietPi attribution
 - SECURITY.md, BRANCH_SYSTEM.md, GitHub templates updated for shaughvOS
 - CLAUDE.md updated to reflect post-rebrand codebase
+
+### Fixed
+- Release image build: run from clean directory to avoid rootfs conflict with repo checkout
+- Release image build: ensure DNS resolution inside chroot container
+- Release image build: use branch name instead of tag name for GitHub archive extraction
+- Release image build: add missing LICENSE file required by installer
 
 ### Removed
 - `dietpi-survey` — DietPi telemetry system (sent data to DietPi servers)
