@@ -48,7 +48,6 @@ jobs:
     name: "Build: ${{ matrix.target }}"
     runs-on: ${{ matrix.target == 'rpi4' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     steps:
-    - uses: actions/checkout@v6
     - name: Build image
       run: |
         # Map target to shaughvos-build arguments
@@ -61,21 +60,23 @@ jobs:
         sudo systemctl --now mask ssh ssh.socket systemd-resolved azure-proxy-agent 2>/dev/null || true
         echo 'nameserver 1.1.1.1' | sudo tee /etc/resolv.conf > /dev/null
 
+        # Run build from a clean directory (not the repo checkout — shaughvos-build creates its own rootfs/)
+        mkdir -p /tmp/shaughvos-build && cd /tmp/shaughvos-build
         sudo bash -c "G_GITOWNER=$GITHUB_REPOSITORY_OWNER G_GITBRANCH=$GITHUB_REF_NAME; \
           $(curl -sSf "https://raw.githubusercontent.com/$GITHUB_REPOSITORY_OWNER/shaughvOS/$GITHUB_REF_NAME/.build/images/shaughvos-build" || echo false)" \
           -- -m "$model" -o "$GITHUB_REPOSITORY_OWNER" -b "$GITHUB_REF_NAME"
 
         # Find the output image
-        img=$(find . -maxdepth 1 -name '*.img.xz' -o -name '*.7z' | head -1)
+        img=$(find /tmp/shaughvos-build -maxdepth 1 -name '*.img.xz' -o -name '*.7z' | head -1)
         if [ -z "$img" ]; then
           echo "::error::No image file produced"
           exit 1
         fi
 
-        # Rename to standard format
+        # Rename to standard format and move to workspace for upload
         version='${{ needs.prep.outputs.version }}'
-        mv "$img" "shaughvOS_${desc}_${version}.img.xz" 2>/dev/null || \
-        mv "$img" "shaughvOS_${desc}_${version}.${img##*.}"
+        mv "$img" "$GITHUB_WORKSPACE/shaughvOS_${desc}_${version}.img.xz" 2>/dev/null || \
+        mv "$img" "$GITHUB_WORKSPACE/shaughvOS_${desc}_${version}.${img##*.}"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
