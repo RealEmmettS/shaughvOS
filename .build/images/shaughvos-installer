@@ -1647,7 +1647,7 @@ _EOF_
 		getent passwd rock64 > /dev/null && userdel -f rock64
 		getent passwd rock > /dev/null && userdel -f rock # Radxa images
 		getent passwd linaro > /dev/null && userdel -f linaro # ASUS TB
-		getent passwd shaughvos > /dev/null && userdel -f shaughvos # recreated below
+		getent passwd shaughvos > /dev/null && userdel -f shaughvos # legacy cleanup
 		getent passwd openmediavault-webgui > /dev/null && userdel -f openmediavault-webgui # OMV
 		getent passwd admin > /dev/null && userdel -f admin # OMV
 		getent passwd fa > /dev/null && userdel -f fa # OMV
@@ -1660,9 +1660,9 @@ _EOF_
 
 		G_SHAUGHVOS-NOTIFY 2 'Resetting root user account'
 		G_EXEC usermod -d /root -s /bin/bash root
-		G_EXEC eval 'chpasswd <<< '\''root:shaughvos'\'
+		G_EXEC eval 'chpasswd <<< '\''root:1234'\'
 
-		G_EXEC_DESC='Creating shaughvOS user account' G_EXEC /boot/shaughvos/func/shaughvos-set_software useradd shaughvos
+		G_EXEC_DESC='Creating shaughvOS user account' G_EXEC /boot/shaughvos/func/shaughvos-set_software useradd admin
 
 		G_SHAUGHVOS-NOTIFY 2 'Removing misc files/folders/services, not required by shaughvOS'
 

@@ -163,7 +163,7 @@ Would you like to restart the first run setup and installation?"
 		then
 			G_WHIP_MSG '[ WARN ] root permissions required
 \nTo finish the shaughvOS first run setup, this script will now try to rerun itself with "sudo".
-\nIf this fails, please login as user "root" with password "shaughvos", respectively the one you chose via "shaughvos.txt".'
+\nIf this fails, please login as user "root" with password "1234", respectively the one you chose via "shaughvos.txt".'
 			G_CHECK_ROOT_USER
 			exit 1
 

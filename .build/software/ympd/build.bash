@@ -81,10 +81,10 @@ then
 	if getent passwd ympd > /dev/null
 	then
 		echo 'Configuring ympd service user "ympd" ...'
-		usermod -g shaughvos -d /nonexistent -s /usr/sbin/nologin ympd
+		usermod -g admin -d /nonexistent -s /usr/sbin/nologin ympd
 	else
 		echo 'Creating ympd service user "ympd" ...'
-		useradd -rMN -g shaughvos -d /nonexistent -s /usr/sbin/nologin ympd
+		useradd -rMN -g admin -d /nonexistent -s /usr/sbin/nologin ympd
 	fi
 
 	echo 'Configuring ympd systemd service ...'

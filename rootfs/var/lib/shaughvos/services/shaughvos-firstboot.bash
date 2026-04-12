@@ -188,7 +188,7 @@ _EOF_
 		if [[ $password ]]
 		then
 			chpasswd <<< "root:$password"
-			chpasswd <<< "shaughvos:$password"
+			chpasswd <<< "admin:$password"
 		fi
 		unset -v password
 

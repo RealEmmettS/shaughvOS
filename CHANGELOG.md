@@ -11,6 +11,32 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.3.0] — 2026-04-12
+
+### Changed
+- Default credentials: username `admin` (was `shaughvos`), password `1234` (was `shaughvos`)
+- Desktop autologin user changed from `root` to `admin`
+- Boot menu submenu rebranded from "Clonezilla live" to "shaughvOS Live" (GRUB and syslinux)
+- ISO publisher string updated from dietpi.com to shaughvOS GitHub repo
+- DNS check domain changed from `dietpi.com` to `google.com`
+- Chromium autostart URL changed from `dietpi.com` to shaughvOS GitHub repo
+- Software install confirmation dialog URL updated from `dietpi.com/docs/software/` to GitHub wiki
+- All service user group references updated from `shaughvos` group to `admin` group
+
+### Fixed
+- Fixed broken `shaughvOS-Website` URL in desktop icon download that caused first-boot install failure (exit code 22)
+- Fixed 5 broken `$G_GITOWNER/DietPi/` curl URLs in `.update/patches` (pointed to non-existent repo)
+- Fixed install confirmation dialog still referencing `dietpi.com/docs/software/`
+
+### Removed
+- Removed shaughvOS-Dashboard (ID 200) from software catalog — referenced non-existent upstream repo `nonnorm/shaughvos-dashboard`
+
+### Added
+- Default credentials table in README
+- `admin` user account with full sudo access as the primary non-root user
+
+---
+
 ## [1.2.0] — 2026-04-12
 
 ### Added

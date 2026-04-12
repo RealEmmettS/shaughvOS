@@ -716,7 +716,7 @@ _EOF_
 				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p poweroff restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
 				-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/' tmpiso/boot/grub/grub.cfg
 			cat << '_EOF_' >> tmpiso/boot/grub/grub.cfg
-submenu "Clonezilla live" { configfile /boot/grub/clonezilla.cfg }
+submenu "shaughvOS Live" { configfile /boot/grub/clonezilla.cfg }
 menuentry "Power off" { halt }
 _EOF_
 			### Prepare custom files used by the installer when booting in BIOS/CSM mode ###
@@ -724,7 +724,7 @@ _EOF_
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/.build/images/Clonezilla/shaughvos-background_480p.png" -o tmpiso/syslinux/shaughvosbg.png
 			G_EXEC cp /usr/lib/syslinux/modules/bios/poweroff.c32 tmpiso/syslinux/
 			G_EXEC mv tmpiso/syslinux/{syslinux,clonezilla}.cfg
-			sed --follow-symlinks -i '/^MENU TITLE/c\MENU TITLE Clonezilla live' tmpiso/syslinux/clonezilla.cfg
+			sed --follow-symlinks -i '/^MENU TITLE/c\MENU TITLE shaughvOS Live' tmpiso/syslinux/clonezilla.cfg
 			sed '/^label /,$d' tmpiso/syslinux/clonezilla.cfg > tmpiso/syslinux/syslinux.cfg
 			sed -n '/^label .*framebuffer/,/ENDTEXT/p' tmpiso/syslinux/clonezilla.cfg >> tmpiso/syslinux/syslinux.cfg
 			sed --follow-symlinks -i  -e '/^timeout /c\timeout 0' -e 's|\(MENU BACKGROUND\) .*|\1 shaughvosbg.png|' -e '/^MENU TITLE /c\MENU TABMSG' \
@@ -734,7 +734,7 @@ _EOF_
 				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p poweroff restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
 				-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/' tmpiso/syslinux/syslinux.cfg
 			cat << '_EOF_' >> tmpiso/syslinux/syslinux.cfg
-MENU BEGIN Clonezilla live
+MENU BEGIN shaughvOS Live
   INCLUDE clonezilla.cfg
 MENU END
 label Power off
@@ -750,7 +750,7 @@ _EOF_
 			# Generate ISO file with Clonezilla Live + shaughvOS image
 			G_EXEC_DESC="Generating $FP_FINAL" G_EXEC_OUTPUT=1 G_EXEC xorriso \
 				-as mkisofs -R -r -J -joliet-long -l -iso-level 3 -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -partition_offset 16 \
-				-publisher 'shaughvOS - Lightweight justice for your SBC; https://dietpi.com/;' -volid 'SHAUGHVOS_INSTALLER' \
+				-publisher 'shaughvOS; https://github.com/RealEmmettS/shaughvOS;' -volid 'SHAUGHVOS_INSTALLER' \
 				-A "clonezilla-live-$CLONEZILLA_VERSION-amd64" -b syslinux/isolinux.bin -c syslinux/boot.cat -no-emul-boot -boot-load-size 4 \
 				-boot-info-table -eltorito-alt-boot --efi-boot boot/grub/efi.img -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
 				-o "$FP_FINAL" tmpiso

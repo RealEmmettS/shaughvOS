@@ -145,13 +145,13 @@ Available commands:
 				GLOBAL_PW=$(openssl enc -d -a -md sha256 -aes-256-cbc -iter 10000 -salt -pass pass:'shaughvOSRocks!' -in /var/lib/shaughvos/shaughvos-software/.GLOBAL_PW.bin) || GLOBAL_PW=
 
 				# Return on valid password
-				[[ $GLOBAL_PW && $GLOBAL_PW != 'shaughvos' ]] && return 0
+				[[ $GLOBAL_PW && $GLOBAL_PW != '1234' ]] && return 0
 
 				G_SHAUGHVOS-NOTIFY 1 'Global software password failed to be read, is empty, or still the default. Asking to set a new one ...'
 			fi
 
 			# Apply default password as fallback if empty
-			[[ $GLOBAL_PW ]] || GLOBAL_PW='shaughvos'
+			[[ $GLOBAL_PW ]] || GLOBAL_PW='1234'
 
 			# In case ask for and apply new valid password
 			/boot/shaughvos/func/shaughvos-set_software password software check || return 1
@@ -1182,12 +1182,6 @@ Available commands:
 		# - ARMv6/7/RISC-V: https://snapcraft.io/microk8s
 		(( $G_HW_ARCH == 3 || $G_HW_ARCH == 10 )) || aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,$G_HW_ARCH]=0
 		#------------------
-		software_id=200
-		aSOFTWARE_NAME[$software_id]='shaughvOS-Dashboard'
-		aSOFTWARE_DESC[$software_id]='(rework beta!) Official lightweight shaughvOS web interface (Rust)'
-		aSOFTWARE_CATX[$software_id]=8
-		aSOFTWARE_DOCS[$software_id]='https://dietpi.com/docs/software/system_stats/#shaughvos-dashboard'
-		#------------------
 		software_id=99
 		aSOFTWARE_NAME[$software_id]='Prometheus Node Exporter'
 		aSOFTWARE_DESC[$software_id]='Prometheus exporter for hardware and OS metrics'
@@ -2152,7 +2146,7 @@ Available commands:
 		G_EXEC mkdir -p /usr/share/applications /var/lib/shaughvos/shaughvos-software/installed/desktop/{icons,wallpapers}
 
 		# Icons
-		G_THREAD_START curl -sSfL 'https://raw.githubusercontent.com/RealEmmettS/shaughvOS-Website/master/images/shaughvos-logo_128x128.png' -o /var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
+		G_THREAD_START curl -sSfL "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/.conf/desktop/icons/shaughvos-icon.png" -o /var/lib/shaughvos/shaughvos-software/installed/desktop/icons/shaughvos-icon.png
 		G_THREAD_START curl -sSfL "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/.conf/desktop/icons/grey_16x16.png" -o /var/lib/shaughvos/shaughvos-software/installed/desktop/icons/grey_16x16.png
 		G_THREAD_START curl -sSfL "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/.conf/desktop/icons/justboom.png" -o /var/lib/shaughvos/shaughvos-software/installed/desktop/icons/justboom.png
 
@@ -3052,7 +3046,7 @@ unix_socket_directories = '/run/postgresql'" > "$i/00shaughvos.conf"
 			G_EXEC mkdir -p /mnt/shaughvos_userdata/beets
 			[[ -f '/mnt/shaughvos_userdata/beets/config.yaml' ]] || G_EXEC eval 'echo -e '\''directory: /mnt/shaughvos_userdata/Music\nlibrary: /mnt/shaughvos_userdata/beets/library.db'\'' > /mnt/shaughvos_userdata/beets/config.yaml'
 
-			# Allow shaughvos user and audio group members to manage library
+			# Allow admin user and audio group members to manage library
 			[[ -f '/mnt/shaughvos_userdata/beets/library.db' ]] || > /mnt/shaughvos_userdata/beets/library.db
 			[[ -f '/mnt/shaughvos_userdata/beets/state.pickle' ]] || > /mnt/shaughvos_userdata/beets/state.pickle
 			# shellcheck disable=SC2015
@@ -3563,7 +3557,7 @@ _EOF_
 			aSTART_SERVICES+=('nxserver')
 		fi
 
-		if To_Install 200 # shaughvOS-Dashboard
+		if To_Install 200 # shaughvOS-Dashboard (removed from catalog — this block is unreachable)
 		then
 			# Grab latest release
 			local release=$(curl -sSfL 'https://api.github.com/repos/nonnorm/shaughvos-dashboard/releases/latest' | grep -Po '"tag_name": *"\K[^"]+')
@@ -3803,8 +3797,8 @@ _EOF_
 			GCI_PASSWORD=1 G_CONFIG_INJECT '"rpc-password"' "    \"rpc-password\": \"{$hash$salt\"," /etc/transmission-daemon/settings.json '^\{$'
 			unset -v hash salt
 
-			# Grant R/W access to and from download managers, media and file servers: Make "shaughvos" the primary group, "debian-transmission" a supplementary group and create downloads with group write mode
-			G_EXEC usermod -g shaughvos -aG debian-transmission debian-transmission
+			# Grant R/W access to and from download managers, media and file servers: Make "admin" the primary group, "debian-transmission" a supplementary group and create downloads with group write mode
+			G_EXEC usermod -g admin -aG debian-transmission debian-transmission
 			G_CONFIG_INJECT '"umask"' '    "umask": 7,' /etc/transmission-daemon/settings.json '^\{$'
 		fi
 
@@ -3840,7 +3834,7 @@ _EOF_
 				reinstall=0
 				dps_index=$software_id Download_Install 'conf' /etc/samba/smb.conf
 				G_CONFIG_INJECT 'max connections =' "	max connections = $(( $G_HW_CPU_CORES * 2 ))" /etc/samba/smb.conf
-				Create_User -g shaughvos -d /mnt/shaughvos_userdata samba
+				Create_User -g admin -d /mnt/shaughvos_userdata samba
 				G_CONFIG_INJECT 'valid users =' '	valid users = samba' /etc/samba/smb.conf
 			fi
 
@@ -4344,7 +4338,7 @@ _EOF_
 				GCI_PRESERVE=1 G_CONFIG_INJECT 'SOFTWARE_PUBLIC_DOMAIN_NAME=' "SOFTWARE_PUBLIC_DOMAIN_NAME=$servername" /boot/shaughvos.txt
 
 				G_WHIP_DEFAULT_ITEM=$(sed -n '/^[[:blank:]]*SOFTWARE_SYNAPSE_USERNAME=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt)
-				[[ $G_WHIP_DEFAULT_ITEM ]] || G_WHIP_DEFAULT_ITEM='shaughvos'
+				[[ $G_WHIP_DEFAULT_ITEM ]] || G_WHIP_DEFAULT_ITEM='admin'
 				G_WHIP_NOCANCEL=1
 				G_WHIP_INPUTBOX 'Please enter the admin username for this homeserver. It will use the default software password.'
 				local username=$G_WHIP_RETURNED_VALUE
@@ -4388,7 +4382,7 @@ _EOF_
 		if To_Install 128 mpd # MPD
 		then
 			# Service
-			# - Run systemd unit as "mpd" user instead of using config file based user change, to preserve supplementary group permissions (i.e. "shaughvos")
+			# - Run systemd unit as "mpd" user instead of using config file based user change, to preserve supplementary group permissions (i.e. "admin")
 			# - Skip environment file so that usage of our config file is assured
 			G_EXEC mkdir -p /etc/systemd/system/mpd.service.d
 			cat << '_EOF_' > /etc/systemd/system/mpd.service.d/shaughvos.conf
@@ -4442,7 +4436,7 @@ _EOF_
 			fi
 
 			# User
-			Create_User -g audio -G shaughvos -d /mnt/shaughvos_userdata/.mpd_cache mpd
+			Create_User -g audio -G admin -d /mnt/shaughvos_userdata/.mpd_cache mpd
 
 			# Dirs
 			# - Move possibly existing audio and playlist files to userdata
@@ -5375,7 +5369,7 @@ _EOF_
 			G_EXEC chown -R mopidy:root /mnt/shaughvos_userdata/mopidy
 
 			# User
-			G_EXEC usermod -g shaughvos -aG audio -d /mnt/shaughvos_userdata/mopidy mopidy
+			G_EXEC usermod -g admin -aG audio -d /mnt/shaughvos_userdata/mopidy mopidy
 
 			# Do not pre-create obsolete cache dir
 			G_EXEC mkdir -p /etc/systemd/system/mopidy.service.d
@@ -5440,8 +5434,8 @@ _EOF_
 			# Remove obsolete service file
 			Remove_SysV minidlna 1
 
-			# User: Make "shaughvos" the primary group to enable cross-access to media files
-			Create_User -g shaughvos -G minidlna -d /var/lib/minidlna minidlna
+			# User: Make "admin" the primary group to enable cross-access to media files
+			Create_User -g admin -G minidlna -d /var/lib/minidlna minidlna
 
 			# Service: Debian patch enforces file logging, overriding "-S": https://github.com/RealEmmettS/shaughvOS/issues/4745
 			cat << '_EOF_' > /etc/systemd/system/minidlna.service
@@ -5608,7 +5602,7 @@ _EOF_"
 			[[ -d '/var/log/deluged' ]] && G_EXEC rm -R /var/log/deluged
 
 			# User
-			Create_User -g shaughvos -G debian-deluged -d /mnt/shaughvos_userdata/deluge debian-deluged
+			Create_User -g admin -G debian-deluged -d /mnt/shaughvos_userdata/deluge debian-deluged
 
 			# Config
 			if [[ ! -f '/mnt/shaughvos_userdata/deluge/.config/deluge/core.conf' ]]
@@ -5794,7 +5788,7 @@ WantedBy=multi-user.target
 _EOF_
 			# DarkIce
 			# - User
-			Create_User -g audio -G shaughvos darkice
+			Create_User -g audio -G admin darkice
 			# - Config
 			[[ -f '/etc/darkice.cfg' ]] || > /etc/darkice.cfg
 			G_EXEC chown darkice:root /etc/darkice.cfg
@@ -6303,7 +6297,7 @@ _EOF_
 			Download_Install "$(curl -sSfL 'https://api.github.com/repos/airsonic-advanced/airsonic-advanced/releases' | grep -Po '"browser_download_url": *"\K[^"]*\/airsonic\.war' | head -1)" /mnt/shaughvos_userdata/airsonic/airsonic.war
 
 			# User
-			Create_User -g shaughvos -G audio -d /mnt/shaughvos_userdata/airsonic airsonic
+			Create_User -g admin -G audio -d /mnt/shaughvos_userdata/airsonic airsonic
 
 			# Service
 			cat << _EOF_ > /etc/systemd/system/airsonic.service
@@ -6350,7 +6344,7 @@ _EOF_
 			G_EXEC mkdir -p /mnt/shaughvos_userdata/navidrome
 
 			# User
-			Create_User -g shaughvos -d /mnt/shaughvos_userdata/navidrome navidrome
+			Create_User -g admin -d /mnt/shaughvos_userdata/navidrome navidrome
 
 			# Config: https://www.navidrome.org/docs/usage/configuration-options/#available-options
 			[[ -f '/mnt/shaughvos_userdata/navidrome/navidrome.toml' ]] || cat << '_EOF_' > /mnt/shaughvos_userdata/navidrome/navidrome.toml
@@ -6462,7 +6456,7 @@ _EOF_
 			G_EXEC mv Kavita /opt/kavita
 
 			# User
-			Create_User -g shaughvos -d /opt/kavita kavita
+			Create_User -g admin -d /opt/kavita kavita
 			G_EXEC chown -R kavita:root /opt/kavita
 
 			# Data
@@ -7583,7 +7577,7 @@ _EOF_"
 			G_EXEC mv {,/mnt/shaughvos_userdata/ubooquity/}Ubooquity.jar
 
 			# User
-			Create_User -G shaughvos -d /mnt/shaughvos_userdata/ubooquity ubooquity
+			Create_User -G admin -d /mnt/shaughvos_userdata/ubooquity ubooquity
 
 			# Data
 			G_EXEC mkdir -p /mnt/shaughvos_userdata/{ebooks,comics}
@@ -7624,7 +7618,7 @@ _EOF_
 			Download_Install "$(curl -sSfL 'https://api.github.com/repos/gotson/komga/releases/latest' | grep -Po '"browser_download_url": *"\K[^"]*\/komga-[^"\/]*\.jar')" /mnt/shaughvos_userdata/komga/komga.jar
 
 			# User
-			Create_User -G shaughvos -d /mnt/shaughvos_userdata/komga komga
+			Create_User -G admin -d /mnt/shaughvos_userdata/komga komga
 
 			# Data
 			G_EXEC mkdir -p /mnt/shaughvos_userdata/{ebooks,comics,komga/.komga}
@@ -8374,7 +8368,7 @@ location = /.well-known/caldav  { return 301 /baikal/html/dav.php; }' > /etc/ngi
 			G_EXEC systemctl stop emby-server
 
 			# User: The DEB package install overrides this, hence the method needs to be changed when using an APT repository!
-			Create_User -g shaughvos -G emby,video,render -d /var/lib/emby emby
+			Create_User -g admin -G emby,video,render -d /var/lib/emby emby
 
 			Download_Test_Media
 		fi
@@ -8399,8 +8393,8 @@ _EOF_'
 			G_AGI plexmediaserver
 			G_EXEC systemctl stop plexmediaserver
 
-			# User: Run service as "shaughvos" group: https://github.com/RealEmmettS/shaughvOS/issues/350#issuecomment-423763518
-			Create_User -g shaughvos -G plex,video,render -d /var/lib/plexmediaserver plex
+			# User: Run service as "admin" group: https://github.com/RealEmmettS/shaughvOS/issues/350#issuecomment-423763518
+			Create_User -g admin -G plex,video,render -d /var/lib/plexmediaserver plex
 			# - Unset explicit group in service file (applied by DEB package) as this may override supplementary group permissions
 			G_EXEC mkdir -p /etc/systemd/system/plexmediaserver.service.d
 			G_EXEC eval 'echo -e '\''[Service]\nGroup='\'' > /etc/systemd/system/plexmediaserver.service.d/shaughvos-group.conf'
@@ -9057,7 +9051,7 @@ _EOF_
 			# Generate and edit config only on fresh installs
 			if [[ ! -f '/mnt/shaughvos_userdata/syncthing/config.xml' ]]
 			then
-				# Failsafe: Assure that "syncthing" (its "shaughvos" group) has permission to create the /mnt/shaughvos_userdata/syncthing directory
+				# Failsafe: Assure that "syncthing" (its "admin" group) has permission to create the /mnt/shaughvos_userdata/syncthing directory
 				G_EXEC chgrp shaughvos /mnt/shaughvos_userdata
 				G_EXEC chmod 'g+rwx' /mnt/shaughvos_userdata
 
@@ -10501,7 +10495,7 @@ MINIO_VOLUMES='/mnt/shaughvos_userdata/minio-data'
 MINIO_OPTS='--address :9004 --console-address :9001'
 
 # Admin username
-MINIO_ROOT_USER='shaughvos'
+MINIO_ROOT_USER='admin'
 
 # Admin password
 MINIO_ROOT_PASSWORD='$minio_pw'
@@ -10654,7 +10648,7 @@ _EOF_
 			then
 				> /home/bd/user.dat
 				G_EXEC chmod 0600 /home/bd/user.dat
-				echo -n "{'v':{'shaughvos':{'name':'shaughvos','pwd':'$GLOBAL_PW','maxUsers':15,'recycle':true,'inactive':1200,'roles':{}}}}" > /home/bd/user.dat
+				echo -n "{'v':{'admin':{'name':'admin','pwd':'$GLOBAL_PW','maxUsers':15,'recycle':true,'inactive':1200,'roles':{}}}}" > /home/bd/user.dat
 			fi
 			[[ -f '/home/bd/drvcnstr.dat' ]] || echo -n '{"v":{"admin":{"roles":["admin"],"urls":["\/*"],"methods":["GET","POST","PUT","PROPFIND","PROPPATCH","MKCOL","DELETE","MOVE","COPY"]}}}' > /home/bd/drvcnstr.dat
 			[[ -f '/home/bd/tuncnstr.dat' ]] || echo -n '{"v":{"TunFullAcc":{"roles":["TunFullAcc"],"urls":["\/*"],"methods":["GET"]}}}' > /home/bd/tuncnstr.dat
@@ -11733,7 +11727,7 @@ _EOF_
 				local extra_args=()
 				(( ${#GLOBAL_PW} < 12 )) && extra_args+=('--minimum-password-length' "${#GLOBAL_PW}")
 				G_EXEC /opt/filebrowser/filebrowser config set -a 0.0.0.0 -p 8084 -r /mnt "${extra_args[@]}"
-				G_EXEC_DESC='Setting up File Browser login user "shaughvos"' G_EXEC /opt/filebrowser/filebrowser users add shaughvos "$GLOBAL_PW" --perm.admin
+				G_EXEC_DESC='Setting up File Browser login user "admin"' G_EXEC /opt/filebrowser/filebrowser users add admin "$GLOBAL_PW" --perm.admin
 			fi
 
 			# Permissions
@@ -16323,7 +16317,7 @@ List of installed software and their online documentation URLs:
 
 			G_WHIP_DEFAULT_ITEM='ok'
 			G_WHIP_YESNO "shaughvOS is now ready to apply your software choices:$tobeinstalled_text$toberemoved_text$summary_text
-\nSoftware details, usernames, passwords etc:\n - https://dietpi.com/docs/software/\n\nWould you like to begin?" || return 0
+\nSoftware details, usernames, passwords etc:\n - https://github.com/RealEmmettS/shaughvOS/wiki\n\nWould you like to begin?" || return 0
 
 			# If due to choice changes only uninstalls are done and it is not the first run setup, skip the install function and call the uninstall function directly.
 			if [[ $G_SHAUGHVOS_INSTALL_STAGE == 2 && ! $tobeinstalled_text ]]

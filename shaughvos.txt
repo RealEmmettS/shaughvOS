@@ -6,11 +6,11 @@
 ##### shaughvOS-Automation settings, applied on first boot of shaughvOS only, ONCE! #####
 #------------------------------------------------------------------------------------------------------
 # Initial user and default software installation password
-# - Sets "root" and "shaughvos" user's login passwords and is used by shaughvos-software as default for software installs which require a password.
+# - Sets "root" and "admin" user's login passwords and is used by shaughvos-software as default for software installs which require a password.
 # - Once applied during first run setup, the password is removed from this file, encrypted and stored to a safer location to be used by shaughvos-software only.
 # - WARN: The default SSH server Dropbear does not support passwords over 100 bytes. Certain special characters, and such with accents, take 2 bytes.
 # - WARN: We cannot guarantee that all software options can handle special characters like $"|\.
-AUTO_SETUP_GLOBAL_PASSWORD=shaughvos
+AUTO_SETUP_GLOBAL_PASSWORD=1234
 
 ##### Language/Regional options #####
 # Locale e.g.: "en_GB.UTF-8" / "de_DE.UTF-8" | One entry and UTF-8 ONLY!
@@ -96,7 +96,7 @@ AUTO_SETUP_BACKUP_RESTORE=0
 AUTO_SETUP_SSH_SERVER_INDEX=-1
 
 # SSH server pubkey
-# - Public key(s) for "root" and "shaughvos" users, which will be added to ~/.ssh/authorized_keys
+# - Public key(s) for "root" and "admin" users, which will be added to ~/.ssh/authorized_keys
 # - Use the same setting multiple times for adding multiple keys.
 # - See SOFTWARE_DISABLE_SSH_PASSWORD_LOGINS below for disabling SSH password logins.
 #AUTO_SETUP_SSH_PUBKEY=ssh-ed25519 AAAAAAAA111111111111BBBBBBBBBBBB222222222222cccccccccccc333333333333 mySSHkey
@@ -125,7 +125,7 @@ AUTO_SETUP_AUTOSTART_TARGET_INDEX=2
 # Autologin user name
 # - This user must exist before first run installs, otherwise it will be reverted to root.
 # - Applies to all autostart options but: 0, 6, 14 and 16
-AUTO_SETUP_AUTOSTART_LOGIN_USER=root
+AUTO_SETUP_AUTOSTART_LOGIN_USER=admin
 
 ##### Non-interactive first run setup #####
 # On first boot, run updates, initial setup, and optional software installs without any user interaction.
@@ -200,8 +200,8 @@ CONFIG_G_CHECK_URL_ATTEMPTS=2
 CONFIG_CHECK_CONNECTION_IP=9.9.9.9
 # - IPv6 address to ping when checking network connectivity. Default: 2620:fe::fe (Quad9 DNS IP)
 CONFIG_CHECK_CONNECTION_IPV6=2620:fe::fe
-# - Domain to resolve when checking DNS resolver. Default: dietpi.com
-CONFIG_CHECK_DNS_DOMAIN=dietpi.com
+# - Domain to resolve when checking DNS resolver. Default: google.com
+CONFIG_CHECK_DNS_DOMAIN=google.com
 
 # Daily check for shaughvOS updates: 0=disable | 1=enable
 # - Checks are done by downloading a file of only 7 bytes.
@@ -304,7 +304,7 @@ SOFTWARE_XORG_DPI=96
 # Chromium
 SOFTWARE_CHROMIUM_RES_X=1280
 SOFTWARE_CHROMIUM_RES_Y=720
-SOFTWARE_CHROMIUM_AUTOSTART_URL=https://dietpi.com/
+SOFTWARE_CHROMIUM_AUTOSTART_URL=https://github.com/RealEmmettS/shaughvOS
 
 # Home Assistant
 # - Optional Python build dependencies and modules, possibly required for certain HA components

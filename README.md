@@ -87,6 +87,15 @@ sudo bash -c "$(curl -sSfL https://raw.githubusercontent.com/RealEmmettS/shaughv
 
 Reboot after installation completes.
 
+## Default Credentials
+
+| Account | Username | Password |
+|---------|----------|----------|
+| **Admin** | `admin` | `1234` |
+| **Root** | `root` | `1234` |
+
+You will be prompted to change both passwords on first boot. The `admin` account has full `sudo` access and is used for desktop autologin.
+
 ## Target Hardware
 
 | Target | Architecture | Image | Notes |
