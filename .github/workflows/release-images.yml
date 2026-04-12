@@ -82,14 +82,14 @@ jobs:
         # Move .img.xz files
         for img in /tmp/shaughvos-build/*.img.xz; do
           [ -f "$img" ] || continue
-          mv "$img" "$GITHUB_WORKSPACE/shaughvOS_${desc}_${version}.img.xz"
+          mv "$img" "$GITHUB_WORKSPACE/shaughvOS_${desc}.img.xz"
           found=1
         done
 
         # Move .iso files (produced by -v all for x86 targets)
         for iso in /tmp/shaughvos-build/*.iso; do
           [ -f "$iso" ] || continue
-          mv "$iso" "$GITHUB_WORKSPACE/shaughvOS_${desc}_Installer_${version}.iso"
+          mv "$iso" "$GITHUB_WORKSPACE/shaughvOS_${desc}_Installer.iso"
           found=1
         done
 

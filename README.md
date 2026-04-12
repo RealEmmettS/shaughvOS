@@ -60,12 +60,12 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 
 | Image | Hardware | How to use | Download |
 |-------|----------|-----------|----------|
-| **Raspberry Pi 2/3/4** | RPi 2, 3, 3B+, 4, 4B (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64_v1.2.0.img.xz) |
-| **Raspberry Pi 5** | RPi 5 (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi5-aarch64_v1.2.0.img.xz) |
-| **Native PC** | PCs, laptops, Intel Macs (x86_64) | Flash to USB with Etcher or Rufus | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_v1.2.0.img.xz) |
-| **Native PC Installer** | PCs, laptops, Intel Macs (x86_64) | Boot from USB, installs to internal drive | [**Download .iso**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_Installer_v1.2.0.iso) |
-| **Virtual Machine** | VirtualBox, VMware, UTM, QEMU | Import as raw disk image | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_v1.2.0.img.xz) |
-| **VM Installer** | VirtualBox, VMware, UTM, QEMU | Boot ISO in VM, installs to virtual disk | [**Download .iso**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer_v1.2.0.iso) |
+| **Raspberry Pi 2/3/4** | RPi 2, 3, 3B+, 4, 4B (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) |
+| **Raspberry Pi 5** | RPi 5 (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi5-aarch64.img.xz) |
+| **Native PC** | PCs, laptops, Intel Macs (x86_64) | Flash to USB with Etcher or Rufus | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64.img.xz) |
+| **Native PC Installer** | PCs, laptops, Intel Macs (x86_64) | Boot from USB, installs to internal drive | [**Download .iso**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_Installer.iso) |
+| **Virtual Machine** | VirtualBox, VMware, UTM, QEMU | Import as raw disk image | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64.img.xz) |
+| **VM Installer** | VirtualBox, VMware, UTM, QEMU | Boot ISO in VM, installs to virtual disk | [**Download .iso**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer.iso) |
 
 > **Which image do I need?**
 > - **Raspberry Pi 2/3/4** share the same image — one download covers all three generations.
