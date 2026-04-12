@@ -16,11 +16,16 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - Clonezilla-based installer ISO generation for x86 targets (NativePC and VM) in release workflow
 - Raspberry Pi 5 added to deployment documentation build targets table
+- Upstream independence rules and release verification checklist in CLAUDE.md
 
 ### Changed
 - Release workflow artifact handling now supports multiple output files per build target
-- README download table updated with ISO links for x86 targets
+- Release image filenames are now version-agnostic (e.g., `shaughvOS_RPi234-aarch64.img.xz`) so download URLs remain stable across releases
+- README download table updated with stable, version-agnostic download links
 - DEPLOYMENT.md updated with complete build target matrix and ISO documentation
+
+### Fixed
+- Replaced leftover DietPi Clonezilla installer backgrounds with shaughvOS-branded images (from `assets/desktop_background.jpg`), fixing x86 ISO build failure
 
 ---
 
