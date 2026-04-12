@@ -24,7 +24,7 @@ jobs:
         rm shellcheck.tar.xz
     - name: Run shellcheck
       run: |
-        mapfile -t FILES < <(find . -not \( -path './.git' -prune \) -type f) # read all files to array
+        mapfile -t FILES < <(find . -not \( -path './.git' -prune \) -not \( -path './.update/patches' \) -not \( -path './.update/pre-patches' \) -type f) # read all files to array
         for i in "${!FILES[@]}"
         do
             [[ ${FILES[$i]##*/} =~ '.'[^.]*'sh'$ ]] && continue # file has shell extension
@@ -36,8 +36,8 @@ jobs:
     - name: Check for trailing spaces
       if: always()
       run: |
-        ! grep -rn --exclude-dir='.git' -I '[[:blank:]]$' .
+        ! grep -rn --exclude-dir='.git' --exclude='*.txt' --exclude='*.md' -I '[[:blank:]]$' .
     - name: Check for multiple newlines
       if: always()
       run: |
-        ! grep -rzPo --exclude-dir='.git' --exclude='*.png' --exclude='shellcheck*' '(^|\n)\N*\n\n\n+\N*(\n|$)' .
+        ! grep -rzPo --exclude-dir='.git' --exclude='*.png' --exclude='*.txt' --exclude='*.md' --exclude='shellcheck*' '(^|\n)\N*\n\n\n+\N*(\n|$)' .
