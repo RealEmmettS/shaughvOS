@@ -130,7 +130,7 @@ Existing devices: run `shaughvos-update` or reboot (auto-checks on boot).
 EOF
 ```
 
-Once the image build workflow completes, attach the `.img.xz` files to the release.
+Once the image build workflow completes, it automatically attaches `.img.xz` and `.iso` files to the release.
 
 ---
 
@@ -147,7 +147,7 @@ Once the image build workflow completes, attach the `.img.xz` files to the relea
 
 | Workflow | File | What it does |
 |----------|------|-------------|
-| Release Images | `release-images.yml` (to be created) | Builds `.img.xz` for RPi 4, x86_64 PC, x86_64 VM |
+| Release Images | `release-images.yml` | Builds `.img.xz` for all targets + Clonezilla `.iso` installers for x86 targets |
 
 ### Manual dispatch
 
@@ -195,10 +195,10 @@ Live patches apply on next boot without a full update cycle.
 
 | Target | Model | Arch | Output |
 |--------|-------|------|--------|
-| Raspberry Pi 4 | `--model 4` | aarch64 | `.img.xz` for SD card |
-| x86_64 PC/Laptop | `--model 21` | x86_64 | `.img.xz` for USB |
-| x86_64 VM | `--model 20` | x86_64 | `.img.xz` for VirtualBox/VMware |
-| Bootable ISO | model 21 + imager | x86_64 | `.iso` via Clonezilla |
+| Raspberry Pi 2/3/4 | `--model 4` | aarch64 | `.img.xz` for SD card |
+| Raspberry Pi 5 | `--model 5` | aarch64 | `.img.xz` for SD card |
+| x86_64 PC/Laptop | `--model 21` | x86_64 | `.img.xz` for USB + `.iso` installer via Clonezilla |
+| x86_64 VM | `--model 20` | x86_64 | `.img.xz` for VirtualBox/VMware + `.iso` installer via Clonezilla |
 
 ### Building locally (WSL2 or Linux host)
 
@@ -252,10 +252,12 @@ shaughvOS v1.1.0
 ## Downloads
 | Platform | File | How to use |
 |----------|------|-----------|
-| Raspberry Pi 4 | shaughvOS_RPi4-aarch64-Trixie.img.xz | Flash to SD card |
-| PC / Laptop | shaughvOS_NativePC-x86_64-Trixie.img.xz | Flash to USB |
-| Virtual Machine | shaughvOS_VM-x86_64-Trixie.img.xz | Import as disk |
-| Bootable ISO | shaughvOS_NativePC-x86_64-Trixie.iso | Write to USB or mount in VM |
+| Raspberry Pi 2/3/4 | shaughvOS_RPi234-aarch64_v1.x.0.img.xz | Flash to SD card |
+| Raspberry Pi 5 | shaughvOS_RPi5-aarch64_v1.x.0.img.xz | Flash to SD card |
+| PC / Laptop | shaughvOS_NativePC-x86_64_v1.x.0.img.xz | Flash to USB |
+| PC / Laptop ISO | shaughvOS_NativePC-x86_64_Installer_v1.x.0.iso | Boot from USB, installs to internal drive |
+| Virtual Machine | shaughvOS_VM-x86_64_v1.x.0.img.xz | Import as disk |
+| VM ISO | shaughvOS_VM-x86_64_Installer_v1.x.0.iso | Boot in VM, installs to virtual disk |
 
 ## What's New
 (from CHANGELOG.md)

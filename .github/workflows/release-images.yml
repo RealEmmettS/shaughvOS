@@ -51,11 +51,12 @@ jobs:
     - name: Build image
       run: |
         # Map target to shaughvos-build arguments
+        variant=''
         case '${{ matrix.target }}' in
           rpi4)   model=4;  desc='RPi234-aarch64';;
           rpi5)   model=5;  desc='RPi5-aarch64';;
-          x86-pc) model=21; desc='NativePC-x86_64';;
-          x86-vm) model=20; desc='VM-x86_64';;
+          x86-pc) model=21; desc='NativePC-x86_64'; variant='-v all';;
+          x86-vm) model=20; desc='VM-x86_64'; variant='-v all';;
         esac
 
         sudo systemctl --now mask ssh ssh.socket systemd-resolved azure-proxy-agent 2>/dev/null || true
@@ -72,19 +73,30 @@ jobs:
         mkdir -p /tmp/shaughvos-build && cd /tmp/shaughvos-build
         sudo bash -c "G_GITOWNER=$GITHUB_REPOSITORY_OWNER G_GITBRANCH=$branch; \
           $(curl -sSf "https://raw.githubusercontent.com/$GITHUB_REPOSITORY_OWNER/shaughvOS/$branch/.build/images/shaughvos-build" || echo false)" \
-          -- -m "$model" -o "$GITHUB_REPOSITORY_OWNER" -b "$branch"
+          -- -m "$model" -o "$GITHUB_REPOSITORY_OWNER" -b "$branch" $variant
 
-        # Find the output image
-        img=$(find /tmp/shaughvos-build -maxdepth 1 -name '*.img.xz' -o -name '*.7z' | head -1)
-        if [ -z "$img" ]; then
+        # Find and rename output images
+        version='${{ needs.prep.outputs.version }}'
+        found=0
+
+        # Move .img.xz files
+        for img in /tmp/shaughvos-build/*.img.xz; do
+          [ -f "$img" ] || continue
+          mv "$img" "$GITHUB_WORKSPACE/shaughvOS_${desc}_${version}.img.xz"
+          found=1
+        done
+
+        # Move .iso files (produced by -v all for x86 targets)
+        for iso in /tmp/shaughvos-build/*.iso; do
+          [ -f "$iso" ] || continue
+          mv "$iso" "$GITHUB_WORKSPACE/shaughvOS_${desc}_Installer_${version}.iso"
+          found=1
+        done
+
+        if [ "$found" -eq 0 ]; then
           echo "::error::No image file produced"
           exit 1
         fi
-
-        # Rename to standard format and move to workspace for upload
-        version='${{ needs.prep.outputs.version }}'
-        mv "$img" "$GITHUB_WORKSPACE/shaughvOS_${desc}_${version}.img.xz" 2>/dev/null || \
-        mv "$img" "$GITHUB_WORKSPACE/shaughvOS_${desc}_${version}.${img##*.}"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4

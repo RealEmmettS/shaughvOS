@@ -11,6 +11,19 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.2.0] — 2026-04-12
+
+### Added
+- Clonezilla-based installer ISO generation for x86 targets (NativePC and VM) in release workflow
+- Raspberry Pi 5 added to deployment documentation build targets table
+
+### Changed
+- Release workflow artifact handling now supports multiple output files per build target
+- README download table updated with ISO links for x86 targets
+- DEPLOYMENT.md updated with complete build target matrix and ISO documentation
+
+---
+
 ## [1.1.0] — 2026-04-12
 
 ### Added

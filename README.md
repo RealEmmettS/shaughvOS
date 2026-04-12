@@ -58,18 +58,22 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 
 ### Download a pre-built image
 
-| Image | Hardware | How to flash | Download |
-|-------|----------|-------------|----------|
-| **Raspberry Pi 2/3/4** | RPi 2, 3, 3B+, 4, 4B (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64_v1.1.0.img.xz) |
-| **Raspberry Pi 5** | RPi 5 (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi5-aarch64_v1.1.0.img.xz) |
-| **Native PC** | PCs, laptops, Intel Macs (x86_64) | Balena Etcher or Rufus to USB | [**Download**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_v1.1.0.img.xz) |
-| **Virtual Machine** | VirtualBox, VMware, UTM, QEMU | Import as raw disk image | [**Download**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_v1.1.0.img.xz) |
+| Image | Hardware | How to use | Download |
+|-------|----------|-----------|----------|
+| **Raspberry Pi 2/3/4** | RPi 2, 3, 3B+, 4, 4B (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64_v1.2.0.img.xz) |
+| **Raspberry Pi 5** | RPi 5 (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi5-aarch64_v1.2.0.img.xz) |
+| **Native PC** | PCs, laptops, Intel Macs (x86_64) | Flash to USB with Etcher or Rufus | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_v1.2.0.img.xz) |
+| **Native PC Installer** | PCs, laptops, Intel Macs (x86_64) | Boot from USB, installs to internal drive | [**Download .iso**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_Installer_v1.2.0.iso) |
+| **Virtual Machine** | VirtualBox, VMware, UTM, QEMU | Import as raw disk image | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_v1.2.0.img.xz) |
+| **VM Installer** | VirtualBox, VMware, UTM, QEMU | Boot ISO in VM, installs to virtual disk | [**Download .iso**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer_v1.2.0.iso) |
 
 > **Which image do I need?**
 > - **Raspberry Pi 2/3/4** share the same image — one download covers all three generations.
 > - **Raspberry Pi 5** requires its own image due to a different bootloader and device tree.
-> - **Native PC** is for booting directly on real hardware via USB (dual-boot or dedicated).
-> - **VM** is for running inside a virtual machine (no hardware boot firmware needed).
+> - **Native PC (.img.xz)** — flash directly to USB with Etcher or Rufus, then boot from it.
+> - **Native PC Installer (.iso)** — boot from USB to launch a guided Clonezilla installer that writes shaughvOS to your internal drive.
+> - **VM (.img.xz)** — import as a raw disk image in your hypervisor.
+> - **VM Installer (.iso)** — boot the ISO in your VM to install shaughvOS to the virtual disk.
 >
 > All images and SHA256 checksums are also available on the [Releases](https://github.com/RealEmmettS/shaughvOS/releases/latest) page.
 
