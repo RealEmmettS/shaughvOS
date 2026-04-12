@@ -1210,6 +1210,36 @@ Available commands:
 		# - ARMv6/RISC-V: https://github.com/louislam/node-sqlite3/releases
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
 		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
+		#------------------
+		software_id=218
+		aSOFTWARE_NAME[$software_id]='TR-300'
+		aSOFTWARE_DESC[$software_id]='QubeTX machine report — system info, CPU/memory/disk graphs'
+		aSOFTWARE_CATX[$software_id]=8
+		aSOFTWARE_DOCS[$software_id]='https://github.com/QubeTX/qube-machine-report'
+		# aarch64 and x86_64 only
+		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
+		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,2]=0
+		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
+		#------------------
+		software_id=219
+		aSOFTWARE_NAME[$software_id]='ND-300'
+		aSOFTWARE_DESC[$software_id]='QubeTX network diagnostics + SpeedQX quad-provider speed test'
+		aSOFTWARE_CATX[$software_id]=8
+		aSOFTWARE_DOCS[$software_id]='https://github.com/QubeTX/qube-network-diagnostics'
+		# aarch64 and x86_64 only
+		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
+		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,2]=0
+		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
+		#------------------
+		software_id=220
+		aSOFTWARE_NAME[$software_id]='SD-300'
+		aSOFTWARE_DESC[$software_id]='QubeTX real-time interactive system diagnostic TUI'
+		aSOFTWARE_CATX[$software_id]=8
+		aSOFTWARE_DOCS[$software_id]='https://github.com/QubeTX/qube-system-diagnostics'
+		# aarch64 and x86_64 only
+		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,1]=0
+		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,2]=0
+		aSOFTWARE_AVAIL_G_HW_ARCH[$software_id,11]=0
 
 		# Remote Access
 		#--------------------------------------------------------------------------------
@@ -3317,6 +3347,165 @@ _EOF_"
 
 			# Composition manager: Xfce has one integrated with xfwm4, which is blocked by xcompmgr, breaking settings and leading to ugly results: https://github.com/MichaIng/DietPi/issues/3665
 			[[ -f '/etc/xdg/autostart/xcompmgr.desktop' ]] && G_EXEC rm /etc/xdg/autostart/xcompmgr.desktop
+
+			# --- shaughvOS theming ---
+
+			# Install Dracula GTK theme
+			if [[ ! -d '/usr/share/themes/Dracula' ]]
+			then
+				Download_Install 'https://github.com/dracula/gtk/archive/master.tar.gz' /tmp/dracula-theme/
+				G_EXEC mv /tmp/dracula-theme/gtk-master /usr/share/themes/Dracula
+				G_EXEC rm -Rf /tmp/dracula-theme
+			fi
+
+			# Install Papirus-Dark icon theme
+			command -v papirus-icon-theme > /dev/null 2>&1 || G_AGI papirus-icon-theme
+
+			# Install shaughvOS fonts (Makira + IBM Plex Mono)
+			G_EXEC mkdir -p /usr/share/fonts/truetype/shaughvos
+			local font_src='/boot/dietpi/../assets/fonts'
+			# If fonts are in the repo assets directory, install from there
+			if [[ -d "$G_GITPATH/assets/fonts/Makira" ]]
+			then
+				G_EXEC cp "$G_GITPATH/assets/fonts/Makira"/*.ttf /usr/share/fonts/truetype/shaughvos/
+				G_EXEC cp "$G_GITPATH/assets/fonts/IBMPlexMono"/*.ttf /usr/share/fonts/truetype/shaughvos/
+			fi
+			G_EXEC fc-cache -f
+
+			# Set wallpaper
+			G_EXEC mkdir -p /usr/share/backgrounds/shaughvos
+			[[ -f "$G_GITPATH/assets/desktop_background.jpg" ]] && G_EXEC cp "$G_GITPATH/assets/desktop_background.jpg" /usr/share/backgrounds/shaughvos/
+
+			# Apply Xfce settings for all users via /etc/xdg defaults
+			G_EXEC mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml
+
+			# GTK theme, icon theme, and font
+			cat << '_EOF_' > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xsettings" version="1.0">
+  <property name="Net" type="empty">
+    <property name="ThemeName" type="string" value="Dracula"/>
+    <property name="IconThemeName" type="string" value="Papirus-Dark"/>
+  </property>
+  <property name="Gtk" type="empty">
+    <property name="FontName" type="string" value="Makira Medium 10"/>
+    <property name="MonospaceFontName" type="string" value="IBM Plex Mono 10"/>
+  </property>
+</channel>
+_EOF_
+
+			# Window manager theme
+			cat << '_EOF_' > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="theme" type="string" value="Dracula"/>
+    <property name="title_font" type="string" value="Makira SemiBold 10"/>
+  </property>
+</channel>
+_EOF_
+
+			# Desktop wallpaper
+			cat << '_EOF_' > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitorscreen" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/shaughvos/desktop_background.jpg"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+    </property>
+  </property>
+</channel>
+_EOF_
+
+			# Xfce Terminal with IBM Plex Mono and Dracula colors
+			G_EXEC mkdir -p /etc/xdg/xfce4/terminal
+			cat << '_EOF_' > /etc/xdg/xfce4/terminal/terminalrc
+[Configuration]
+FontName=IBM Plex Mono 11
+MiscAlwaysShowTabs=FALSE
+MiscBell=FALSE
+MiscBellUrgent=FALSE
+MiscBordersDefault=TRUE
+MiscCursorBlinks=FALSE
+MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
+MiscDefaultGeometry=120x35
+MiscInheritGeometry=FALSE
+MiscMenubarDefault=TRUE
+MiscMouseAutohide=FALSE
+MiscMouseWheelZoom=TRUE
+MiscToolbarDefault=FALSE
+MiscConfirmClose=TRUE
+MiscCycleTabs=TRUE
+MiscTabCloseButtons=TRUE
+MiscTabCloseMiddleClick=TRUE
+MiscTabPosition=GTK_POS_TOP
+MiscHighlightUrls=TRUE
+MiscMiddleClickOpensUri=FALSE
+MiscCopyOnSelect=FALSE
+MiscShowRelaunchDialog=TRUE
+MiscRewrapOnResize=TRUE
+MiscUseShiftArrowsToScroll=FALSE
+MiscSlimTabs=FALSE
+MiscNewTabAdjacent=FALSE
+MiscSearchDialogOpacity=100
+MiscShowUnsafePasteDialog=TRUE
+MiscRightClickAction=TERMINAL_RIGHT_CLICK_ACTION_CONTEXT_MENU
+ScrollingBar=TERMINAL_SCROLLBAR_NONE
+ColorForeground=#f8f8f2
+ColorBackground=#282a36
+ColorCursor=#f8f8f2
+ColorPalette=#21222c;#ff5555;#50fa7b;#f1fa8c;#bd93f9;#ff79c6;#8be9fd;#f8f8f2;#6272a4;#ff6e6e;#69ff94;#ffffa5;#d6acff;#ff92df;#a4ffff;#ffffff
+_EOF_
+
+			# Bottom panel layout
+			cat << '_EOF_' > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <value type="int" value="1"/>
+    <property name="panel-1" type="empty">
+      <property name="position" type="string" value="p=8;x=0;y=0"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="36"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="3"/>
+        <value type="int" value="4"/>
+        <value type="int" value="5"/>
+        <value type="int" value="6"/>
+      </property>
+    </property>
+  </property>
+  <property name="plugins" type="empty">
+    <property name="plugin-1" type="string" value="applicationsmenu"/>
+    <property name="plugin-2" type="string" value="tasklist"/>
+    <property name="plugin-3" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-4" type="string" value="systray"/>
+    <property name="plugin-5" type="string" value="clock"/>
+    <property name="plugin-6" type="string" value="actions"/>
+  </property>
+</channel>
+_EOF_
+
+			# Plymouth boot splash
+			G_AGI plymouth
+			# The theme files are deployed via rootfs overlay at /usr/share/plymouth/themes/shaughvos/
+			# The white logo PNG must be placed there during image build
+			if [[ -d '/usr/share/plymouth/themes/shaughvos' ]]
+			then
+				G_EXEC plymouth-set-default-theme shaughvos
+				G_EXEC update-initramfs -u
+			fi
 		fi
 
 		if To_Install 175 # Xfce Power Manager
@@ -12645,6 +12834,50 @@ WantedBy=multi-user.target
 _EOF_
 			unset -v mnt opt
 		fi
+
+		if To_Install 218 # TR-300
+		then
+			case $G_HW_ARCH in
+				3) local arch='aarch64-unknown-linux-gnu';;
+				*) local arch='x86_64-unknown-linux-gnu';;
+			esac
+			local ver=$(curl -sSfL 'https://api.github.com/repos/QubeTX/qube-machine-report/releases/latest' | grep -Po '"tag_name": *"\K[^"]+')
+			[[ $ver ]] || { ver='v3.8.0'; G_DIETPI-NOTIFY 1 "Automatic latest ${aSOFTWARE_NAME[218]} version detection failed. Version \"$ver\" will be installed as fallback."; }
+			Download_Install "https://github.com/QubeTX/qube-machine-report/releases/download/$ver/tr-300-$arch.tar.xz" /tmp/tr300-extract/
+			[[ -f '/tmp/tr300-extract/tr300' ]] && G_EXEC mv /tmp/tr300-extract/tr300 /usr/local/bin/tr300
+			G_EXEC chmod +x /usr/local/bin/tr300
+			G_EXEC rm -Rf /tmp/tr300-extract
+		fi
+
+		if To_Install 219 # ND-300 + SpeedQX
+		then
+			case $G_HW_ARCH in
+				3) local arch='aarch64-unknown-linux-gnu';;
+				*) local arch='x86_64-unknown-linux-gnu';;
+			esac
+			local ver=$(curl -sSfL 'https://api.github.com/repos/QubeTX/qube-network-diagnostics/releases/latest' | grep -Po '"tag_name": *"\K[^"]+')
+			[[ $ver ]] || { ver='v2.8.0'; G_DIETPI-NOTIFY 1 "Automatic latest ${aSOFTWARE_NAME[219]} version detection failed. Version \"$ver\" will be installed as fallback."; }
+			Download_Install "https://github.com/QubeTX/qube-network-diagnostics/releases/download/$ver/nd-300-$arch.tar.xz" /tmp/nd300-extract/
+			[[ -f '/tmp/nd300-extract/nd300' ]] && G_EXEC mv /tmp/nd300-extract/nd300 /usr/local/bin/nd300
+			[[ -f '/tmp/nd300-extract/speedqx' ]] && G_EXEC mv /tmp/nd300-extract/speedqx /usr/local/bin/speedqx
+			G_EXEC chmod +x /usr/local/bin/nd300
+			[[ -f '/usr/local/bin/speedqx' ]] && G_EXEC chmod +x /usr/local/bin/speedqx
+			G_EXEC rm -Rf /tmp/nd300-extract
+		fi
+
+		if To_Install 220 # SD-300
+		then
+			case $G_HW_ARCH in
+				3) local arch='aarch64-unknown-linux-gnu';;
+				*) local arch='x86_64-unknown-linux-gnu';;
+			esac
+			local ver=$(curl -sSfL 'https://api.github.com/repos/QubeTX/qube-system-diagnostics/releases/latest' | grep -Po '"tag_name": *"\K[^"]+')
+			[[ $ver ]] || { ver='v1.3.0'; G_DIETPI-NOTIFY 1 "Automatic latest ${aSOFTWARE_NAME[220]} version detection failed. Version \"$ver\" will be installed as fallback."; }
+			Download_Install "https://github.com/QubeTX/qube-system-diagnostics/releases/download/$ver/sd-300-$arch.tar.xz" /tmp/sd300-extract/
+			[[ -f '/tmp/sd300-extract/sd300' ]] && G_EXEC mv /tmp/sd300-extract/sd300 /usr/local/bin/sd300
+			G_EXEC chmod +x /usr/local/bin/sd300
+			G_EXEC rm -Rf /tmp/sd300-extract
+		fi
 	}
 
 	# $1: 0=None 23=LXDE 24=MATE 25=Xfce 26=GNUstep 173=LXQt
@@ -14806,6 +15039,22 @@ _EOF_
 			Remove_Service uptime-kuma 1 1
 			G_EXEC rm -Rf /opt/uptime-kuma
 			G_WHIP_BUTTON_CANCEL_TEXT='Skip' G_WHIP_YESNO "Shall all ${aSOFTWARE_NAME[$software_id]} data at /mnt/dietpi_userdata/uptime-kuma be removed as well?" && G_EXEC rm -Rf /mnt/dietpi_userdata/uptime-kuma
+		fi
+
+		if To_Uninstall 218 # TR-300
+		then
+			[[ -f '/usr/local/bin/tr300' ]] && G_EXEC rm /usr/local/bin/tr300
+		fi
+
+		if To_Uninstall 219 # ND-300 + SpeedQX
+		then
+			[[ -f '/usr/local/bin/nd300' ]] && G_EXEC rm /usr/local/bin/nd300
+			[[ -f '/usr/local/bin/speedqx' ]] && G_EXEC rm /usr/local/bin/speedqx
+		fi
+
+		if To_Uninstall 220 # SD-300
+		then
+			[[ -f '/usr/local/bin/sd300' ]] && G_EXEC rm /usr/local/bin/sd300
 		fi
 
 		G_DIETPI-NOTIFY 3 "$G_PROGRAM_NAME" 'Finalising uninstall'

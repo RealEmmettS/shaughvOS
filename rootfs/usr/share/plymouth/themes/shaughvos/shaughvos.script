@@ -1,0 +1,30 @@
+// shaughvOS Plymouth boot splash script
+// Displays the SHAUGHV logo centered on a black background
+
+Window.SetBackgroundTopColor(0, 0, 0);
+Window.SetBackgroundBottomColor(0, 0, 0);
+
+logo.image = Image("shaughvos-logo-white.png");
+logo.sprite = Sprite(logo.image);
+logo.sprite.SetX(Window.GetWidth() / 2 - logo.image.GetWidth() / 2);
+logo.sprite.SetY(Window.GetHeight() / 2 - logo.image.GetHeight() / 2);
+logo.sprite.SetZ(100);
+logo.sprite.SetOpacity(1);
+
+// Progress indicator — simple fade-in effect
+progress = 0;
+
+fun refresh_callback() {
+    if (progress < 1) {
+        progress += 0.02;
+        logo.sprite.SetOpacity(progress);
+    }
+}
+
+Plymouth.SetRefreshFunction(refresh_callback);
+
+// Suppress text messages during boot
+fun message_callback(text) {
+}
+
+Plymouth.SetMessageFunction(message_callback);

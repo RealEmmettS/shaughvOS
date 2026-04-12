@@ -1,39 +1,33 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us improve shaughvOS
 ---
 
-### Creating a bug report/issue
+### Creating a bug report
+
 - [ ] I have searched the existing open and closed issues
 
 #### Required Information
-- DietPi version | `cat /boot/dietpi/.version`
-- Distro version | `echo $G_DISTRO_NAME $G_RASPBIAN`
+- shaughvOS version | `cat /boot/shaughvos/.version`
+- Distro version | `echo $G_DISTRO_NAME`
 - Kernel version | `uname -a`
-- SBC model | `echo $G_HW_MODEL_NAME` or (EG: RPi3)
-- Power supply used | (EG: 5V 1A RAVpower)
-- SD card used | (EG: SanDisk ultra)
+- Hardware | (e.g., RPi 4 4GB, x86_64 laptop, VM)
+- Power supply used | (e.g., 5V 3A USB-C)
 
 #### Additional Information (if applicable)
-- Software title | (EG: Nextcloud)
-- Was the software title installed freshly or updated/migrated?
-- Can this issue be replicated on a fresh installation of DietPi?
-<!-- If you sent a "dietpi-bugreport", please paste the ID here -->
-- Bug report ID | `echo $G_HW_UUID`
+- Software title | (e.g., TR-300, Xfce, Nextcloud)
+- Was the software installed freshly or updated/migrated?
+- Can this issue be replicated on a fresh installation of shaughvOS?
 
 #### Steps to reproduce
-<!-- Explain how to reproduce the issue -->
 1. ...
 2. ...
 
 #### Expected behaviour
-<!-- What SHOULD be happening? -->
 - ...
 
 #### Actual behaviour
-<!-- What IS happening? -->
 - ...
 
 #### Extra details
-<!-- Please post any extra details that might help solve the issue -->
 - ...
