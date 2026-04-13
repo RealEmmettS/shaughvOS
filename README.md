@@ -30,9 +30,17 @@ Whether you're setting up a home server on a Raspberry Pi, diagnosing network is
 
 **Getting started (the easy way):**
 
-1. Download the [VM Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer.iso) (for VirtualBox) or the [Raspberry Pi image](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) (for a Pi).
-2. **For VirtualBox:** Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (free, by Oracle). Create a new VM (Linux > Debian 64-bit, 2 GB RAM, 20 GB disk), attach the ISO, set video memory to 128 MB, and click Start. The desktop loads and the installer walks you through the rest.
-3. **For Raspberry Pi:** Download and install [Balena Etcher](https://etcher.balena.io/) (free, by Balena). Flash the `.img.xz` file to a microSD card, plug it in, and power on. Done.
+1. **For VirtualBox (try it on your computer):**
+   - Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (free, by Oracle) and the [VM Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer.iso).
+   - Open VirtualBox and click **New**. In the wizard, enter a name (like `shaughvOS`), set **Type** to `Linux` and **Version** to `Debian (64-bit)`. Click **Next**.
+   - On the **Hardware** page, set memory to at least `2048 MB` and processors to `2`. Click **Next**.
+   - On the **Virtual Hard Disk** page, select **Create a Virtual Hard Disk Now**, set size to `20 GB` or more. Click **Next**, then **Finish**.
+   - Before starting, click **Settings** > **Storage**, click the empty disc icon under Controller: IDE, click the small disc icon on the right, and choose **Choose a Disk File**. Select the `.iso` you downloaded. Also go to **Display** and set **Video Memory** to `128 MB`.
+   - Click **Start**. The shaughvOS desktop loads and the installer walks you through the rest.
+2. **For Raspberry Pi:**
+   - Download and install [Balena Etcher](https://etcher.balena.io/) (free, by Balena) and the [Raspberry Pi image](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz).
+   - Open Etcher, select the `.img.xz` file, select your microSD card, and click **Flash**.
+   - Plug the microSD into your Pi and power it on. Done.
 4. Default login: username `admin`, password `1234` (you'll be asked to change it on first boot).
 
 ### For Technicians & IT Professionals
