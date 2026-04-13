@@ -31,7 +31,7 @@ After tagging and pushing a new release:
 
 ### Deployment & Releases
 See `DEPLOYMENT.md` for the complete release process. Key points:
-- **Versioning:** `CORE.SUB.RC` in `.update/version` (currently v1.0.0)
+- **Versioning:** `CORE.SUB.RC` in `.update/version` (currently v1.5.0)
 - **Changelog:** Update `CHANGELOG.md` with every release — move `[Unreleased]` to a dated version section
 - **Release flow:** `dev` -> `master` -> tag `v1.x.0` -> GitHub Release with image artifacts
 - **OTA updates:** Push to `master` with bumped `.update/version` — devices auto-detect via `raw.githubusercontent.com`
@@ -156,4 +156,4 @@ Three tools in `.build/images/`:
 
 ## Current Version
 
-shaughvOS v1.0.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.5.0 (`.update/version`). Minimum Debian version: 7+.

@@ -675,10 +675,11 @@ _EOF_
 			# Remove loop device
 			Delete_Loopback
 
-			# For the sake of privacy, remove some non vital files that contain SNs and UUIDs
-			G_EXEC rm -f "tmpiso/home/partimag/$OUTPUT_IMG_NAME/"{Info*txt,*list,clonezilla-img}
+			# For the sake of privacy, remove hardware info files that contain SNs and UUIDs
+			# Keep clonezilla-img (image descriptor) and *list files (dev-fs.list, blkid.list, etc.) as they are required for restore
+			G_EXEC rm -f "tmpiso/home/partimag/$OUTPUT_IMG_NAME/"Info*txt
 
-			# Check image
+			# Check image (must run after privacy cleanup to verify the image is still restorable)
 			G_EXEC_DESC='Checking Clonezilla image' G_EXEC_OUTPUT=1 G_EXEC ocs-chkimg -or "$PWD/tmpiso/home/partimag" --nogui -b "$OUTPUT_IMG_NAME"
 
 			### Prepare custom files used by the installer when booting in UEFI mode ###
@@ -715,8 +716,14 @@ _EOF_
 				-e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' -e 's/ocs-live-general/ocs-live-restore/' \
 				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p poweroff restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
 				-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/' tmpiso/boot/grub/grub.cfg
+			# Add a direct Live boot entry (same Safe graphic base, but keep ocs-live-general mode)
+			{
+				echo 'menuentry "shaughvOS Live" {'
+				sed -n '/menuentry .*Safe graphic/,/}/s/^  //p' tmpiso/boot/grub/clonezilla.cfg
+				echo '}'
+			} >> tmpiso/boot/grub/grub.cfg
 			cat << '_EOF_' >> tmpiso/boot/grub/grub.cfg
-submenu "shaughvOS Live" { configfile /boot/grub/clonezilla.cfg }
+submenu "Advanced options" { configfile /boot/grub/clonezilla.cfg }
 menuentry "Power off" { halt }
 _EOF_
 			### Prepare custom files used by the installer when booting in BIOS/CSM mode ###
@@ -733,8 +740,13 @@ _EOF_
 				-e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' -e 's/ocs-live-general/ocs-live-restore/' \
 				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p poweroff restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
 				-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/' tmpiso/syslinux/syslinux.cfg
+			# Add a direct Live boot entry (same framebuffer base, keeping ocs-live-general mode)
+			sed -n '/^label .*framebuffer/,/ENDTEXT/p' tmpiso/syslinux/clonezilla.cfg | \
+				sed -e '/^label /c\label shaughvOS Live' -e '/^  MENU LABEL /c\  MENU LABEL shaughvOS Live' \
+					-e '/^  TEXT HELP/,/^  ENDTEXT/d' \
+					-e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' >> tmpiso/syslinux/syslinux.cfg
 			cat << '_EOF_' >> tmpiso/syslinux/syslinux.cfg
-MENU BEGIN shaughvOS Live
+MENU BEGIN Advanced options
   INCLUDE clonezilla.cfg
 MENU END
 label Power off

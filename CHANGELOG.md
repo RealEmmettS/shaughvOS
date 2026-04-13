@@ -11,6 +11,16 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.5.0] — 2026-04-12
+
+### Fixed
+- **CRITICAL**: Fixed Clonezilla ISO installer failing to restore disk image — the imager was deleting critical image metadata files (`clonezilla-img`, `dev-fs.list`, `blkid.list`) "for privacy," causing partclone restore errors and immediate shutdown on first boot in VirtualBox. The `ocs-chkimg` verification ran before the deletion, masking the breakage during build. Now only removes hardware info files (`Info*txt`) while preserving all structural files needed for restore.
+
+### Changed
+- "shaughvOS Live" boot option now boots directly into the live environment instead of dumping users into the raw Clonezilla menu with confusing internal options (graphics modes, memtest, etc.). Original Clonezilla options moved to "Advanced options" submenu for both GRUB and SYSLINUX boot modes.
+
+---
+
 ## [1.4.0] — 2026-04-12
 
 ### Fixed
