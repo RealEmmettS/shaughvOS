@@ -665,7 +665,7 @@ _EOF_
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/settings.conf" -o "$live_root/etc/calamares/settings.conf"
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/branding/shaughvos/branding.desc" -o "$live_root/etc/calamares/branding/shaughvos/branding.desc"
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/shaughv-logo.svg" -o "$live_root/etc/calamares/branding/shaughvos/shaughv-logo.svg"
-			for f in unpackfs.conf bootloader.conf finished.conf users.conf partition.conf welcome.conf; do
+			for f in unpackfs.conf bootloader.conf finished.conf users.conf partition.conf welcome.conf services-systemd.conf shellprocess.conf; do
 				G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/modules/$f" -o "$live_root/etc/calamares/modules/$f"
 			done
 
@@ -724,7 +724,7 @@ AUTOLOGIN
 			umount "$live_root/run" "$live_root/sys" "$live_root/proc" "$live_root/dev" 2>/dev/null || true
 			G_EXEC_DESC='Creating squashfs filesystem (this takes several minutes)' G_EXEC_OUTPUT=1 G_EXEC mksquashfs \
 				"$live_root" tmpiso/live/filesystem.squashfs \
-				-e boot -comp zstd -Xcompression-level 15 -no-exports -noappend
+				-comp zstd -Xcompression-level 15 -no-exports -noappend
 
 			### Step 9: Unmount and clean up temporary image ###
 			G_EXEC umount "$live_root"

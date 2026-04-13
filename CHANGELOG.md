@@ -11,6 +11,19 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.8.3] — 2026-04-13
+
+### Fixed
+- **CRITICAL**: Fixed installed system having no kernel, initrd, or shaughvOS scripts — `mksquashfs` was run with `-e boot` which excluded the entire `/boot` directory from the squashfs. Calamares extracted an empty `/boot`, leaving the installed system unbootable and missing all shaughvOS tools. Removed the exclusion flag.
+- Fixed disabled services (preboot, postboot, ramlog) persisting to the installed system — added Calamares `services-systemd` module config to re-enable these services during installation. They are disabled in the live session only.
+- Fixed NOPASSWD sudo and live-session autologin config persisting to the installed system — added Calamares `shellprocess` module to remove live-only artifacts (`/etc/sudoers.d/live-admin`, `/etc/lightdm/lightdm.conf.d/shaughvos-autologin.conf`) after extraction.
+
+### Added
+- Calamares `services-systemd.conf` — re-enables shaughvos-preboot, shaughvos-postboot, and shaughvos-ramlog on the installed system.
+- Calamares `shellprocess.conf` — post-install cleanup of live-session-only artifacts.
+
+---
+
 ## [1.8.2] — 2026-04-13
 
 ### Fixed
