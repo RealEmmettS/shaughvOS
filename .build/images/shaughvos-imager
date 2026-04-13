@@ -656,8 +656,8 @@ _EOF_
 			G_EXEC mount -t tmpfs tmpfs "$live_root/run"
 			# Ensure DNS works inside chroot
 			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
-			G_EXEC_DESC='Installing live-boot and Calamares' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd'
+			G_EXEC_DESC='Installing live-boot, Calamares, and LightDM' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
+				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter'
 
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
@@ -707,6 +707,8 @@ autologin-user=admin
 autologin-session=xfce
 AUTOLOGIN
 			chroot "$live_root" systemctl enable lightdm 2>/dev/null || true
+			# Belt and suspenders: create the display-manager symlink directly in case systemctl enable failed in chroot
+			ln -sf /lib/systemd/system/lightdm.service "$live_root/etc/systemd/system/display-manager.service"
 
 			### Step 6: Create staging directory for ISO ###
 			G_SHAUGHVOS-NOTIFY 2 'Creating ISO staging directory'

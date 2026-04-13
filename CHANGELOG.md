@@ -11,6 +11,15 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.8.5] — 2026-04-13
+
+### Fixed
+- **CRITICAL**: Fixed live ISO booting to CLI instead of Xfce desktop — lightdm (display manager) was never installed in the ISO. The base image uses `exec startx` for root's desktop autologin and doesn't need lightdm, but the live session runs as admin (non-root) and requires it. Added `lightdm` and `lightdm-gtk-greeter` to the imager's package install step.
+- **CRITICAL**: Also create the `display-manager.service` symlink directly during ISO build as a reliability measure, in case `systemctl enable lightdm` fails inside the chroot environment.
+- Fixed `desktop` command returning "Permission denied" — the script was tracked in git as non-executable (`100644`) due to being created on Windows. Changed to `100755`.
+
+---
+
 ## [1.8.4] — 2026-04-13
 
 ### Fixed
