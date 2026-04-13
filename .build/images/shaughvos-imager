@@ -46,7 +46,6 @@
 	# Import shaughvOS-Globals ---------------------------------------------------------------
 
 	readonly FP_MNT_TMP="/tmp/${G_PROGRAM_NAME}_mnt"
-	readonly CLONEZILLA_REPO='https://sourceforge.net/projects/clonezilla/files/clonezilla_live_stable'
 	readonly SHAUGHVOS_REPO="https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH"
 
 	Error_Exit()
@@ -232,16 +231,16 @@
 
 		G_WHIP_MENU_ARRAY=(
 			'dd'         ': Create an .img file to flash to target system drive directly.'
-			'Clonezilla' ': Create an installer .iso file to boot from removeable media. (x86_64 only!)'
+			'Clonezilla' ': Create a live installer .iso with Calamares. (x86_64 only!)'
 		)
 		G_WHIP_DEFAULT_ITEM=$CLONING_TOOL
 		G_WHIP_MENU 'Please select which cloning tool to use:
  - dd: A regular system image is created which must be flashed to the target system drive directly.
 	This can be compared with regular SD card images like Raspbian Lite or Armbian ones.
 	Usually those can be flashed to and booted from eMMC as well.
- - Clonezilla: An installer ISO image is created which must be flashed to an external/USB/removeable drive.
-	Boot from the external drive will launch Clonezilla and allow you to install shaughvOS to any internal drive.
-	This is required e.g. for UEFI images.
+ - Clonezilla: A live installer ISO is created with the Calamares installer.
+	Boot from the external drive to try shaughvOS live or install to any internal drive.
+	Calamares handles partitioning and GRUB installation for the target hardware.
 	NB: Only compatible with x86_64 systems!' || return
 		CLONING_TOOL=$G_WHIP_RETURNED_VALUE
 		[[ $CLONING_TOOL == 'dd' ]] && OUTPUT_IMG_EXT='img' || OUTPUT_IMG_EXT='iso'
@@ -388,14 +387,13 @@
 		(( $SKIP_ARCHIVE )) || deps+=('xz-utils')
 		if [[ $CLONING_TOOL == 'Clonezilla' ]]
 		then
-			deps+=('clonezilla' 'unzip' 'parted' 'partclone' 'syslinux-common' 'xorriso' 'isolinux')
+			deps+=('squashfs-tools' 'xorriso' 'isolinux' 'syslinux-common' 'syslinux-efi' 'grub-pc-bin' 'grub-efi-amd64-bin' 'mtools' 'dosfstools')
 
 		elif [[ $PART_TABLE_TYPE == 'gpt' ]]
 		then
 			deps+=('gdisk')
 		fi
 		G_AGI "${deps[@]}"
-		[[ -f 'clonezilla.deb' ]] && G_EXEC rm clonezilla.deb
 
 		# Shrink last filesystem to minimum
 		# - resize2fs: "Please run 'e2fsck -f /dev/loop0p1' first."
@@ -628,155 +626,192 @@ _EOF_
 			G_SHAUGHVOS-NOTIFY 2 "Creating final image with actually used size: $(( $IMAGE_SIZE / 1024**2 + 1 )) MiB"
 			G_EXEC_OUTPUT=1 G_EXEC dd if="$FP_SOURCE" of="$FP_FINAL" bs=1M status=progress count=$(( $IMAGE_SIZE / 1024**2 + 1 ))
 
-		# Clonezilla target
+		# Live ISO installer target (replaces Clonezilla)
+		# Uses live-boot + Calamares for proper hardware-specific GRUB installation
 		else
-			G_SHAUGHVOS-NOTIFY 2 'Creating final image with Clonezilla'
-
-			# Get latest version of Clonezilla Live
-			CLONEZILLA_VERSION=$(curl -sSf "$CLONEZILLA_REPO/" | mawk -F\" '/class="folder "/{print $2}' | head -1)
-			[[ $CLONEZILLA_VERSION ]] || Error_Exit 'Could not retrieve latest Clonezilla Live version string'
-			CLONEZILLA_URL="$CLONEZILLA_REPO/$CLONEZILLA_VERSION/clonezilla-live-$CLONEZILLA_VERSION-amd64.zip/download"
-
-			# Check for sufficient free disk space to store the bundled Clonezilla Live + shaughvOS directory and ISO with 100 MiB buffer
-			# - Get Clonezilla Live ISO size, which matches sufficiently well the unpacked archive: Remove trailing carriage return
-			CLONEZILLA_SIZE=$(curl -sSfIL "${CLONEZILLA_URL/amd64.zip/amd64.iso}" | mawk '/^[Cc]ontent-[Ll]ength:/{print $2}' | tail -1); CLONEZILLA_SIZE=${CLONEZILLA_SIZE%$'\r'}
-			(( $CLONEZILLA_SIZE )) || Error_Exit 'Could not retrieve Clonezilla Live size'
-			NEEDED_FREE_SPACE=$(( ( $CLONEZILLA_SIZE + $IMAGE_SIZE * 20/100 ) * 2 / 1024**2 + 100 )) REMOVE_IMG=0
-			# If free space is insufficient and the source is an image on the same filesystem, check whether it fits when we remove the source image before generating the ISO
-			if ! G_CHECK_FREESPACE . "$NEEDED_FREE_SPACE"
-			then
-				[[ $FP_SOURCE_IMG && $(findmnt -Ufnro TARGET -T "$FP_SOURCE_IMG") == $(findmnt -Ufnro TARGET -T .) ]] || exit 1
-				G_SHAUGHVOS-NOTIFY 2 'Insufficient free space for ISO directory + file, checking whether it would be sufficient after removing source image file ...'
-				G_CHECK_FREESPACE . $(( $NEEDED_FREE_SPACE - $IMAGE_SIZE / 1024**2 )) || exit 1
-				REMOVE_IMG=1
-			fi
-
-			# Download
-			G_EXEC_DESC="Downloading Clonezilla Live v$CLONEZILLA_VERSION" G_EXEC_OUTPUT=1 G_EXEC curl -fL "$CLONEZILLA_URL" -o clonezilla.zip
-
-			# Extract
+			G_SHAUGHVOS-NOTIFY 2 'Creating live installer ISO with Calamares'
+			local live_root='/tmp/shaughvos-live-rootfs'
 			[[ -e 'tmpiso' ]] && G_EXEC rm -R tmpiso
-			G_EXEC unzip clonezilla.zip -d 'tmpiso'
-			G_EXEC rm clonezilla.zip
 
-			# Clone disk
-			G_EXEC mkdir -p tmpiso/home/partimag
-			# -q2: use partclone (default)
-			# -z5p: multi-threaded xz-compression
-			# -j2: save data between MBR and first partition, e.g. bootloader
-			# -b: batch mode: no ocs prompts
-			# --nogui: no partclone TUI
-			# -fsck-y: auto check+repair source before cloning
-			# -i 4096: split image to max 4 GiB volumes
-			# -senc: do not encrypt image
-			# -sc: skip check if image is restorable
-			G_EXEC_DESC='Cloning disk with Clonezilla' G_EXEC_OUTPUT=1 G_EXEC ocs-sr -or "$PWD/tmpiso/home/partimag" --nogui -fsck-y -q2 -b -j2 -z5p -i 4096 -senc -sc savedisk "$OUTPUT_IMG_NAME" "${FP_SOURCE##*/}"
+			### Step 1: Mount the source .img and prepare root filesystem ###
+			G_SHAUGHVOS-NOTIFY 2 'Mounting source image'
+			G_EXEC mkdir -p "$live_root"
+			G_EXEC mount "$FP_ROOT_DEV" "$live_root"
 
-			# Remove loop device
+			### Step 2: Install live-boot + Calamares into the root filesystem ###
+			G_SHAUGHVOS-NOTIFY 2 'Installing live-boot and Calamares into root filesystem'
+			G_EXEC mount --bind /dev "$live_root/dev"
+			G_EXEC mount --bind /proc "$live_root/proc"
+			G_EXEC mount --bind /sys "$live_root/sys"
+			G_EXEC mount -t tmpfs tmpfs "$live_root/run"
+			# Ensure DNS works inside chroot
+			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
+			G_EXEC_DESC='Installing live-boot and Calamares' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
+				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd'
+
+			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
+			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
+			G_EXEC mkdir -p "$live_root/etc/calamares/branding/shaughvos" "$live_root/etc/calamares/modules"
+			for f in settings.conf; do
+				G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/$f" -o "$live_root/etc/calamares/$f"
+			done
+			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/branding/shaughvos/branding.desc" -o "$live_root/etc/calamares/branding/shaughvos/branding.desc"
+			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/shaughv-logo.svg" -o "$live_root/etc/calamares/branding/shaughvos/shaughv-logo.svg"
+			for f in unpackfs.conf bootloader.conf finished.conf users.conf partition.conf welcome.conf; do
+				G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/modules/$f" -o "$live_root/etc/calamares/modules/$f"
+			done
+
+			### Step 4: Add Calamares desktop autostart + shortcut ###
+			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/calamares-installer.desktop" -o "$live_root/etc/xdg/autostart/calamares-installer.desktop"
+			G_EXEC mkdir -p "$live_root/usr/share/applications"
+			G_EXEC cp "$live_root/etc/xdg/autostart/calamares-installer.desktop" "$live_root/usr/share/applications/"
+
+			### Step 5: Install Node.js/npm and Claude Code CLI ###
+			G_SHAUGHVOS-NOTIFY 2 'Installing Node.js, npm, and Claude Code CLI'
+			G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
+				'apt-get install -y --no-install-recommends nodejs npm && curl -fsSL https://claude.ai/install.sh | bash || true'
+
+			### Step 6: Create staging directory for ISO ###
+			G_SHAUGHVOS-NOTIFY 2 'Creating ISO staging directory'
+			mkdir -p tmpiso/{live,isolinux,boot/grub/x86_64-efi,EFI/BOOT}
+
+			### Step 7: Copy kernel + initramfs from the root filesystem ###
+			G_SHAUGHVOS-NOTIFY 2 'Extracting kernel and initramfs'
+			# shellcheck disable=SC2086
+			cp "$live_root"/boot/vmlinuz-* tmpiso/live/vmlinuz
+			# shellcheck disable=SC2086
+			cp "$live_root"/boot/initrd.img-* tmpiso/live/initrd
+
+			### Step 8: Create squashfs of the root filesystem ###
+			# Unmount bind mounts before squashfs creation
+			umount "$live_root/run" "$live_root/sys" "$live_root/proc" "$live_root/dev" 2>/dev/null || true
+			G_EXEC_DESC='Creating squashfs filesystem (this takes several minutes)' G_EXEC_OUTPUT=1 G_EXEC mksquashfs \
+				"$live_root" tmpiso/live/filesystem.squashfs \
+				-e boot -comp zstd -Xcompression-level 15 -no-exports -noappend
+
+			### Step 9: Unmount source image ###
+			G_EXEC umount "$live_root"
 			Delete_Loopback
+			G_EXEC rmdir "$live_root"
 
-			# For the sake of privacy, remove hardware info files that contain SNs and UUIDs
-			# Keep clonezilla-img (image descriptor) and *list files (dev-fs.list, blkid.list, etc.) as they are required for restore
-			G_EXEC rm -f "tmpiso/home/partimag/$OUTPUT_IMG_NAME/"Info*txt
-
-			# Check image (must run after privacy cleanup to verify the image is still restorable)
-			G_EXEC_DESC='Checking Clonezilla image' G_EXEC_OUTPUT=1 G_EXEC ocs-chkimg -or "$PWD/tmpiso/home/partimag" --nogui -b "$OUTPUT_IMG_NAME"
-
-			### Prepare custom files used by the installer when booting in UEFI mode ###
-			# Create a GRUB theme for the main menu
+			### Step 10: Create GRUB config for UEFI boot ###
+			# Download shaughvOS background for boot menu
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/.build/images/Clonezilla/shaughvos-background_768p.png" -o tmpiso/boot/grub/shaughvosbg.png
-			G_EXEC curl -sSf "$SHAUGHVOS_REPO/.build/images/Clonezilla/select_bkg_c.png" -o tmpiso/boot/grub/select_bkg_c.png
-			cat << '_EOF_' > tmpiso/boot/grub/theme.txt
-title-text: ""
-desktop-image: "shaughvosbg.png"
-desktop-image-scale-method: "crop"
-terminal-font: "Unifont Regular 16"
-terminal-width: "100%"
-terminal-height: "100%"
-message-color: "#ffffff"
-+ boot_menu {
-    width = 60%
-    height = 80%
-    item_spacing = 10
-    item_color = "#000000"
-    selected_item_color = "#ffffff"
-    selected_item_pixmap_style = "select_bkg_*.png"
-}
-_EOF_
-			# Replace Clonezilla boot menu with an intelligent shaughvOS installer menu
-			# that auto-detects an existing installation and boots from it.
-			G_EXEC mv tmpiso/boot/grub/{grub,clonezilla}.cfg
-			# Extract preamble (everything before the first menuentry)
-			sed '/^menuentry /,$d' tmpiso/boot/grub/clonezilla.cfg > tmpiso/boot/grub/grub.cfg
-			# Apply preamble settings: theme
-			# shellcheck disable=SC2016
-			sed --follow-symlinks -i -e '/^set timeout=/d' -e '/^set pref=/a\set theme=$pref/theme.txt' tmpiso/boot/grub/grub.cfg
-			# Auto-detect installed shaughvOS: if found, default to booting it with
-			# a 5-second timeout; if not found, show install menu and wait for user.
-			# "Boot shaughvOS" chainloads the installed OS's GRUB config.
-			cat << '_EOF_' >> tmpiso/boot/grub/grub.cfg
-search --set=installed --no-floppy --file /boot/shaughvos/.hw_model
-if [ -n "$installed" ]; then
-    set default="Boot shaughvOS"
-    set timeout=5
-else
-    set timeout=-1
+			cat << '_EOF_' > tmpiso/boot/grub/grub.cfg
+insmod all_video
+insmod gfxterm
+insmod png
+
+set gfxmode=auto
+set gfxpayload=keep
+terminal_output gfxterm
+
+if background_image /boot/grub/shaughvosbg.png; then
+    true
 fi
-menuentry "Boot shaughvOS" {
-    search --set=root --no-floppy --file /boot/shaughvos/.hw_model
-    configfile /boot/grub/grub.cfg
+
+set default=0
+set timeout=30
+set menu_color_normal=white/black
+set menu_color_highlight=white/dark-gray
+
+menuentry "Install shaughvOS" {
+    search --no-floppy --set=root --label SHAUGHVOS
+    linux ($root)/live/vmlinuz boot=live quiet splash
+    initrd ($root)/live/initrd
+}
+menuentry "shaughvOS Live" {
+    search --no-floppy --set=root --label SHAUGHVOS
+    linux ($root)/live/vmlinuz boot=live nomodeset quiet splash
+    initrd ($root)/live/initrd
+}
+menuentry "Power off" {
+    halt
 }
 _EOF_
-			# Add "Install shaughvOS" entry (Safe graphic base, modified for restore mode)
-			# -icds: skip disk size check before creating partition table
-			# -k1: resize partition after creation
-			# -r: resize filesystem after partition resize
-			# -e2: use CHS geometry info from EDD for partition creation with sfdisk
-			{
-				echo 'menuentry "Install shaughvOS" {'
-				sed -n '/menuentry .*Safe graphic/,/}/s/^  //p' tmpiso/boot/grub/clonezilla.cfg | \
-					sed -e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' -e 's/ocs-live-general/ocs-live-restore/' \
-						-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p reboot restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
-						-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/'
-				echo '}'
-				echo 'menuentry "Power off" { halt }'
-			} >> tmpiso/boot/grub/grub.cfg
-			### Prepare custom files used by the installer when booting in BIOS/CSM mode ###
-			# Replace Clonezilla syslinux menu with an intelligent shaughvOS installer menu
-			G_EXEC curl -sSf "$SHAUGHVOS_REPO/.build/images/Clonezilla/shaughvos-background_480p.png" -o tmpiso/syslinux/shaughvosbg.png
-			G_EXEC cp /usr/lib/syslinux/modules/bios/poweroff.c32 tmpiso/syslinux/
-			G_EXEC cp /usr/lib/syslinux/modules/bios/chain.c32 tmpiso/syslinux/
-			G_EXEC mv tmpiso/syslinux/{syslinux,clonezilla}.cfg
-			sed '/^label /,$d' tmpiso/syslinux/clonezilla.cfg > tmpiso/syslinux/syslinux.cfg
-			sed -n '/^label .*framebuffer/,/ENDTEXT/p' tmpiso/syslinux/clonezilla.cfg >> tmpiso/syslinux/syslinux.cfg
-			sed --follow-symlinks -i  -e '/^timeout /c\timeout 0' -e 's|\(MENU BACKGROUND\) .*|\1 shaughvosbg.png|' -e '/^MENU TITLE /c\MENU TABMSG' \
-				-e '/menu title/d' -e '/^say /d' -e '/MENU MARGIN/a\MENU HSHIFT 80\nPROMPT 1\n MENU COLOR BORDER 0 #00000000 #00000000 none' \
-				-e '/^label /c\label Install shaughvOS' -e '/^  MENU LABEL /c\  MENU LABEL Install shaughvOS' -e '/^  TEXT HELP/,/^  ENDTEXT/d' \
-				-e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' -e 's/ocs-live-general/ocs-live-restore/' \
-				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p reboot restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
-				-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/' \
-				-e '/^  MENU LABEL Install/a\  MENU DEFAULT' tmpiso/syslinux/syslinux.cfg
-			cat << '_EOF_' >> tmpiso/syslinux/syslinux.cfg
-label Boot shaughvOS
-  MENU LABEL Boot shaughvOS
-  COM32 chain.c32
-  APPEND hd0
-label Power off
+			G_EXEC cp tmpiso/boot/grub/grub.cfg tmpiso/EFI/BOOT/grub.cfg
+
+			### Step 11: Create embedded GRUB config for EFI ###
+			cat << '_EOF_' > /tmp/grub-embed.cfg
+if ! [ -d "$cmdpath" ]; then
+    if regexp --set=1:isodevice '^(\([^)]+\))\/?[Ee][Ff][Ii]\/[Bb][Oo][Oo][Tt]\/?$' "$cmdpath"; then
+        cmdpath="${isodevice}/EFI/BOOT"
+    fi
+fi
+configfile "${cmdpath}/grub.cfg"
+_EOF_
+
+			### Step 12: Create isolinux config for BIOS boot ###
+			# Download shaughvOS background for BIOS boot menu
+			G_EXEC curl -sSf "$SHAUGHVOS_REPO/.build/images/Clonezilla/shaughvos-background_480p.png" -o tmpiso/isolinux/shaughvosbg.png
+			cat << '_EOF_' > tmpiso/isolinux/isolinux.cfg
+UI vesamenu.c32
+
+MENU TITLE shaughvOS
+MENU BACKGROUND shaughvosbg.png
+DEFAULT install
+TIMEOUT 300
+
+MENU COLOR border       30;44   #40ffffff #a0000000 std
+MENU COLOR title        1;36;44 #9033ccff #a0000000 std
+MENU COLOR sel          7;37;40 #e0ffffff #20ffffff all
+MENU COLOR unsel        37;44   #50ffffff #a0000000 std
+
+LABEL install
+  MENU LABEL Install shaughvOS
+  MENU DEFAULT
+  KERNEL /live/vmlinuz
+  APPEND initrd=/live/initrd boot=live quiet splash
+
+LABEL live
+  MENU LABEL shaughvOS Live
+  KERNEL /live/vmlinuz
+  APPEND initrd=/live/initrd boot=live nomodeset quiet splash
+
+LABEL poweroff
   MENU LABEL Power off
   COM32 poweroff.c32
 _EOF_
-			G_EXEC cp tmpiso/syslinux/{syslinux,isolinux}.cfg
 
-			# Removing source image if required
-			(( $REMOVE_IMG )) && G_EXEC rm "$FP_SOURCE_IMG"
+			### Step 13: Copy boot loader files ###
+			G_SHAUGHVOS-NOTIFY 2 'Setting up boot loaders'
+			G_EXEC cp /usr/lib/ISOLINUX/isolinux.bin tmpiso/isolinux/
+			G_EXEC cp /usr/lib/syslinux/modules/bios/* tmpiso/isolinux/
+			G_EXEC cp -r /usr/lib/grub/x86_64-efi/* tmpiso/boot/grub/x86_64-efi/
 
-			# Generate ISO file with Clonezilla Live + shaughvOS image
+			### Step 14: Create EFI boot image ###
+			G_EXEC_DESC='Creating EFI boot image' G_EXEC_OUTPUT=1 G_EXEC grub-mkstandalone -O x86_64-efi \
+				--modules='part_gpt part_msdos fat iso9660' \
+				--locales='' --themes='' --fonts='' \
+				--output=tmpiso/EFI/BOOT/BOOTx64.EFI \
+				"boot/grub/grub.cfg=/tmp/grub-embed.cfg"
+			G_EXEC rm /tmp/grub-embed.cfg
+			(
+				cd tmpiso
+				dd if=/dev/zero of=efiboot.img bs=1M count=20 2>/dev/null
+				mkfs.vfat efiboot.img > /dev/null
+				mmd -i efiboot.img ::/EFI ::/EFI/BOOT
+				mcopy -vi efiboot.img EFI/BOOT/BOOTx64.EFI boot/grub/grub.cfg ::/EFI/BOOT/ > /dev/null
+			)
+
+			### Step 15: Generate the ISO ###
 			G_EXEC_DESC="Generating $FP_FINAL" G_EXEC_OUTPUT=1 G_EXEC xorriso \
-				-as mkisofs -R -r -J -joliet-long -l -iso-level 3 -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -partition_offset 16 \
-				-publisher 'shaughvOS; https://github.com/RealEmmettS/shaughvOS;' -volid 'SHAUGHVOS_INSTALLER' \
-				-A "clonezilla-live-$CLONEZILLA_VERSION-amd64" -b syslinux/isolinux.bin -c syslinux/boot.cat -no-emul-boot -boot-load-size 4 \
-				-boot-info-table -eltorito-alt-boot --efi-boot boot/grub/efi.img -isohybrid-gpt-basdat -isohybrid-apm-hfsplus \
-				-o "$FP_FINAL" tmpiso
+				-as mkisofs -iso-level 3 \
+				-o "$FP_FINAL" \
+				-full-iso9660-filenames \
+				-volid 'SHAUGHVOS' \
+				-publisher 'shaughvOS; https://github.com/RealEmmettS/shaughvOS;' \
+				--mbr-force-bootable -partition_offset 16 \
+				-joliet -joliet-long -rational-rock \
+				-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
+				-eltorito-boot isolinux/isolinux.bin \
+					-no-emul-boot -boot-load-size 4 -boot-info-table \
+					--eltorito-catalog isolinux/isolinux.cat \
+				-eltorito-alt-boot \
+					-e --interval:appended_partition_2:all:: \
+					-no-emul-boot -isohybrid-gpt-basdat \
+				-append_partition 2 C12A7328-F81F-11D2-BA4B-00A0C93EC93B tmpiso/efiboot.img \
+				tmpiso
 			G_EXEC rm -R tmpiso
 		fi
 

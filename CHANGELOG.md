@@ -11,6 +11,25 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.8.0] — 2026-04-13
+
+### Changed
+- **MAJOR**: Replaced Clonezilla disk imaging installer with a proper live-boot + Calamares installer. The ISO now boots a full shaughvOS live desktop environment, and Calamares (the industry-standard Linux installer used by Manjaro, KDE Neon, Kubuntu, and 20+ distros) handles partitioning, filesystem creation, and GRUB installation dynamically for the target hardware. This fixes the boot loop issue in VirtualBox and other VMs where Clonezilla's raw block copy didn't properly configure the bootloader.
+- ISO boot menu now shows three entries: "Install shaughvOS" (live desktop + installer), "shaughvOS Live" (live desktop, safe graphics), and "Power off". Both GRUB (UEFI) and isolinux (BIOS) menus display the shaughvOS background image.
+- ISO is now a proper hybrid ISO supporting both legacy BIOS and UEFI boot with separate EFI boot partition.
+
+### Added
+- **Calamares installer** with full shaughvOS branding (Dracula-themed sidebar colors, shaughv logo, custom welcome/partition/user configuration).
+- **Live boot support** — the ISO boots a complete shaughvOS desktop in RAM. Users can try the full OS (Xfce, QubeTX tools, everything) before installing.
+- **Node.js, npm, and Claude Code CLI** pre-installed as default software.
+- Calamares auto-launches on live desktop boot via XDG autostart entry. Desktop shortcut also available for manual launch.
+
+### Removed
+- Clonezilla disk imaging — no longer downloads or uses Clonezilla Live for ISO creation.
+- `chain.c32` syslinux module and GRUB auto-detect logic (no longer needed — Calamares installs GRUB properly on the target disk).
+
+---
+
 ## [1.7.0] — 2026-04-12
 
 ### Fixed

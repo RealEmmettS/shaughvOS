@@ -97,8 +97,9 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 1. Download the **Native PC Installer** `.iso` image.
 2. Flash the `.iso` to a USB drive using [Balena Etcher](https://etcher.balena.io/).
 3. Boot from the USB drive (same key as above).
-4. Select **Install shaughvOS** from the boot menu. The installer writes shaughvOS to your internal drive automatically and reboots when finished.
-5. Remove the USB drive when the system reboots so it boots from the internal drive.
+4. The shaughvOS desktop loads in live mode. The **Calamares installer** launches automatically.
+5. Follow the installer: choose language, keyboard, partitioning, and user account. Click **Install** to begin.
+6. When installation completes, click **Restart**. Remove the USB drive when prompted.
 
 ### VirtualBox VM
 
@@ -119,13 +120,16 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
    - **Storage:** Click the empty optical drive under Controller: IDE, then click the disk icon on the right and select **Choose a disk file**. Select the `.iso` you downloaded.
    - **Display > Video Memory:** Set to 128 MB.
 
-5. Click **Start**. The boot menu appears — select **Install shaughvOS** to begin installation.
+5. Click **Start**. The boot menu appears with three options:
+   - **Install shaughvOS** — boots the live desktop and launches the Calamares installer
+   - **shaughvOS Live** — boots the live desktop without launching the installer (safe graphics mode)
+   - **Power off** — shuts down the VM
 
-6. The installer restores shaughvOS to the virtual disk automatically and reboots when finished.
-7. After the reboot, the boot menu appears again (the ISO is still attached). Select **Boot shaughvOS** to start the installed OS. For UEFI-enabled VMs, this happens automatically.
-8. First-boot setup runs automatically (updates, software installation). When it finishes, the Xfce desktop appears with autologin.
+6. Select **Install shaughvOS**. The shaughvOS desktop loads and the Calamares installer opens automatically.
+7. Follow the installer: choose your language, keyboard layout, disk partitioning, and create a user account. Click **Install**.
+8. When installation completes, click **Restart**. The VM reboots into the installed shaughvOS with the Xfce desktop.
 
-> **Tip:** You can remove the ISO from **Settings > Storage** after installation so the boot menu doesn't appear on future startups.
+> **Tip:** Remove the ISO from **Settings > Storage** after installation so the VM boots directly from the hard disk.
 
 ### Install on an existing Debian system
 

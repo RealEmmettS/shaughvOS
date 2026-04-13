@@ -1,0 +1,29 @@
+---
+componentName: shaughvos
+
+welcomeStyleCalamares: true
+welcomeExpandingLogo: true
+
+strings:
+    productName:         shaughvOS
+    shortProductName:    shaughvOS
+    version:             1.8.0
+    shortVersion:        1.8.0
+    versionedName:       shaughvOS 1.8.0
+    shortVersionedName:  shaughvOS 1.8.0
+    bootloaderEntryName: shaughvOS
+    productUrl:          https://github.com/RealEmmettS/shaughvOS
+    supportUrl:          https://github.com/RealEmmettS/shaughvOS/issues
+    knownIssuesUrl:      https://github.com/RealEmmettS/shaughvOS/issues
+    releaseNotesUrl:     https://github.com/RealEmmettS/shaughvOS/releases
+
+images:
+    productLogo:         shaughv-logo.svg
+    productIcon:         shaughv-logo.svg
+    productWelcome:      shaughv-logo.svg
+
+style:
+    SidebarBackground:   "#282a36"
+    SidebarText:         "#f8f8f2"
+    SidebarTextSelect:   "#bd93f9"
+    SidebarTextHighlight: "#50fa7b"

@@ -41,7 +41,7 @@ See `DEPLOYMENT.md` for the full reference. Below is the exact step-by-step work
 
 1. **Bump version** — Edit `.update/version`, increment `G_REMOTE_VERSION_SUB` (or `_CORE` for breaking changes). Set `G_REMOTE_VERSION_RC=0` for stable.
 2. **Update CHANGELOG.md** — Move `[Unreleased]` contents into a new `## [X.Y.0] — YYYY-MM-DD` section. Add a fresh empty `[Unreleased]` section at the top. Follow [Keep a Changelog](https://keepachangelog.com/) format with `### Fixed`, `### Changed`, `### Added`, `### Removed` subsections.
-3. **Update CLAUDE.md version refs** — Find/replace old version string (e.g., `v1.5.0` -> `v1.7.0`) in this file.
+3. **Update CLAUDE.md version refs** — Find/replace old version string (e.g., `v1.5.0` -> `v1.8.0`) in this file.
 4. **Update README.md** if features/install process changed.
 
 **Step 2 — Single commit with everything, then tag before push:**
@@ -181,9 +181,17 @@ Systemd services: `shaughvos-fs_partition_resize` -> `shaughvos-preboot` -> `sha
 
 Three tools in `.build/images/`:
 - **`shaughvos-build`** — Creates images from scratch for specific hardware models
-- **`shaughvos-imager`** — Shrinks and compresses images for release (`.img.xz`, `.iso`)
+- **`shaughvos-imager`** — Shrinks and compresses images for release (`.img.xz`). For x86 ISOs, creates a live-boot ISO with squashfs + Calamares installer (replaces the old Clonezilla approach).
 - **`shaughvos-installer`** — Converts a running Debian 12+ system into shaughvOS
+
+### ISO Installer Architecture
+
+The installer ISO boots a full shaughvOS live environment using Debian's `live-boot` system. The root filesystem is compressed as squashfs. **Calamares** (industry-standard installer used by 20+ Linux distros) handles disk partitioning, filesystem creation, squashfs extraction, and GRUB installation — dynamically configured for the target hardware.
+
+Configuration: `assets/calamares/` contains settings.conf, branding, and module configs.
+
+Pre-installed software: Node.js, npm, Claude Code CLI.
 
 ## Current Version
 
-shaughvOS v1.7.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.8.0 (`.update/version`). Minimum Debian version: 7+.
