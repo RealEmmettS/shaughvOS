@@ -49,7 +49,7 @@ See `DEPLOYMENT.md` for the full reference. Below is the exact step-by-step work
 5. **Stage specific files** — `git add .update/version CHANGELOG.md CLAUDE.md README.md` (and any other changed files). Never `git add -A`.
 6. **Commit** — `git commit -m "Release vX.Y.0 — <one-line summary>"`
 7. **Tag the commit** — `git tag vX.Y.0` (tag BEFORE pushing so the tag and commit go out together)
-8. **Push commit and tag together** — `git push origin master --tags` (one push, avoids duplicate CI triggers)
+8. **Push commit and tag** — `git push origin master && git push origin vX.Y.0` (NEVER use `--tags` — it pushes all local tags including old DietPi-era ones that break CI)
 
 **Step 3 — Monitor and verify (hands off — CI does the rest):**
 
