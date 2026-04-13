@@ -9,6 +9,12 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- Fixed live-boot ISO failing to reach desktop — `/etc/fstab` from build environment contained invalid PARTUUIDs causing mount errors in the live overlay. Now cleared for live-boot; Calamares regenerates correct fstab during installation.
+- Fixed cascade of systemd service failures during live boot — disabled `shaughvos-fs_partition_resize`, `shaughvos-firstboot`, `shaughvos-preboot`, and `shaughvos-ramlog` services that expect real installed hardware. These are re-enabled by Calamares during installation.
+- Fixed `admin`/`1234` login not working in live session — password now explicitly set via `chpasswd` during ISO build since first-boot setup doesn't run in live mode.
+- Fixed LightDM desktop not starting in live session — added autologin configuration for `admin` user with Xfce session.
+
 ---
 
 ## [1.8.0] — 2026-04-13

@@ -679,6 +679,27 @@ _EOF_
 			G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
 				'apt-get install -y --no-install-recommends nodejs npm && curl -fsSL https://claude.ai/install.sh | bash || true'
 
+			### Step 5b: Prepare root filesystem for live-boot compatibility ###
+			G_SHAUGHVOS-NOTIFY 2 'Preparing root filesystem for live-boot mode'
+			# Clear fstab — live-boot generates mounts dynamically, Calamares regenerates on install
+			echo '# Live boot — fstab generated dynamically' > "$live_root/etc/fstab"
+			# Disable services that expect a real installed disk (not available in live mode)
+			chroot "$live_root" systemctl disable shaughvos-fs_partition_resize 2>/dev/null || true
+			chroot "$live_root" systemctl disable shaughvos-firstboot 2>/dev/null || true
+			chroot "$live_root" systemctl disable shaughvos-preboot 2>/dev/null || true
+			chroot "$live_root" systemctl disable shaughvos-ramlog 2>/dev/null || true
+			# Set passwords for live session (admin + root)
+			chroot "$live_root" bash -c "echo 'admin:1234' | chpasswd"
+			chroot "$live_root" bash -c "echo 'root:1234' | chpasswd"
+			# Ensure desktop autologin for the live session
+			G_EXEC mkdir -p "$live_root/etc/lightdm/lightdm.conf.d"
+			cat > "$live_root/etc/lightdm/lightdm.conf.d/shaughvos-autologin.conf" << 'AUTOLOGIN'
+[Seat:*]
+autologin-user=admin
+autologin-session=xfce
+AUTOLOGIN
+			chroot "$live_root" systemctl enable lightdm 2>/dev/null || true
+
 			### Step 6: Create staging directory for ISO ###
 			G_SHAUGHVOS-NOTIFY 2 'Creating ISO staging directory'
 			mkdir -p tmpiso/{live,isolinux,boot/grub/x86_64-efi,EFI/BOOT}
