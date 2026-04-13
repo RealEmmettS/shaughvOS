@@ -119,12 +119,13 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
    - **Storage:** Click the empty optical drive under Controller: IDE, then click the disk icon on the right and select **Choose a disk file**. Select the `.iso` you downloaded.
    - **Display > Video Memory:** Set to 128 MB.
 
-5. Click **Start**. The boot menu appears with two options:
-   - **Install shaughvOS** — select this to begin installation.
-   - **Power off** — shuts down the VM.
+5. Click **Start**. The boot menu appears — select **Install shaughvOS** to begin installation.
 
-6. The installer restores shaughvOS to the virtual disk automatically. When it finishes, the install media is ejected and the VM reboots into shaughvOS.
-7. First-boot setup runs automatically (updates, software installation). When it finishes, the Xfce desktop appears with autologin.
+6. The installer restores shaughvOS to the virtual disk automatically and reboots when finished.
+7. After the reboot, the boot menu appears again (the ISO is still attached). Select **Boot shaughvOS** to start the installed OS. For UEFI-enabled VMs, this happens automatically.
+8. First-boot setup runs automatically (updates, software installation). When it finishes, the Xfce desktop appears with autologin.
+
+> **Tip:** You can remove the ISO from **Settings > Storage** after installation so the boot menu doesn't appear on future startups.
 
 ### Install on an existing Debian system
 

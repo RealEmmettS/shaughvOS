@@ -41,7 +41,7 @@ See `DEPLOYMENT.md` for the full reference. Below is the exact step-by-step work
 
 1. **Bump version** — Edit `.update/version`, increment `G_REMOTE_VERSION_SUB` (or `_CORE` for breaking changes). Set `G_REMOTE_VERSION_RC=0` for stable.
 2. **Update CHANGELOG.md** — Move `[Unreleased]` contents into a new `## [X.Y.0] — YYYY-MM-DD` section. Add a fresh empty `[Unreleased]` section at the top. Follow [Keep a Changelog](https://keepachangelog.com/) format with `### Fixed`, `### Changed`, `### Added`, `### Removed` subsections.
-3. **Update CLAUDE.md version refs** — Find/replace old version string (e.g., `v1.5.0` -> `v1.6.0`) in this file.
+3. **Update CLAUDE.md version refs** — Find/replace old version string (e.g., `v1.5.0` -> `v1.7.0`) in this file.
 4. **Update README.md** if features/install process changed.
 
 **Step 2 — Single commit with everything, then tag before push:**
@@ -186,4 +186,4 @@ Three tools in `.build/images/`:
 
 ## Current Version
 
-shaughvOS v1.6.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.7.0 (`.update/version`). Minimum Debian version: 7+.

@@ -703,24 +703,32 @@ message-color: "#ffffff"
     selected_item_pixmap_style = "select_bkg_*.png"
 }
 _EOF_
-			# Create post-restore script that ejects the install media before rebooting
-			# so the VM/PC boots from the hard disk instead of looping the installer.
-			# Clonezilla Live mounts the ISO at /run/live/medium/.
-			cat << '_EOF_' > tmpiso/postaction.sh
-#!/bin/bash
-eject /dev/sr0 2>/dev/null
-eject /dev/cdrom 2>/dev/null
-reboot
-_EOF_
-			G_EXEC chmod +x tmpiso/postaction.sh
-
-			# Replace Clonezilla boot menu with a simplified shaughvOS installer menu
+			# Replace Clonezilla boot menu with an intelligent shaughvOS installer menu
+			# that auto-detects an existing installation and boots from it.
 			G_EXEC mv tmpiso/boot/grub/{grub,clonezilla}.cfg
 			# Extract preamble (everything before the first menuentry)
 			sed '/^menuentry /,$d' tmpiso/boot/grub/clonezilla.cfg > tmpiso/boot/grub/grub.cfg
-			# Apply preamble settings: infinite timeout + theme
+			# Apply preamble settings: theme
 			# shellcheck disable=SC2016
-			sed --follow-symlinks -i -e '/^set timeout=/c\set timeout="-1"' -e '/^set pref=/a\set theme=$pref/theme.txt' tmpiso/boot/grub/grub.cfg
+			sed --follow-symlinks -i -e '/^set timeout=/d' -e '/^set pref=/a\set theme=$pref/theme.txt' tmpiso/boot/grub/grub.cfg
+			# Auto-detect installed shaughvOS: if found, default to booting it with
+			# a 5-second timeout; if not found, show install menu and wait for user.
+			cat << '_EOF_' >> tmpiso/boot/grub/grub.cfg
+search --set=installed --no-floppy --file /boot/shaughvos/.hw_model
+if [ -n "$installed" ]; then
+    set default="Boot shaughvOS"
+    set timeout=5
+else
+    set timeout=-1
+fi
+_EOF_
+			# Add "Boot shaughvOS" entry — chainloads the installed OS's GRUB config
+			cat << '_EOF_' >> tmpiso/boot/grub/grub.cfg
+menuentry "Boot shaughvOS" {
+    search --set=root --no-floppy --file /boot/shaughvos/.hw_model
+    configfile /boot/grub/grub.cfg
+}
+_EOF_
 			# Add "Install shaughvOS" entry (Safe graphic base, modified for restore mode)
 			# -icds: skip disk size check before creating partition table
 			# -k1: resize partition after creation
@@ -730,7 +738,7 @@ _EOF_
 				echo 'menuentry "Install shaughvOS" {'
 				sed -n '/menuentry .*Safe graphic/,/}/s/^  //p' tmpiso/boot/grub/clonezilla.cfg | \
 					sed -e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' -e 's/ocs-live-general/ocs-live-restore/' \
-						-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p /run/live/medium/postaction.sh restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
+						-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p reboot restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
 						-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/'
 				echo '}'
 			} >> tmpiso/boot/grub/grub.cfg
@@ -738,19 +746,25 @@ _EOF_
 menuentry "Power off" { halt }
 _EOF_
 			### Prepare custom files used by the installer when booting in BIOS/CSM mode ###
-			# Replace Clonezilla syslinux menu with a simplified shaughvOS installer menu
+			# Replace Clonezilla syslinux menu with an intelligent shaughvOS installer menu
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/.build/images/Clonezilla/shaughvos-background_480p.png" -o tmpiso/syslinux/shaughvosbg.png
 			G_EXEC cp /usr/lib/syslinux/modules/bios/poweroff.c32 tmpiso/syslinux/
+			G_EXEC cp /usr/lib/syslinux/modules/bios/chain.c32 tmpiso/syslinux/
 			G_EXEC mv tmpiso/syslinux/{syslinux,clonezilla}.cfg
 			sed '/^label /,$d' tmpiso/syslinux/clonezilla.cfg > tmpiso/syslinux/syslinux.cfg
 			sed -n '/^label .*framebuffer/,/ENDTEXT/p' tmpiso/syslinux/clonezilla.cfg >> tmpiso/syslinux/syslinux.cfg
 			sed --follow-symlinks -i  -e '/^timeout /c\timeout 0' -e 's|\(MENU BACKGROUND\) .*|\1 shaughvosbg.png|' -e '/^MENU TITLE /c\MENU TABMSG' \
-				-e '/menu title/d' -e '/^say /d' -e '/MENU MARGIN/a\MENU HSHIFT 80\n MENU COLOR BORDER 0 #00000000 #00000000 none' \
+				-e '/menu title/d' -e '/^say /d' -e '/MENU MARGIN/a\MENU HSHIFT 80\nPROMPT 1\n MENU COLOR BORDER 0 #00000000 #00000000 none' \
 				-e '/^label /c\label Install shaughvOS' -e '/^  MENU LABEL /c\  MENU LABEL Install shaughvOS' -e '/^  TEXT HELP/,/^  ENDTEXT/d' \
 				-e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' -e 's/ocs-live-general/ocs-live-restore/' \
-				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p /run/live/medium/postaction.sh restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
-				-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/' tmpiso/syslinux/syslinux.cfg
+				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p reboot restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
+				-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/' \
+				-e '/^  MENU LABEL Install/a\  MENU DEFAULT' tmpiso/syslinux/syslinux.cfg
 			cat << '_EOF_' >> tmpiso/syslinux/syslinux.cfg
+label Boot shaughvOS
+  MENU LABEL Boot shaughvOS
+  COM32 chain.c32
+  APPEND hd0
 label Power off
   MENU LABEL Power off
   COM32 poweroff.c32

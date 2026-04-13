@@ -11,6 +11,22 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.7.0] — 2026-04-12
+
+### Fixed
+- **CRITICAL**: Fixed post-install boot loop in VirtualBox and other VMs — after Clonezilla restore, the ISO boot menu now detects an existing shaughvOS installation and boots from the hard disk automatically (UEFI/GRUB) or offers a "Boot shaughvOS" menu entry (BIOS/syslinux). Previously, the VM rebooted back into the installer because VirtualBox ignores guest-initiated CD eject commands and the default boot order has Optical before Hard Disk.
+- Fixed syslinux BIOS boot menu auto-installing without any user interaction — `timeout 0` caused the installer to run immediately on every boot with no visible menu. Now shows the menu and waits for user input.
+
+### Changed
+- ISO boot menu (GRUB/UEFI) now uses intelligent auto-detection: `search --file /boot/shaughvos/.hw_model` checks if shaughvOS is installed. If found, defaults to "Boot shaughvOS" with a 5-second timeout. If not found, shows "Install shaughvOS" and waits for user.
+- ISO boot menu (syslinux/BIOS) now includes a "Boot shaughvOS" entry using `chain.c32` to chainload the hard disk MBR, matching how Ubuntu and Linux Mint installer ISOs handle the same problem.
+- Removed non-functional `postaction.sh` eject script — VirtualBox and most hypervisors ignore guest-initiated optical drive eject commands.
+
+### Added
+- `chain.c32` syslinux module bundled in ISO for hard disk chainloading in BIOS boot mode.
+
+---
+
 ## [1.6.0] — 2026-04-12
 
 ### Fixed
