@@ -28,12 +28,26 @@ Whether you're setting up a home server on a Raspberry Pi, diagnosing network is
 - **Developer tools included** — Node.js, npm, and Claude Code CLI come pre-installed, so you can start coding right away.
 - **Easy mode switching** — type `desktop on` for the graphical desktop or `desktop off` for a minimal console. Switch anytime.
 
+**Getting started (the easy way):**
+
+1. Download the [VM Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer.iso) (for VirtualBox) or the [Raspberry Pi image](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) (for a Pi).
+2. **For VirtualBox:** Create a new VM (Linux > Debian 64-bit, 2 GB RAM, 20 GB disk), attach the ISO, set video memory to 128 MB, and click Start. The desktop loads and the installer walks you through the rest.
+3. **For Raspberry Pi:** Download [Balena Etcher](https://etcher.balena.io/), flash the `.img.xz` file to a microSD card, plug it in, and power on. Done.
+4. Default login: username `admin`, password `1234` (you'll be asked to change it on first boot).
+
 ### For Technicians & IT Professionals
 
-- **Instant system diagnostics** — three professional-grade tools run automatically on every login, giving you CPU, memory, disk, and network status at a glance.
+- **Instant system diagnostics** — three professional-grade QubeTX tools run automatically on every login, giving you CPU, memory, disk, and network status at a glance.
 - **Network troubleshooting** — 17 deep diagnostic checks including DNS resolution, gateway reachability, packet loss, MTU testing, and quad-provider speed testing with bufferbloat grading.
 - **Portable diagnostic toolkit** — boot from a USB drive on any x86_64 machine to diagnose problems without touching the existing OS.
 - **Headless server ready** — switch to console mode for a minimal-footprint server. Perfect for Raspberry Pi home labs, media servers, or IoT projects.
+
+**Quick deployment:**
+
+1. **USB diagnostic boot:** Download the [NativePC Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_Installer.iso), flash to USB with [Balena Etcher](https://etcher.balena.io/), and boot any x86_64 machine from it. Select "shaughvOS Live" for a non-destructive diagnostic session, or "Install shaughvOS" to deploy to the internal drive.
+2. **VirtualBox lab:** Create a VM (Linux/Debian 64-bit, 4 GB RAM, 2+ CPUs, 20 GB VDI, 128 MB video). Attach the [VM Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer.iso) to the IDE optical drive. Boot, select Install, and Calamares handles partitioning and GRUB. SSH is available immediately via Dropbear on port 22.
+3. **Raspberry Pi server:** Flash the [RPi image](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) to microSD with Etcher. After first boot, run `desktop off` to switch to headless mode. Configure via SSH (`ssh admin@<ip>`, password `1234`).
+4. **Existing Debian system:** `sudo bash -c "$(curl -sSfL https://raw.githubusercontent.com/RealEmmettS/shaughvOS/master/.build/images/shaughvos-installer)"` — converts any Debian 12+ system in-place.
 
 ## Features
 
