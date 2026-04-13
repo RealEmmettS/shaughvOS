@@ -687,10 +687,18 @@ _EOF_
 			chroot "$live_root" systemctl disable shaughvos-fs_partition_resize 2>/dev/null || true
 			chroot "$live_root" systemctl disable shaughvos-firstboot 2>/dev/null || true
 			chroot "$live_root" systemctl disable shaughvos-preboot 2>/dev/null || true
+			chroot "$live_root" systemctl disable shaughvos-postboot 2>/dev/null || true
 			chroot "$live_root" systemctl disable shaughvos-ramlog 2>/dev/null || true
+			# Mark setup as complete — prevents shaughvos-login from entering first-run/error mode
+			echo 2 > "$live_root/boot/shaughvos/.install_stage"
 			# Set passwords for live session (admin + root)
 			chroot "$live_root" bash -c "echo 'admin:1234' | chpasswd"
 			chroot "$live_root" bash -c "echo 'root:1234' | chpasswd"
+			# Grant admin passwordless sudo for the live session (required for Calamares + desktop command)
+			echo 'admin ALL=(ALL:ALL) NOPASSWD: ALL' > "$live_root/etc/sudoers.d/live-admin"
+			chmod 0440 "$live_root/etc/sudoers.d/live-admin"
+			# Set desktop autostart mode for the live session
+			echo 2 > "$live_root/boot/shaughvos/.shaughvos-autostart_index"
 			# Ensure desktop autologin for the live session
 			G_EXEC mkdir -p "$live_root/etc/lightdm/lightdm.conf.d"
 			cat > "$live_root/etc/lightdm/lightdm.conf.d/shaughvos-autologin.conf" << 'AUTOLOGIN'

@@ -11,6 +11,16 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.8.2] — 2026-04-13
+
+### Fixed
+- **CRITICAL**: Fixed Calamares installer never launching in live-boot ISO — `.install_stage` was stuck at `10` (build marker), causing `shaughvos-login` to enter error/first-run mode on every shell instead of normal login. Now set to `2` (setup complete) for the live session.
+- **CRITICAL**: Fixed `admin` user having no sudo access in live session — Calamares desktop entry runs `sudo calamares` but admin had no sudoers rule, causing silent failure from XDG autostart (no terminal for password prompt). Added NOPASSWD sudo for the live session.
+- Fixed `shaughvos-postboot` service still enabled in live-boot environment — could interfere with the live session by running post-install scripts that expect a real installed system.
+- Fixed desktop autostart index not set for live session — `desktop status` now reports correctly and the autostart system knows to run in desktop mode.
+
+---
+
 ## [1.8.1] — 2026-04-13
 
 ### Fixed
