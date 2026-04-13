@@ -33,11 +33,31 @@ After tagging and pushing a new release:
 - `DEPLOYMENT.md` — full release lifecycle: versioning, tagging, CI, image building, OTA updates, GitHub Releases
 
 ### Deployment & Releases
-See `DEPLOYMENT.md` for the complete release process. Key points:
-- **Versioning:** `CORE.SUB.RC` in `.update/version` (currently v1.6.0)
-- **Changelog:** Update `CHANGELOG.md` with every release — move `[Unreleased]` to a dated version section
-- **Release flow:** `dev` -> `master` -> tag `v1.x.0` -> GitHub Release with image artifacts
-- **OTA updates:** Push to `master` with bumped `.update/version` — devices auto-detect via `raw.githubusercontent.com`
+See `DEPLOYMENT.md` for the full reference. Below is the exact step-by-step workflow Claude should follow when asked to "deploy", "release", "bump", "tag", or any variation:
+
+#### Release Workflow (execute in order)
+
+1. **Bump version** — Edit `.update/version`, increment `G_REMOTE_VERSION_SUB` (or `_CORE` for breaking changes). Set `G_REMOTE_VERSION_RC=0` for stable.
+2. **Update CHANGELOG.md** — Move `[Unreleased]` contents into a new `## [X.Y.0] — YYYY-MM-DD` section. Add a fresh empty `[Unreleased]` section at the top. Follow [Keep a Changelog](https://keepachangelog.com/) format with `### Fixed`, `### Changed`, `### Added`, `### Removed` subsections.
+3. **Update CLAUDE.md version refs** — Find/replace old version string (e.g., `v1.5.0` -> `v1.6.0`) in this file.
+4. **Update README.md** if features/install process changed.
+5. **Stage specific files** — `git add .update/version CHANGELOG.md CLAUDE.md README.md` (and any other changed files). Never `git add -A`.
+6. **Commit** — `git commit -m "Release vX.Y.0 — <one-line summary>"`
+7. **Push to master** — `git push origin master`
+8. **Create tag** — `git tag vX.Y.0`
+9. **Push tag** — `git push origin vX.Y.0` — this triggers `release-images.yml` CI
+10. **NEVER run `gh release create`** — CI creates the Release and attaches build artifacts automatically. Manual creation blocks CI (see memory: `feedback_release_verification.md`).
+11. **Monitor CI** — `gh run list --workflow=release-images.yml --limit 1` (also check `shellcheck.yml`)
+12. **Verify release** (~15-20 min) — `gh api repos/RealEmmettS/shaughvOS/releases --jq '.[0] | "\(.tag_name): \(.assets | length) assets"'`
+13. **If CI fails** — Check logs: `gh run view <run-id> --log-failed`. If release step failed due to existing release: delete release, delete tag, re-push tag.
+
+#### Version Scheme
+- `CORE` = major version (breaking changes)
+- `SUB` = minor version (features, fixes)
+- `RC` = release candidate (0 = stable)
+
+#### OTA Updates
+Pushing to `master` with a bumped `.update/version` is sufficient for OTA — devices auto-detect via `raw.githubusercontent.com`.
 
 ## Target Hardware
 
