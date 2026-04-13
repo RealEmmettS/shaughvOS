@@ -52,7 +52,7 @@ Whether you're setting up a home server on a Raspberry Pi, diagnosing network is
 
 **Quick deployment:**
 
-1. **USB diagnostic boot:** Download the [NativePC Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_Installer.iso), flash to USB with [Balena Etcher](https://etcher.balena.io/) (free, by Balena), and boot any x86_64 machine from it. Select "shaughvOS Live" for a non-destructive diagnostic session, or "Install shaughvOS" to deploy to the internal drive.
+1. **USB diagnostic boot:** Download the [NativePC Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_Installer.iso), flash to USB with [Balena Etcher](https://etcher.balena.io/) (free, by Balena), and boot any x86_64 machine from it. Select "shaughvOS Live (safe graphics)" for a non-destructive diagnostic session, or "Install shaughvOS" to deploy to the internal drive.
 2. **VirtualBox lab:** Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (free, by Oracle). Create a VM (Linux/Debian 64-bit, 4 GB RAM, 2+ CPUs, 20 GB VDI, 128 MB video). Attach the [VM Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer.iso) to the IDE optical drive. Boot, select Install, and Calamares handles partitioning and GRUB. SSH is available immediately via Dropbear on port 22.
 3. **Raspberry Pi server:** Flash the [RPi image](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) to microSD with [Balena Etcher](https://etcher.balena.io/). After first boot, run `desktop off` to switch to headless mode. Configure via SSH (`ssh admin@<ip>`, password `1234`).
 4. **Existing Debian system:** `sudo bash -c "$(curl -sSfL https://raw.githubusercontent.com/RealEmmettS/shaughvOS/master/.build/images/shaughvos-installer)"` — converts any Debian 12+ system in-place.
@@ -174,7 +174,7 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 
 5. Click **Start**. The boot menu appears with three options:
    - **Install shaughvOS** — boots the live desktop and launches the Calamares installer
-   - **shaughvOS Live** — boots the live desktop without launching the installer (safe graphics mode)
+   - **shaughvOS Live (safe graphics)** — boots the live desktop without launching the installer
    - **Power off** — shuts down the VM
 
 6. Select **Install shaughvOS**. The shaughvOS desktop loads and the Calamares installer opens automatically.

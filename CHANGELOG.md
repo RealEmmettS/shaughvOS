@@ -11,6 +11,16 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.8.4] — 2026-04-13
+
+### Fixed
+- **CRITICAL**: Fixed VirtualBox booting straight to CLI instead of the desktop installer — the "Install shaughvOS" GRUB and isolinux entries were missing `nomodeset`, causing the `vmwgfx` kernel driver to fail on VirtualBox's VMSVGA graphics controller. Xorg couldn't start, lightdm failed, and the user got dumped to a text login with no desktop or Calamares. Added `nomodeset` to both boot entries.
+
+### Changed
+- Renamed "shaughvOS Live" boot menu entry to "shaughvOS Live (safe graphics)" for clarity, since both entries now use identical boot parameters with `nomodeset`.
+
+---
+
 ## [1.8.3] — 2026-04-13
 
 ### Fixed

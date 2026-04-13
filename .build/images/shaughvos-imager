@@ -754,10 +754,10 @@ set menu_color_highlight=white/dark-gray
 
 menuentry "Install shaughvOS" {
     search --no-floppy --set=root --label SHAUGHVOS
-    linux ($root)/live/vmlinuz boot=live quiet splash
+    linux ($root)/live/vmlinuz boot=live nomodeset quiet splash
     initrd ($root)/live/initrd
 }
-menuentry "shaughvOS Live" {
+menuentry "shaughvOS Live (safe graphics)" {
     search --no-floppy --set=root --label SHAUGHVOS
     linux ($root)/live/vmlinuz boot=live nomodeset quiet splash
     initrd ($root)/live/initrd
@@ -798,10 +798,10 @@ LABEL install
   MENU LABEL Install shaughvOS
   MENU DEFAULT
   KERNEL /live/vmlinuz
-  APPEND initrd=/live/initrd boot=live quiet splash
+  APPEND initrd=/live/initrd boot=live nomodeset quiet splash
 
 LABEL live
-  MENU LABEL shaughvOS Live
+  MENU LABEL shaughvOS Live (safe graphics)
   KERNEL /live/vmlinuz
   APPEND initrd=/live/initrd boot=live nomodeset quiet splash
 
