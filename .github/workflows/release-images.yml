@@ -99,7 +99,7 @@ jobs:
         fi
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: shaughvOS-${{ matrix.target }}
         path: shaughvOS_*
@@ -112,7 +112,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - name: Download all artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         path: artifacts/
 
