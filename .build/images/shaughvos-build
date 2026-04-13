@@ -107,8 +107,8 @@ case $HW_MODEL in
 	15) iname='OdroidN2' HW_ARCH=3 partition_start=4 root_size='meson64';;
 	16) iname='OdroidC4' HW_ARCH=3 partition_start=4 root_size='meson64';;
 	17) iname='OdroidHC4' HW_ARCH=3 partition_start=4 root_size='meson64';;
-	20) iname='VM' HW_ARCH=${HW_ARCH:-10} root_size=1200;;
-	21) iname='NativePC' HW_ARCH=10 root_size=1600;;
+	20) iname='VM' HW_ARCH=${HW_ARCH:-10} root_size=2400;;
+	21) iname='NativePC' HW_ARCH=10 root_size=2400;;
 	40) iname='PINEA64' HW_ARCH=3 partition_start=4 root_size='sunxi64';;
 	42) iname='ROCKPro64' HW_ARCH=3 partition_start=16 root_size='rockchip64';;
 	43) iname='ROCK64' HW_ARCH=3 partition_start=16 root_size='rockchip64';;
