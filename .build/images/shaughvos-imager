@@ -713,6 +713,7 @@ _EOF_
 			sed --follow-symlinks -i -e '/^set timeout=/d' -e '/^set pref=/a\set theme=$pref/theme.txt' tmpiso/boot/grub/grub.cfg
 			# Auto-detect installed shaughvOS: if found, default to booting it with
 			# a 5-second timeout; if not found, show install menu and wait for user.
+			# "Boot shaughvOS" chainloads the installed OS's GRUB config.
 			cat << '_EOF_' >> tmpiso/boot/grub/grub.cfg
 search --set=installed --no-floppy --file /boot/shaughvos/.hw_model
 if [ -n "$installed" ]; then
@@ -721,9 +722,6 @@ if [ -n "$installed" ]; then
 else
     set timeout=-1
 fi
-_EOF_
-			# Add "Boot shaughvOS" entry — chainloads the installed OS's GRUB config
-			cat << '_EOF_' >> tmpiso/boot/grub/grub.cfg
 menuentry "Boot shaughvOS" {
     search --set=root --no-floppy --file /boot/shaughvos/.hw_model
     configfile /boot/grub/grub.cfg
@@ -741,10 +739,8 @@ _EOF_
 						-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p reboot restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
 						-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/'
 				echo '}'
+				echo 'menuentry "Power off" { halt }'
 			} >> tmpiso/boot/grub/grub.cfg
-			cat << '_EOF_' >> tmpiso/boot/grub/grub.cfg
-menuentry "Power off" { halt }
-_EOF_
 			### Prepare custom files used by the installer when booting in BIOS/CSM mode ###
 			# Replace Clonezilla syslinux menu with an intelligent shaughvOS installer menu
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/.build/images/Clonezilla/shaughvos-background_480p.png" -o tmpiso/syslinux/shaughvosbg.png
