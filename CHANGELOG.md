@@ -14,19 +14,33 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [1.8.0] — 2026-04-13
 
 ### Changed
-- **MAJOR**: Replaced Clonezilla disk imaging installer with a proper live-boot + Calamares installer. The ISO now boots a full shaughvOS live desktop environment, and Calamares (the industry-standard Linux installer used by Manjaro, KDE Neon, Kubuntu, and 20+ distros) handles partitioning, filesystem creation, and GRUB installation dynamically for the target hardware. This fixes the boot loop issue in VirtualBox and other VMs where Clonezilla's raw block copy didn't properly configure the bootloader.
-- ISO boot menu now shows three entries: "Install shaughvOS" (live desktop + installer), "shaughvOS Live" (live desktop, safe graphics), and "Power off". Both GRUB (UEFI) and isolinux (BIOS) menus display the shaughvOS background image.
-- ISO is now a proper hybrid ISO supporting both legacy BIOS and UEFI boot with separate EFI boot partition.
+- **MAJOR**: Replaced Clonezilla disk imaging installer with a proper live-boot + Calamares installer. The ISO now boots a full shaughvOS live desktop environment, and Calamares (the industry-standard Linux installer used by Manjaro, KDE Neon, Kubuntu, and 20+ distros) handles partitioning, filesystem creation, and GRUB installation dynamically for the target hardware. This fixes the boot loop issue in VirtualBox and other VMs where Clonezilla's raw block copy didn't properly configure the bootloader for the target disk controller.
+- ISO boot menu now shows three entries: "Install shaughvOS" (live desktop + installer auto-launch), "shaughvOS Live" (live desktop with safe graphics), and "Power off". Both GRUB (UEFI) and isolinux (BIOS) menus display the shaughvOS background image.
+- ISO is now a proper hybrid ISO supporting both legacy BIOS and UEFI boot with separate EFI boot partition, generated via xorriso with isohybrid MBR + GPT.
+- ISO build dependencies changed from Clonezilla/partclone to squashfs-tools, grub-pc-bin, grub-efi-amd64-bin, mtools, dosfstools, syslinux-efi.
+- ISO build pipeline now copies the shrunken root filesystem to a temporary 3 GiB ext4 image before installing packages, since the imager's shrink step truncates the .img to minimum size before the ISO path runs.
+- Updated README with comprehensive installation guides for Raspberry Pi, Native PC, and VirtualBox — VirtualBox instructions now describe the Calamares-based install flow.
+- Default desktop set to Xfce (`AUTO_SETUP_DESKTOP=xfce` in shaughvos.txt) for consistency with autostart index 2 (desktop autologin).
 
 ### Added
-- **Calamares installer** with full shaughvOS branding (Dracula-themed sidebar colors, shaughv logo, custom welcome/partition/user configuration).
-- **Live boot support** — the ISO boots a complete shaughvOS desktop in RAM. Users can try the full OS (Xfce, QubeTX tools, everything) before installing.
-- **Node.js, npm, and Claude Code CLI** pre-installed as default software.
-- Calamares auto-launches on live desktop boot via XDG autostart entry. Desktop shortcut also available for manual launch.
+- **Calamares installer** with full shaughvOS branding — Dracula-themed sidebar (background #282a36, text #f8f8f2, highlight #50fa7b), shaughv logo, custom welcome/locale/keyboard/partition/users/summary flow, and automatic GRUB bootloader installation.
+- **Live boot support** via Debian's `live-boot` package — the ISO boots a complete shaughvOS desktop in RAM. Users can try the full OS (Xfce desktop, QubeTX 300 Series tools, everything) before committing to install.
+- **Node.js, npm, and Claude Code CLI** pre-installed as default software in the live environment and installed system.
+- Calamares auto-launches on live desktop boot via XDG autostart entry (`/etc/xdg/autostart/calamares-installer.desktop`). Desktop shortcut also available in application menu for manual launch.
+- Calamares module configurations: `unpackfs.conf` (squashfs extraction from `/run/live/medium/live/filesystem.squashfs`), `bootloader.conf` (GRUB with `efiBootloaderId: shaughvos`), `partition.conf` (GPT default, ext4, EFI system partition), `users.conf` (autologin, sudo groups), `welcome.conf` (8 GB storage / 1 GB RAM requirements), `finished.conf` (auto-restart).
+- Detailed release deployment workflow documented in CLAUDE.md with step-by-step instructions for version bumping, changelog, tagging, pushing, and CI monitoring.
+- `upload-artifact` and `download-artifact` GitHub Actions bumped to v5 for Node.js 24 compatibility (ahead of June 2nd 2026 deprecation deadline).
+
+### Fixed
+- **CRITICAL**: Fixed post-install boot loop in VirtualBox — Clonezilla's raw block copy didn't install GRUB for the target hardware's disk controller. VirtualBox BIOS enumerates IDE before SATA, so the ISO's `chain.c32 hd0` pointed to the IDE optical drive instead of the SATA hard disk. Calamares eliminates this by running `grub-install` during installation.
+- Fixed GRUB "Install shaughvOS" menuentry that was never properly created in v1.5.0 — sed pattern matched nothing because the `menuentry` line wasn't indented.
+- Fixed syslinux BIOS boot menu silently auto-reinstalling — `timeout 0` caused the installer to run immediately on every boot with no visible menu.
+- Fixed non-functional `postaction.sh` eject script — VirtualBox and most hypervisors ignore guest-initiated optical drive eject commands.
 
 ### Removed
-- Clonezilla disk imaging — no longer downloads or uses Clonezilla Live for ISO creation.
-- `chain.c32` syslinux module and GRUB auto-detect logic (no longer needed — Calamares installs GRUB properly on the target disk).
+- Clonezilla disk imaging — no longer downloads or uses Clonezilla Live for ISO creation. The `CLONING_TOOL='Clonezilla'` variable name is retained as a legacy trigger in the build system but the implementation is entirely live-boot + Calamares.
+- `chain.c32` syslinux module, GRUB auto-detect logic, and `localboot` entries — no longer needed since Calamares installs GRUB properly on the target disk.
+- Old DietPi-era tags (v9.x, v10.x) cleaned from remote repository.
 
 ---
 
