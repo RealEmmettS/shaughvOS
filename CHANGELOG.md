@@ -11,6 +11,23 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.6.0] — 2026-04-12
+
+### Fixed
+- **CRITICAL**: Fixed GRUB boot menu "Install shaughvOS" entry never being created — the `menuentry` wrapper was missing due to a sed pattern that matched nothing, leaving only a duplicate "shaughvOS Live" entry visible. Install entry is now properly constructed with a `menuentry` block.
+- **CRITICAL**: Fixed post-restore poweroff causing the installer to loop — Clonezilla powered off the VM after restoring, and rebooting with the ISO still attached restarted the install process. Now ejects the install media and reboots so the VM boots directly into the installed OS.
+
+### Changed
+- ISO boot menu simplified to just two entries: "Install shaughvOS" and "Power off". Removed the "shaughvOS Live" entry (booted raw Clonezilla, not shaughvOS) and "Advanced options" submenu.
+- Default desktop changed from `none` to `xfce` in `shaughvos.txt` — makes the configuration self-consistent with the autostart index (2 = desktop autologin) and software install list (ID 25 = Xfce).
+- Post-restore action changed from `poweroff` to auto-eject + reboot via a `postaction.sh` script baked into the ISO. Works for both UEFI (GRUB) and BIOS (syslinux) boot modes.
+- Syslinux BIOS boot menu cleaned up — removed stray `MENU END` with no matching `MENU BEGIN`.
+
+### Added
+- Detailed installation guides in README for Raspberry Pi, Native PC/Laptop/Intel Mac, and VirtualBox VMs. Recommends Balena Etcher for flashing.
+
+---
+
 ## [1.5.0] — 2026-04-12
 
 ### Fixed

@@ -703,56 +703,57 @@ message-color: "#ffffff"
     selected_item_pixmap_style = "select_bkg_*.png"
 }
 _EOF_
-			# Make the original Clonezilla Live menu a submenu of a simplified shaughvOS install main menu
+			# Create post-restore script that ejects the install media before rebooting
+			# so the VM/PC boots from the hard disk instead of looping the installer.
+			# Clonezilla Live mounts the ISO at /run/live/medium/.
+			cat << '_EOF_' > tmpiso/postaction.sh
+#!/bin/bash
+eject /dev/sr0 2>/dev/null
+eject /dev/cdrom 2>/dev/null
+reboot
+_EOF_
+			G_EXEC chmod +x tmpiso/postaction.sh
+
+			# Replace Clonezilla boot menu with a simplified shaughvOS installer menu
 			G_EXEC mv tmpiso/boot/grub/{grub,clonezilla}.cfg
+			# Extract preamble (everything before the first menuentry)
 			sed '/^menuentry /,$d' tmpiso/boot/grub/clonezilla.cfg > tmpiso/boot/grub/grub.cfg
-			sed -n '/menuentry .*Safe graphic/,/}/s/^  //p' tmpiso/boot/grub/clonezilla.cfg >> tmpiso/boot/grub/grub.cfg
-			# -e2: use CHS geometry info from EDD for partition creation with sfdisk
+			# Apply preamble settings: infinite timeout + theme
+			# shellcheck disable=SC2016
+			sed --follow-symlinks -i -e '/^set timeout=/c\set timeout="-1"' -e '/^set pref=/a\set theme=$pref/theme.txt' tmpiso/boot/grub/grub.cfg
+			# Add "Install shaughvOS" entry (Safe graphic base, modified for restore mode)
 			# -icds: skip disk size check before creating partition table
 			# -k1: resize partition after creation
 			# -r: resize filesystem after partition resize
-			# shellcheck disable=SC2016
-			sed --follow-symlinks -i  -e '/^set timeout=/c\set timeout="-1"' -e '/^set pref=/a\set theme=\$pref/theme.txt' -e '/^menuentry /c\menuentry "Install shaughvOS" {' \
-				-e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' -e 's/ocs-live-general/ocs-live-restore/' \
-				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p poweroff restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
-				-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/' tmpiso/boot/grub/grub.cfg
-			# Add a direct Live boot entry (same Safe graphic base, but keep ocs-live-general mode)
+			# -e2: use CHS geometry info from EDD for partition creation with sfdisk
 			{
-				echo 'menuentry "shaughvOS Live" {'
-				sed -n '/menuentry .*Safe graphic/,/}/s/^  //p' tmpiso/boot/grub/clonezilla.cfg
+				echo 'menuentry "Install shaughvOS" {'
+				sed -n '/menuentry .*Safe graphic/,/}/s/^  //p' tmpiso/boot/grub/clonezilla.cfg | \
+					sed -e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' -e 's/ocs-live-general/ocs-live-restore/' \
+						-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p /run/live/medium/postaction.sh restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
+						-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/'
 				echo '}'
 			} >> tmpiso/boot/grub/grub.cfg
 			cat << '_EOF_' >> tmpiso/boot/grub/grub.cfg
-submenu "Advanced options" { configfile /boot/grub/clonezilla.cfg }
 menuentry "Power off" { halt }
 _EOF_
 			### Prepare custom files used by the installer when booting in BIOS/CSM mode ###
-			# Make the original Clonezilla Live menu a submenu of a simplified shaughvOS install main menu
+			# Replace Clonezilla syslinux menu with a simplified shaughvOS installer menu
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/.build/images/Clonezilla/shaughvos-background_480p.png" -o tmpiso/syslinux/shaughvosbg.png
 			G_EXEC cp /usr/lib/syslinux/modules/bios/poweroff.c32 tmpiso/syslinux/
 			G_EXEC mv tmpiso/syslinux/{syslinux,clonezilla}.cfg
-			sed --follow-symlinks -i '/^MENU TITLE/c\MENU TITLE shaughvOS Live' tmpiso/syslinux/clonezilla.cfg
 			sed '/^label /,$d' tmpiso/syslinux/clonezilla.cfg > tmpiso/syslinux/syslinux.cfg
 			sed -n '/^label .*framebuffer/,/ENDTEXT/p' tmpiso/syslinux/clonezilla.cfg >> tmpiso/syslinux/syslinux.cfg
 			sed --follow-symlinks -i  -e '/^timeout /c\timeout 0' -e 's|\(MENU BACKGROUND\) .*|\1 shaughvosbg.png|' -e '/^MENU TITLE /c\MENU TABMSG' \
 				-e '/menu title/d' -e '/^say /d' -e '/MENU MARGIN/a\MENU HSHIFT 80\n MENU COLOR BORDER 0 #00000000 #00000000 none' \
 				-e '/^label /c\label Install shaughvOS' -e '/^  MENU LABEL /c\  MENU LABEL Install shaughvOS' -e '/^  TEXT HELP/,/^  ENDTEXT/d' \
 				-e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' -e 's/ocs-live-general/ocs-live-restore/' \
-				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p poweroff restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
+				-e "s|ocs_live_extra_param=\"\"|ocs_live_extra_param=\"-icds -k1 -r -e2 -j2 -b -p /run/live/medium/postaction.sh restoredisk $OUTPUT_IMG_NAME ask_user\"|" \
 				-e 's/ocs_live_batch="no"/ocs_live_batch="yes"/' tmpiso/syslinux/syslinux.cfg
-			# Add a direct Live boot entry (same framebuffer base, keeping ocs-live-general mode)
-			sed -n '/^label .*framebuffer/,/ENDTEXT/p' tmpiso/syslinux/clonezilla.cfg | \
-				sed -e '/^label /c\label shaughvOS Live' -e '/^  MENU LABEL /c\  MENU LABEL shaughvOS Live' \
-					-e '/^  TEXT HELP/,/^  ENDTEXT/d' \
-					-e 's/locales= /locales=C.UTF-8 /' -e 's/keyboard-layouts= /keyboard-layouts=gb /' >> tmpiso/syslinux/syslinux.cfg
 			cat << '_EOF_' >> tmpiso/syslinux/syslinux.cfg
-MENU BEGIN Advanced options
-  INCLUDE clonezilla.cfg
-MENU END
 label Power off
   MENU LABEL Power off
   COM32 poweroff.c32
-MENU END
 _EOF_
 			G_EXEC cp tmpiso/syslinux/{syslinux,isolinux}.cfg
 

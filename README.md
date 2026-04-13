@@ -56,26 +56,75 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 
 ## Installation
 
-### Download a pre-built image
+### Downloads
 
 | Image | Hardware | How to use | Download |
 |-------|----------|-----------|----------|
-| **Raspberry Pi 2/3/4** | RPi 2, 3, 3B+, 4, 4B (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) |
-| **Raspberry Pi 5** | RPi 5 (ARM 64-bit) | Balena Etcher or `dd` to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi5-aarch64.img.xz) |
-| **Native PC** | PCs, laptops, Intel Macs (x86_64) | Flash to USB with Etcher or Rufus | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64.img.xz) |
+| **Raspberry Pi 2/3/4** | RPi 2, 3, 3B+, 4, 4B (ARM 64-bit) | Flash to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) |
+| **Raspberry Pi 5** | RPi 5 (ARM 64-bit) | Flash to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi5-aarch64.img.xz) |
+| **Native PC** | PCs, laptops, Intel Macs (x86_64) | Flash to USB drive | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64.img.xz) |
 | **Native PC Installer** | PCs, laptops, Intel Macs (x86_64) | Boot from USB, installs to internal drive | [**Download .iso**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_Installer.iso) |
 | **Virtual Machine** | VirtualBox, VMware, UTM, QEMU | Import as raw disk image | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64.img.xz) |
 | **VM Installer** | VirtualBox, VMware, UTM, QEMU | Boot ISO in VM, installs to virtual disk | [**Download .iso**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer.iso) |
 
-> **Which image do I need?**
-> - **Raspberry Pi 2/3/4** share the same image — one download covers all three generations.
-> - **Raspberry Pi 5** requires its own image due to a different bootloader and device tree.
-> - **Native PC (.img.xz)** — flash directly to USB with Etcher or Rufus, then boot from it.
-> - **Native PC Installer (.iso)** — boot from USB to launch a guided Clonezilla installer that writes shaughvOS to your internal drive.
-> - **VM (.img.xz)** — import as a raw disk image in your hypervisor.
-> - **VM Installer (.iso)** — boot the ISO in your VM to install shaughvOS to the virtual disk.
->
 > All images and SHA256 checksums are also available on the [Releases](https://github.com/RealEmmettS/shaughvOS/releases/latest) page.
+
+### Raspberry Pi
+
+**What you need:** A Raspberry Pi 2, 3, 4, or 5, a microSD card (8 GB or larger), and another computer to flash the image.
+
+1. Download the correct image for your Pi from the table above.
+   - RPi 2, 3, and 4 share the same image.
+   - RPi 5 requires its own image (different bootloader).
+2. Download and install [Balena Etcher](https://etcher.balena.io/).
+3. Open Balena Etcher, select the `.img.xz` file (no need to decompress it), select your microSD card as the target, and click **Flash**.
+4. Insert the microSD card into your Pi and power it on.
+5. shaughvOS will run first-boot setup automatically — this takes a few minutes. When it finishes, the Xfce desktop appears with autologin.
+
+### Native PC / Laptop / Intel Mac
+
+**Option A: Run directly from USB**
+
+1. Download the **Native PC** `.img.xz` image.
+2. Open [Balena Etcher](https://etcher.balena.io/), select the `.img.xz` file, select your USB drive, and click **Flash**.
+3. Boot your computer from the USB drive:
+   - **PC:** Press `F12`, `F2`, `Esc`, or `Del` during startup to open the boot menu (varies by manufacturer), then select the USB drive.
+   - **Intel Mac:** Hold the `Option` key at startup, then select the USB drive from the Startup Manager.
+4. shaughvOS runs first-boot setup on the first boot, then starts the Xfce desktop.
+
+**Option B: Install to internal drive**
+
+1. Download the **Native PC Installer** `.iso` image.
+2. Flash the `.iso` to a USB drive using [Balena Etcher](https://etcher.balena.io/).
+3. Boot from the USB drive (same key as above).
+4. Select **Install shaughvOS** from the boot menu. The installer writes shaughvOS to your internal drive automatically and reboots when finished.
+5. Remove the USB drive when the system reboots so it boots from the internal drive.
+
+### VirtualBox VM
+
+1. Download the **VM Installer** `.iso` from the table above.
+2. Open VirtualBox and click **New** to create a new virtual machine.
+3. Configure the VM with these settings:
+
+   | Setting | Value |
+   |---------|-------|
+   | **Name** | `shaughvOS` (or any name) |
+   | **Type** | Linux |
+   | **Version** | Debian (64-bit) |
+   | **Base Memory** | 2048 MB minimum (4096 MB recommended) |
+   | **Processors** | 2 or more |
+   | **Hard Disk** | Create a virtual hard disk, VDI, 20 GB or larger |
+
+4. Before starting the VM, open **Settings** and adjust:
+   - **Storage:** Click the empty optical drive under Controller: IDE, then click the disk icon on the right and select **Choose a disk file**. Select the `.iso` you downloaded.
+   - **Display > Video Memory:** Set to 128 MB.
+
+5. Click **Start**. The boot menu appears with two options:
+   - **Install shaughvOS** — select this to begin installation.
+   - **Power off** — shuts down the VM.
+
+6. The installer restores shaughvOS to the virtual disk automatically. When it finishes, the install media is ejected and the VM reboots into shaughvOS.
+7. First-boot setup runs automatically (updates, software installation). When it finishes, the Xfce desktop appears with autologin.
 
 ### Install on an existing Debian system
 
