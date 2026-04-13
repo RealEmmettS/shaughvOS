@@ -652,9 +652,7 @@ _EOF_
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
 			G_EXEC mkdir -p "$live_root/etc/calamares/branding/shaughvos" "$live_root/etc/calamares/modules"
-			for f in settings.conf; do
-				G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/$f" -o "$live_root/etc/calamares/$f"
-			done
+			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/settings.conf" -o "$live_root/etc/calamares/settings.conf"
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/branding/shaughvos/branding.desc" -o "$live_root/etc/calamares/branding/shaughvos/branding.desc"
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/shaughv-logo.svg" -o "$live_root/etc/calamares/branding/shaughvos/shaughv-logo.svg"
 			for f in unpackfs.conf bootloader.conf finished.conf users.conf partition.conf welcome.conf; do
@@ -787,7 +785,7 @@ _EOF_
 				"boot/grub/grub.cfg=/tmp/grub-embed.cfg"
 			G_EXEC rm /tmp/grub-embed.cfg
 			(
-				cd tmpiso
+				cd tmpiso || exit 1
 				dd if=/dev/zero of=efiboot.img bs=1M count=20 2>/dev/null
 				mkfs.vfat efiboot.img > /dev/null
 				mmd -i efiboot.img ::/EFI ::/EFI/BOOT
