@@ -633,10 +633,20 @@ _EOF_
 			local live_root='/tmp/shaughvos-live-rootfs'
 			[[ -e 'tmpiso' ]] && G_EXEC rm -R tmpiso
 
-			### Step 1: Mount the source .img and prepare root filesystem ###
-			G_SHAUGHVOS-NOTIFY 2 'Mounting source image'
-			G_EXEC mkdir -p "$live_root"
-			G_EXEC mount "$FP_ROOT_DEV" "$live_root"
+			### Step 1: Copy root filesystem to a larger temporary image ###
+			# The imager has already shrunk and truncated the .img to minimum size.
+			# We need a larger writable copy to install Calamares, live-boot, etc.
+			G_SHAUGHVOS-NOTIFY 2 'Creating temporary root filesystem image (3 GiB)'
+			G_EXEC dd if=/dev/zero of=/tmp/live-root.img bs=1M count=3072
+			G_EXEC mkfs.ext4 -q -m0 /tmp/live-root.img
+			G_EXEC mkdir -p "$live_root" /tmp/live-src
+			G_EXEC mount "$FP_ROOT_DEV" /tmp/live-src -o ro
+			G_EXEC mount /tmp/live-root.img "$live_root"
+			G_SHAUGHVOS-NOTIFY 2 'Copying root filesystem to temporary image'
+			G_EXEC_OUTPUT=1 G_EXEC cp -a /tmp/live-src/. "$live_root/"
+			G_EXEC umount /tmp/live-src
+			G_EXEC rmdir /tmp/live-src
+			Delete_Loopback
 
 			### Step 2: Install live-boot + Calamares into the root filesystem ###
 			G_SHAUGHVOS-NOTIFY 2 'Installing live-boot and Calamares into root filesystem'
@@ -687,10 +697,10 @@ _EOF_
 				"$live_root" tmpiso/live/filesystem.squashfs \
 				-e boot -comp zstd -Xcompression-level 15 -no-exports -noappend
 
-			### Step 9: Unmount source image ###
+			### Step 9: Unmount and clean up temporary image ###
 			G_EXEC umount "$live_root"
-			Delete_Loopback
 			G_EXEC rmdir "$live_root"
+			G_EXEC rm /tmp/live-root.img
 
 			### Step 10: Create GRUB config for UEFI boot ###
 			# Download shaughvOS background for boot menu
