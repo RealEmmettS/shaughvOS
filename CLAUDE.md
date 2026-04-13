@@ -17,12 +17,15 @@ shaughvOS is a **fully independent project**. It is NOT a contributor to, nor af
 
 ### Release Verification Checklist
 
+**IMPORTANT**: Do NOT create GitHub Releases manually with `gh release create`. The `release-images.yml` CI workflow automatically creates the Release and attaches build artifacts (ISO images, checksums) when a `v*` tag is pushed. Manually creating a release first causes CI to fail with "a release with the same tag name already exists."
+
 After tagging and pushing a new release:
 1. Confirm the release workflow triggered: `gh run list --workflow=release-images.yml --limit 1`
-2. Wait for all build jobs to complete (typically 5-8 minutes)
+2. Wait for all build jobs to complete (typically 15-20 minutes)
 3. Verify the GitHub Release was created with all expected assets: `gh api repos/RealEmmettS/shaughvOS/releases --jq '.[0] | "\(.tag_name): \(.assets | length) assets"'`
 4. Test download links from README and the homepage
 5. If any builds failed, check logs: `gh run view <run-id> --log-failed`
+6. If CI release step failed due to existing release: delete the release (`gh release delete <tag> --yes`), delete the tag (`git push --delete origin <tag>`), then re-push the tag to re-trigger CI
 
 ### Key Documents
 - `QUBETX_INTEGRATION.md` — aspirational goals and feature research
