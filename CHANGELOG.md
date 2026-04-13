@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+---
+
+## [1.8.1] — 2026-04-13
+
 ### Fixed
 - Fixed live-boot ISO failing to reach desktop — `/etc/fstab` from build environment contained invalid PARTUUIDs causing mount errors in the live overlay. Now cleared for live-boot; Calamares regenerates correct fstab during installation.
 - Fixed cascade of systemd service failures during live boot — disabled `shaughvos-fs_partition_resize`, `shaughvos-firstboot`, `shaughvos-preboot`, and `shaughvos-ramlog` services that expect real installed hardware. These are re-enabled by Calamares during installation.
