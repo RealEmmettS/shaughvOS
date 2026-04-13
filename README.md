@@ -11,9 +11,29 @@
 
 ## What is shaughvOS?
 
-shaughvOS is a custom, lightweight operating system built on a Debian foundation. It ships with a polished Xfce desktop, powerful diagnostic tools, and a streamlined terminal experience — all pre-configured and ready to use out of the box.
+shaughvOS is a custom, lightweight operating system built on a Debian foundation. It comes ready to use out of the box — a polished desktop, professional diagnostic tools, and a streamlined terminal experience, all pre-configured so you can get to work immediately.
 
-Designed for Raspberry Pi 2/3/4/5, x86_64 PCs and laptops, Intel Macs, and virtual machines. Can also run just as easily off of a live-boot flash drive.
+shaughvOS is the personal edition developed and used by [Emmett Shaughnessy](https://github.com/RealEmmettS), powered by [QubeTX](https://github.com/QubeTX) diagnostic tooling. It serves as the development testbed and daily-driver OS. An official QubeTX-branded edition for enterprise and professional deployment is in development.
+
+Whether you're setting up a home server on a Raspberry Pi, diagnosing network issues on a client's machine, or just want a clean, fast Linux desktop, shaughvOS has you covered.
+
+**Runs on:** Raspberry Pi 2/3/4/5, x86_64 PCs and laptops, Intel Macs, and virtual machines. Can also run as a live system directly from a USB drive without installing.
+
+## What Can I Do With It?
+
+### For Everyday Users
+
+- **A beautiful, fast desktop** — shaughvOS boots into a polished Xfce desktop with the Dracula dark theme, custom fonts, and a clean taskbar. No bloatware, no clutter.
+- **Try before you install** — boot the installer ISO to get a full live desktop you can explore. If you like it, click "Install" and it's on your disk in minutes.
+- **Developer tools included** — Node.js, npm, and Claude Code CLI come pre-installed, so you can start coding right away.
+- **Easy mode switching** — type `desktop on` for the graphical desktop or `desktop off` for a minimal console. Switch anytime.
+
+### For Technicians & IT Professionals
+
+- **Instant system diagnostics** — three professional-grade tools run automatically on every login, giving you CPU, memory, disk, and network status at a glance.
+- **Network troubleshooting** — 17 deep diagnostic checks including DNS resolution, gateway reachability, packet loss, MTU testing, and quad-provider speed testing with bufferbloat grading.
+- **Portable diagnostic toolkit** — boot from a USB drive on any x86_64 machine to diagnose problems without touching the existing OS.
+- **Headless server ready** — switch to console mode for a minimal-footprint server. Perfect for Raspberry Pi home labs, media servers, or IoT projects.
 
 ## Features
 
@@ -21,18 +41,28 @@ Designed for Raspberry Pi 2/3/4/5, x86_64 PCs and laptops, Intel Macs, and virtu
 
 Three professional-grade diagnostic tools are pre-installed on every shaughvOS system:
 
-- **TR-300** (`tr300`) — Machine report with system info, CPU/memory/disk graphs, network details. Runs automatically on every terminal session.
-- **ND-300** (`nd300`) — Network diagnostics with 8 core checks (user mode) and 17 deep diagnostics (technician mode). Includes **SpeedQX** (`speedqx`) quad-provider speed test with bufferbloat grading.
-- **SD-300** (`sd300`) — Real-time interactive system diagnostic TUI with 9 monitoring sections.
+| Tool | Command | What It Does |
+|------|---------|--------------|
+| **TR-300** | `tr300` | Machine report — system info, CPU/memory/disk graphs, network details. Runs automatically on every terminal session. |
+| **ND-300** | `nd300` | Network diagnostics — 8 core checks (user mode) or 17 deep diagnostics (technician mode with `nd300 -t`). |
+| **SpeedQX** | `speedqx` | Quad-provider speed test with download/upload speeds and bufferbloat grading. |
+| **SD-300** | `sd300` | Real-time interactive system diagnostic TUI with 9 monitoring sections. |
 
 ### Desktop Environment
 
-- **Xfce** with the **Dracula** dark theme — GTK, window manager, terminal, and icons
+- **Xfce** with the **Dracula** dark theme — GTK, window manager, terminal, and Papirus icons
 - **Makira** sans-serif font for system UI
 - **IBM Plex Mono** for terminal and code
 - Custom desktop wallpaper
 - Bottom taskbar with app menu and system tray
 - Toggle between desktop and console with `desktop on` / `desktop off`
+
+### Pre-Installed Software
+
+- **Node.js & npm** — JavaScript runtime and package manager
+- **Claude Code** — AI-powered coding assistant CLI
+- **Dropbear SSH** — lightweight SSH server for remote access
+- **Standard Debian tools** — apt, systemd, networking, and the full Debian package ecosystem
 
 ### Boot Experience
 
@@ -47,12 +77,12 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 | `desktop on` | Switch to desktop mode |
 | `desktop off` | Switch to console mode |
 | `desktop status` | Show current display mode |
+| `tr300` or `report` | Machine report |
 | `tr300 --fast` | Quick machine report |
-| `nd300` | Network diagnostics |
-| `nd300 -t` | Technician-mode deep diagnostics |
+| `nd300` | Network diagnostics (user mode) |
+| `nd300 -t` | Network diagnostics (technician mode) |
 | `speedqx` | Quad-provider speed test |
 | `sd300` | Interactive system monitoring TUI |
-| `report` | Alias for `tr300` |
 
 ## Installation
 
@@ -161,6 +191,30 @@ You will be prompted to change both passwords on first boot. The `admin` account
 | **Apple Silicon Macs** | aarch64 | VM | Via UTM or Parallels only (no native boot). |
 | **Virtual Machines** | x86_64 / aarch64 | VM | VirtualBox, VMware, UTM, QEMU, Parallels. |
 
+## Technical Details
+
+### System Architecture
+
+shaughvOS is built on Debian Trixie (13) with a minimal footprint optimized for single-board computers and lightweight deployments. The system uses:
+
+- **Kernel:** Standard Debian `linux-image-amd64` (x86) or Raspberry Pi kernel (ARM)
+- **Init:** systemd with boot-optimized service ordering
+- **Display manager:** LightDM with autologin
+- **Desktop:** Xfce 4 with Dracula GTK/icon/WM themes
+- **SSH:** Dropbear (lightweight) by default, OpenSSH available
+
+### OTA Updates
+
+shaughvOS devices check for updates automatically. When a new version is available, `shaughvos-update` pulls changes from the `master` branch on GitHub and applies incremental patches. No manual download or reinstall required.
+
+### ISO Installer Architecture
+
+The installer ISO uses Debian's `live-boot` system to boot a complete shaughvOS desktop in RAM. The **Calamares** installer framework (used by Manjaro, KDE Neon, Kubuntu, and 20+ Linux distributions) handles disk partitioning, filesystem creation, OS extraction from squashfs, and GRUB bootloader installation — all dynamically configured for your specific hardware.
+
+### Software Management
+
+shaughvOS uses APT (the standard Debian package manager) for all software. The full Debian package repository is available. Additionally, `shaughvos-software` provides a curated menu of pre-configured applications with one-command installs.
+
 ## Branch System
 
 | Branch | Purpose |
@@ -220,6 +274,7 @@ shaughvOS includes or integrates with software from many open-source projects, i
 [Debian](https://salsa.debian.org/),
 [Raspberry Pi](https://github.com/raspberrypi),
 [Xfce](https://git.xfce.org/),
+[Calamares](https://github.com/calamares/calamares),
 [Dracula Theme](https://draculatheme.com/),
 [Papirus Icons](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme),
 [Plymouth](https://gitlab.freedesktop.org/plymouth/plymouth),
