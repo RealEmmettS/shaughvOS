@@ -11,6 +11,21 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.12.0] — 2026-04-14
+
+### Fixed
+- **CRITICAL**: Fixed login loop on installed system (v1.11.0 fix was insufficient) — the Xfce session crashed immediately after login due to multiple cascading issues:
+  1. `apt-get autoremove` in Calamares shellprocess could silently remove packages critical to the desktop session (D-Bus, session manager). Now marks all critical desktop/session packages as manually installed before autoremove runs.
+  2. Missing D-Bus session bus fallback — `dbus-x11` was not installed, so if `dbus-user-session`'s systemd --user integration failed, there was no fallback `dbus-launch`. Now installs `dbus-x11` as belt-and-suspenders.
+  3. xfwm4 compositor could crash with nomodeset/fbdev/vesa (no hardware GL) on VirtualBox. Disabled compositor in default config.
+  4. Missing Calamares `displaymanager` module — `doAutologin: true` in `users.conf` was never acted on because the `displaymanager` module wasn't in the exec sequence. Added it with LightDM + Xfce configuration.
+- Fixed black greeter background (v1.11.0 fix was insufficient) — the conditional wallpaper download skipped re-download if a file existed (even if corrupt/empty). Now always downloads fresh from GitHub.
+
+### Added
+- Diagnostic session wrapper (`/usr/local/bin/shaughvos-xsession-wrapper`) — logs session startup info (user, DISPLAY, D-Bus, available sessions, critical packages) to `/var/log/lightdm/shaughvos-session.log` on every login attempt. Enables rapid diagnosis of future login issues.
+
+---
+
 ## [1.11.0] — 2026-04-14
 
 ### Fixed

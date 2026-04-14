@@ -709,11 +709,10 @@ SUDOERS
 			chmod 0440 "$live_root/etc/sudoers.d/live-admin"
 			# Set desktop autostart mode for the live session
 			echo 2 > "$live_root/boot/shaughvos/.shaughvos-autostart_index"
-			# Guarantee greeter wallpaper exists — the base image downloads it via curl with || true,
-			# so if that download failed the squashfs would be missing the file and the greeter shows black.
-			# Download from GitHub since the imager runs outside the repo checkout in CI.
+			# Guarantee greeter wallpaper exists — always download fresh from GitHub.
+			# Don't trust the base image's copy (curl || true could have silently failed).
 			G_EXEC mkdir -p "$live_root/usr/share/backgrounds/shaughvos"
-			[[ -f "$live_root/usr/share/backgrounds/shaughvos/desktop_background.jpg" ]] || G_EXEC curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background.jpg" "https://raw.githubusercontent.com/${G_GITOWNER:-RealEmmettS}/shaughvOS/${G_GITBRANCH:-master}/assets/desktop_background.jpg"
+			G_EXEC curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background.jpg" "https://raw.githubusercontent.com/${G_GITOWNER:-RealEmmettS}/shaughvOS/${G_GITBRANCH:-master}/assets/desktop_background.jpg"
 			# Ensure desktop autologin for the live session
 			G_EXEC mkdir -p "$live_root/etc/lightdm/lightdm.conf.d"
 			cat > "$live_root/etc/lightdm/lightdm.conf.d/live-autologin.conf" << 'AUTOLOGIN'
@@ -727,7 +726,27 @@ AUTOLOGIN
 			cat > "$live_root/etc/lightdm/lightdm.conf.d/50-shaughvos.conf" << 'SHAUGHVOS_SESSION'
 [Seat:*]
 user-session=xfce
+session-wrapper=/usr/local/bin/shaughvos-xsession-wrapper
 SHAUGHVOS_SESSION
+			# Diagnostic session wrapper — logs session startup info for debugging login loops
+			cat > "$live_root/usr/local/bin/shaughvos-xsession-wrapper" << 'XWRAPPER'
+#!/bin/sh
+# shaughvOS X session wrapper — logs session startup for diagnostics
+LOG="/var/log/lightdm/shaughvos-session.log"
+echo "=== Session start: $(date) ===" >> "$LOG" 2>/dev/null
+echo "User: $(whoami) (UID: $(id -u))" >> "$LOG" 2>/dev/null
+echo "DISPLAY=$DISPLAY" >> "$LOG" 2>/dev/null
+echo "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" >> "$LOG" 2>/dev/null
+echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS" >> "$LOG" 2>/dev/null
+echo "Session arg: $1" >> "$LOG" 2>/dev/null
+echo "--- xsessions available ---" >> "$LOG" 2>/dev/null
+ls -la /usr/share/xsessions/ >> "$LOG" 2>/dev/null
+echo "--- critical packages ---" >> "$LOG" 2>/dev/null
+dpkg -l xfce4-session dbus-user-session dbus-x11 lightdm 2>/dev/null | tail -5 >> "$LOG" 2>/dev/null
+echo "--- starting session ---" >> "$LOG" 2>/dev/null
+exec /etc/X11/Xsession "$@"
+XWRAPPER
+			chmod +x "$live_root/usr/local/bin/shaughvos-xsession-wrapper"
 			chroot "$live_root" systemctl enable lightdm 2>/dev/null || true
 			# Belt and suspenders: create the display-manager symlink directly in case systemctl enable failed in chroot
 			ln -sf /lib/systemd/system/lightdm.service "$live_root/etc/systemd/system/display-manager.service"

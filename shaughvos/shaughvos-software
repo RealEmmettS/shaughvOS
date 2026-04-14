@@ -3407,6 +3407,7 @@ _EOF_
   <property name="general" type="empty">
     <property name="theme" type="string" value="Dracula"/>
     <property name="title_font" type="string" value="Makira SemiBold 10"/>
+    <property name="use_compositing" type="bool" value="false"/>
   </property>
 </channel>
 _EOF_

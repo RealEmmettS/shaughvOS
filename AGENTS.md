@@ -239,7 +239,7 @@ Two mechanisms exist (important for understanding conflicts):
 - **Non-root (modern):** lightdm (`display-manager.service`) → autologin → Xfce session — comment in `shaughvos-login:34` confirms "non-root autologins are done via LightDM service since v7.2"
 - **`desktop` command:** Uses `systemctl start/stop lightdm` — works with the lightdm mechanism
 
-### Installed System LightDM Configuration (v1.11.0+)
+### Installed System LightDM Configuration (v1.12.0+)
 
 After Calamares installs from the live ISO, the installed system's LightDM state:
 - `/etc/lightdm/lightdm.conf.d/50-shaughvos.conf` — persistent config with `user-session=xfce` (survives shellprocess cleanup)
@@ -247,7 +247,7 @@ After Calamares installs from the live ISO, the installed system's LightDM state
 - `/etc/lightdm/lightdm.conf.d/live-autologin.conf` — **REMOVED** by shellprocess (was only for the live session)
 - `/etc/default/grub` has `GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0 nomodeset quiet splash"` — enables Plymouth boot splash
 
-### Plymouth Boot Splash (v1.11.0+)
+### Plymouth Boot Splash (v1.12.0+)
 
 Plymouth requires three things on the installed system:
 1. `quiet splash` in `/etc/default/grub` — injected by imager into squashfs
@@ -268,7 +268,7 @@ Calamares `shellprocess.conf` removes `live-autologin.conf` (which contained `au
 The base image's `shaughvos-software` downloads wallpapers with `curl ... || true` (silent fail). If the download fails, the greeter shows a black background. The imager now checks if the file exists and downloads from GitHub if missing.
 
 ### Never Use `git push --tags`
-Push specific tags only (e.g., `git push origin v1.11.0`). `--tags` leaks old DietPi-era tags that break CI workflows.
+Push specific tags only (e.g., `git push origin v1.12.0`). `--tags` leaks old DietPi-era tags that break CI workflows.
 
 ### Never Create GitHub Releases Manually
 CI (`release-images.yml`) creates the Release and attaches build artifacts automatically when a `v*` tag is pushed. Running `gh release create` first blocks CI with "release already exists."
@@ -290,4 +290,4 @@ Files in `rootfs/` are copied to `/` by the installer via `cp -a "$dir/rootfs/."
 
 ## Current Version
 
-shaughvOS v1.11.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.12.0 (`.update/version`). Minimum Debian version: 7+.
