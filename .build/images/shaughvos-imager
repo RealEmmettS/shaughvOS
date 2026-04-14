@@ -656,8 +656,8 @@ _EOF_
 			G_EXEC mount -t tmpfs tmpfs "$live_root/run"
 			# Ensure DNS works inside chroot
 			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
-			G_EXEC_DESC='Installing live-boot, Calamares, and LightDM' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter'
+			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, and display drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
+				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev'
 
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
@@ -689,6 +689,9 @@ _EOF_
 			chroot "$live_root" systemctl disable shaughvos-preboot 2>/dev/null || true
 			chroot "$live_root" systemctl disable shaughvos-postboot 2>/dev/null || true
 			chroot "$live_root" systemctl disable shaughvos-ramlog 2>/dev/null || true
+			# Disable root's getty autologin — the live session uses lightdm for admin, not root's startx
+			rm -f "$live_root/etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf"
+			rm -f "$live_root/etc/systemd/system/console-getty.service.d/shaughvos-autologin.conf"
 			# Mark setup as complete — prevents shaughvos-login from entering first-run/error mode
 			echo 2 > "$live_root/boot/shaughvos/.install_stage"
 			# Set passwords for live session (admin + root)
@@ -709,6 +712,8 @@ AUTOLOGIN
 			chroot "$live_root" systemctl enable lightdm 2>/dev/null || true
 			# Belt and suspenders: create the display-manager symlink directly in case systemctl enable failed in chroot
 			ln -sf /lib/systemd/system/lightdm.service "$live_root/etc/systemd/system/display-manager.service"
+			# Set graphical.target as default so systemd starts lightdm on boot (base image defaults to multi-user.target)
+			chroot "$live_root" systemctl set-default graphical.target 2>/dev/null || ln -sf /lib/systemd/system/graphical.target "$live_root/etc/systemd/system/default.target"
 
 			### Step 6: Create staging directory for ISO ###
 			G_SHAUGHVOS-NOTIFY 2 'Creating ISO staging directory'

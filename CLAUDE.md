@@ -194,4 +194,4 @@ Pre-installed software: Node.js, npm, Claude Code CLI.
 
 ## Current Version
 
-shaughvOS v1.8.5 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.8.6 (`.update/version`). Minimum Debian version: 7+.

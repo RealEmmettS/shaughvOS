@@ -11,6 +11,17 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.8.6] — 2026-04-13
+
+### Fixed
+- **CRITICAL**: Fixed live ISO black screen after selecting "Install shaughvOS" — three cascading failures prevented the graphical desktop from ever appearing:
+  1. systemd default target was `multi-user.target`, so lightdm (installed in v1.8.5) never started — `display-manager.service` is only activated by `graphical.target`. Now set `graphical.target` as default for the live session.
+  2. Root's getty autologin on tty1 ran `exec startx` in a loop — the base image's root autologin triggered `shaughvos-login` → `Run_AutoStart(2)` → `exec startx`, which crashed (wrong display driver) and killed the tty. With `quiet splash` kernel params, the crash loop was invisible — just a permanent black screen. Now removed root's getty autologin for the live session.
+  3. Wrong X11 display driver — the build container installed `xserver-xorg-video-vmware` (designed for VMware KMS), but VirtualBox with `nomodeset` has no KMS. Xorg had no working driver and crashed immediately. Now install `xserver-xorg-video-fbdev` as a universal fallback that works with any kernel framebuffer.
+- Updated Calamares `shellprocess.conf` to also clean up root's getty autologin conf on the installed system.
+
+---
+
 ## [1.8.5] — 2026-04-13
 
 ### Fixed
