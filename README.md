@@ -15,47 +15,18 @@ shaughvOS is a custom, lightweight operating system built on a Debian foundation
 
 shaughvOS is the personal edition developed and used by [Emmett Shaughnessy](https://github.com/RealEmmettS), powered by [QubeTX](https://github.com/QubeTX) diagnostic tooling. It serves as the development testbed and daily-driver OS. An official QubeTX-branded edition for enterprise and professional deployment is in development.
 
-Whether you're setting up a home server on a Raspberry Pi, diagnosing network issues on a client's machine, or just want a clean, fast Linux desktop, shaughvOS has you covered.
-
 **Runs on:** Raspberry Pi 2/3/4/5, x86_64 PCs and laptops, Intel Macs, and virtual machines. Can also run as a live system directly from a USB drive without installing.
 
 ## What Can I Do With It?
 
-### For Everyday Users
+- **A beautiful, fast desktop** — Xfce with the Dracula dark theme, custom fonts, and no bloatware. Toggle between desktop and console anytime with `desktop on` / `desktop off`.
+- **Instant system diagnostics** — QubeTX diagnostic tools run automatically on every login, giving you CPU, memory, disk, and network status at a glance.
+- **Network troubleshooting** — Deep diagnostic checks including DNS resolution, gateway reachability, packet loss, MTU testing, and quad-provider speed testing with bufferbloat grading.
+- **Portable diagnostic toolkit** — Boot from a USB drive on any x86_64 machine to diagnose problems without touching the existing OS.
+- **Headless server ready** — Switch to console mode for a minimal-footprint server. Perfect for Raspberry Pi home labs, media servers, or IoT projects.
+- **Developer tools on installer ISOs** — The installer ISO images include Node.js, npm, and the Claude Code CLI out of the box.
 
-- **A beautiful, fast desktop** — shaughvOS boots into a polished Xfce desktop with the Dracula dark theme, custom fonts, and a clean taskbar. No bloatware, no clutter.
-- **Try before you install** — boot the installer ISO to get a full live desktop you can explore. If you like it, click "Install" and it's on your disk in minutes.
-- **Developer tools included** — Node.js, npm, and Claude Code CLI come pre-installed, so you can start coding right away.
-- **Easy mode switching** — type `desktop on` for the graphical desktop or `desktop off` for a minimal console. Switch anytime.
-
-**Getting started (the easy way):**
-
-1. **For VirtualBox (try it on your computer):**
-   - Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (free, by Oracle) and the [VM Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer.iso).
-   - Open VirtualBox and click **New**. In the wizard, enter a name (like `shaughvOS`), set **Type** to `Linux` and **Version** to `Debian (64-bit)`. Click **Next**.
-   - On the **Hardware** page, set memory to at least `2048 MB` and processors to `2`. Click **Next**.
-   - On the **Virtual Hard Disk** page, select **Create a Virtual Hard Disk Now**, set size to `20 GB` or more. Click **Next**, then **Finish**.
-   - Before starting, click **Settings** > **Storage**, click the empty disc icon under Controller: IDE, click the small disc icon on the right, and choose **Choose a Disk File**. Select the `.iso` you downloaded. Also go to **Display** and set **Video Memory** to `128 MB`.
-   - Click **Start**. The shaughvOS desktop loads and the installer walks you through the rest.
-2. **For Raspberry Pi:**
-   - Download and install [Balena Etcher](https://etcher.balena.io/) (free, by Balena) and the [Raspberry Pi image](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz).
-   - Open Etcher, select the `.img.xz` file, select your microSD card, and click **Flash**.
-   - Plug the microSD into your Pi and power it on. Done.
-4. Default login: username `admin`, password `1234` (you'll be asked to change it on first boot).
-
-### For Technicians & IT Professionals
-
-- **Instant system diagnostics** — three professional-grade QubeTX tools run automatically on every login, giving you CPU, memory, disk, and network status at a glance.
-- **Network troubleshooting** — 17 deep diagnostic checks including DNS resolution, gateway reachability, packet loss, MTU testing, and quad-provider speed testing with bufferbloat grading.
-- **Portable diagnostic toolkit** — boot from a USB drive on any x86_64 machine to diagnose problems without touching the existing OS.
-- **Headless server ready** — switch to console mode for a minimal-footprint server. Perfect for Raspberry Pi home labs, media servers, or IoT projects.
-
-**Quick deployment:**
-
-1. **USB diagnostic boot:** Download the [NativePC Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_Installer.iso), flash to USB with [Balena Etcher](https://etcher.balena.io/) (free, by Balena), and boot any x86_64 machine from it. Select "shaughvOS Live (safe graphics)" for a non-destructive diagnostic session, or "Install shaughvOS" to deploy to the internal drive.
-2. **VirtualBox lab:** Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (free, by Oracle). Create a VM (Linux/Debian 64-bit, 4 GB RAM, 2+ CPUs, 20 GB VDI, 128 MB video). Attach the [VM Installer ISO](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_VM-x86_64_Installer.iso) to the IDE optical drive. Boot, select Install, and Calamares handles partitioning and GRUB. SSH is available immediately via Dropbear on port 22.
-3. **Raspberry Pi server:** Flash the [RPi image](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) to microSD with [Balena Etcher](https://etcher.balena.io/). After first boot, run `desktop off` to switch to headless mode. Configure via SSH (`ssh admin@<ip>`, password `1234`).
-4. **Existing Debian system:** `sudo bash -c "$(curl -sSfL https://raw.githubusercontent.com/RealEmmettS/shaughvOS/master/.build/images/shaughvos-installer)"` — converts any Debian 12+ system in-place.
+Ready to try it? See [Installation](#installation) below.
 
 ## Features
 
@@ -66,8 +37,7 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 | Tool | Command | What It Does |
 |------|---------|--------------|
 | **TR-300** | `tr300` | Machine report — system info, CPU/memory/disk graphs, network details. Runs automatically on every terminal session. |
-| **ND-300** | `nd300` | Network diagnostics — 8 core checks (user mode) or 17 deep diagnostics (technician mode with `nd300 -t`). |
-| **SpeedQX** | `speedqx` | Quad-provider speed test with download/upload speeds and bufferbloat grading. |
+| **ND-300** | `nd300` | Network diagnostics — 8 core checks (user mode) or 17 deep diagnostics (technician mode with `nd300 -t`). Includes `speedqx` for quad-provider speed testing with bufferbloat grading. |
 | **SD-300** | `sd300` | Real-time interactive system diagnostic TUI with 9 monitoring sections. |
 
 ### Desktop Environment
@@ -76,15 +46,21 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 - **Makira** sans-serif font for system UI
 - **IBM Plex Mono** for terminal and code
 - Custom desktop wallpaper
-- Bottom taskbar with app menu and system tray
 - Toggle between desktop and console with `desktop on` / `desktop off`
 
 ### Pre-Installed Software
 
+On all images:
+
+- **QubeTX 300 Series** — TR-300, ND-300, SD-300 diagnostic tools (see above)
+- **Dropbear SSH** — lightweight SSH server for remote access
+- **Xfce desktop** — with Dracula theme, auto-login on boot
+- **Standard Debian tools** — apt, systemd, networking, and the full Debian package ecosystem
+
+On installer ISOs only:
+
 - **Node.js & npm** — JavaScript runtime and package manager
 - **Claude Code** — AI-powered coding assistant CLI
-- **Dropbear SSH** — lightweight SSH server for remote access
-- **Standard Debian tools** — apt, systemd, networking, and the full Debian package ecosystem
 
 ### Boot Experience
 
@@ -112,7 +88,7 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
 
 | Image | Hardware | How to use | Download |
 |-------|----------|-----------|----------|
-| **Raspberry Pi 2/3/4** | RPi 2, 3, 3B+, 4, 4B (ARM 64-bit) | Flash to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) |
+| **Raspberry Pi 2/3/4** | RPi 2 (v1.2+), 3, 4 (ARM 64-bit) | Flash to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi234-aarch64.img.xz) |
 | **Raspberry Pi 5** | RPi 5 (ARM 64-bit) | Flash to microSD | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_RPi5-aarch64.img.xz) |
 | **Native PC** | PCs, laptops, Intel Macs (x86_64) | Flash to USB drive | [**Download .img.xz**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64.img.xz) |
 | **Native PC Installer** | PCs, laptops, Intel Macs (x86_64) | Boot from USB, installs to internal drive | [**Download .iso**](https://github.com/RealEmmettS/shaughvOS/releases/latest/download/shaughvOS_NativePC-x86_64_Installer.iso) |
@@ -173,11 +149,11 @@ Three professional-grade diagnostic tools are pre-installed on every shaughvOS s
    - **Display > Video Memory:** Set to 128 MB.
 
 5. Click **Start**. The boot menu appears with three options:
-   - **Install shaughvOS** — boots the live desktop and launches the Calamares installer
-   - **shaughvOS Live (safe graphics)** — boots the live desktop without launching the installer
+   - **Install shaughvOS** — boots the live desktop and launches the Calamares installer (boot messages visible for diagnostics)
+   - **shaughvOS Live (safe graphics)** — boots the live desktop without launching the installer (quiet boot)
    - **Power off** — shuts down the VM
 
-6. Select **Install shaughvOS**. The shaughvOS desktop loads and the Calamares installer opens automatically.
+6. Select **Install shaughvOS**. Boot messages scroll briefly, then the shaughvOS desktop loads and the Calamares installer opens automatically.
 7. Follow the installer: choose your language, keyboard layout, disk partitioning, and create a user account. Click **Install**.
 8. When installation completes, click **Restart**. The VM reboots into the installed shaughvOS with the Xfce desktop.
 
@@ -202,28 +178,30 @@ Reboot after installation completes.
 
 You will be prompted to change both passwords on first boot. The `admin` account has full `sudo` access and is used for desktop autologin.
 
-## Target Hardware
-
-| Target | Architecture | Image | Notes |
-|--------|-------------|-------|-------|
-| **Raspberry Pi 2/3/4** | aarch64 (ARMv8) | RPi234 | 1-8GB RAM. Shared boot firmware. |
-| **Raspberry Pi 5** | aarch64 (ARMv8) | RPi5 | 4-8GB RAM. Separate bootloader. |
-| **x86_64 PCs / Laptops** | x86_64 (Intel/AMD) | NativePC | Dual-boot or dedicated USB boot. |
-| **Intel Macs** | x86_64 | NativePC | USB boot via Startup Manager (hold Option at boot). |
-| **Apple Silicon Macs** | aarch64 | VM | Via UTM or Parallels only (no native boot). |
-| **Virtual Machines** | x86_64 / aarch64 | VM | VirtualBox, VMware, UTM, QEMU, Parallels. |
-
 ## Technical Details
 
 ### System Architecture
 
-shaughvOS is built on Debian Trixie (13) with a minimal footprint optimized for single-board computers and lightweight deployments. The system uses:
+shaughvOS is built on Debian 12+ (Bookworm or later) with a minimal footprint optimized for single-board computers and lightweight deployments. The system uses:
 
 - **Kernel:** Standard Debian `linux-image-amd64` (x86) or Raspberry Pi kernel (ARM)
 - **Init:** systemd with boot-optimized service ordering
 - **Display manager:** LightDM with autologin
 - **Desktop:** Xfce 4 with Dracula GTK/icon/WM themes
 - **SSH:** Dropbear (lightweight) by default, OpenSSH available
+
+### Supported Hardware
+
+| Target | Architecture | Notes |
+|--------|-------------|-------|
+| **Raspberry Pi 2/3/4** | aarch64 (ARMv8) | 1-8 GB RAM. Shared boot firmware. RPi 2 requires v1.2+. |
+| **Raspberry Pi 5** | aarch64 (ARMv8) | 4-8 GB RAM. Separate bootloader. |
+| **x86_64 PCs / Laptops** | x86_64 (Intel/AMD) | Dual-boot, dedicated install, or USB boot. |
+| **Intel Macs** | x86_64 | USB boot via Startup Manager (hold Option at boot). |
+| **Apple Silicon Macs** | aarch64 | Via UTM or Parallels only (no native boot). |
+| **Virtual Machines** | x86_64 / aarch64 | VirtualBox, VMware, UTM, QEMU, Parallels. |
+
+> The build system supports 70+ hardware models including Odroid, Pine64, NanoPi, Orange Pi, ROCK, and RISC-V boards. Official release images currently target Raspberry Pi and x86_64.
 
 ### OTA Updates
 
@@ -242,8 +220,7 @@ shaughvOS uses APT (the standard Debian package manager) for all software. The f
 | Branch | Purpose |
 |--------|---------|
 | `master` | Stable release — OTA updates pull from here |
-| `beta` | Pre-release public testing |
-| `dev` | Active development — PRs target this branch |
+| `dev` | Active development |
 
 ## Contributing
 
@@ -258,7 +235,7 @@ shaughvOS is built on the **[DietPi](https://github.com/MichaIng/DietPi)** found
 ### DietPi Credits
 
 - **[Daniel Knight](https://github.com/Fourdee)** — DietPi founder and original project lead
-- **[MichaIng](https://github.com/MichaIng)** — DietPi project lead (2019–present), primary maintainer
+- **[MichaIng](https://github.com/MichaIng)** — DietPi project lead (2019-present), primary maintainer
 - **[All DietPi contributors](https://github.com/MichaIng/DietPi/graphs/contributors)** — The community that built and maintains DietPi
 
 DietPi is licensed under GPLv2. shaughvOS preserves this license.

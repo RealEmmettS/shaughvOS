@@ -198,15 +198,19 @@ The live session differs fundamentally from the base image's boot flow. The base
 
 **Imager must configure** (all in Step 5b of `.build/images/shaughvos-imager`):
 1. `graphical.target` as systemd default — base image uses `multi-user.target`; lightdm only starts under `graphical.target`
-2. Root's getty autologin removed — otherwise root's `exec startx` conflicts with lightdm and crash-loops invisibly under `quiet splash`
-3. `xserver-xorg-video-fbdev` installed — build container may install vmware driver (if `/dev/dri` exists on runner); fbdev works universally with `nomodeset`
+2. Root's getty autologin removed — otherwise root's `exec startx` conflicts with lightdm and crash-loops invisibly
+3. `xserver-xorg-video-fbdev` + `xserver-xorg-video-vesa` installed — fbdev needs `/dev/fb0`, vesa works directly with VBE as universal fallback
 4. `lightdm` + `lightdm-gtk-greeter` installed — base image has no display manager
 5. `.install_stage=2` — prevents login script's first-run error handler
-6. Admin NOPASSWD sudo — Calamares runs `sudo calamares` with `Terminal=false`
-7. `nomodeset` on ALL GRUB/isolinux boot entries — VirtualBox VMSVGA + vmwgfx fails without it
-8. Never exclude `/boot` from squashfs — strips kernel, initrd, and all shaughvOS scripts
+6. Calamares launcher script (`/usr/local/bin/launch-calamares`) — uses `xhost` + `sudo -E` + `LIBGL_ALWAYS_SOFTWARE=1`. Never use bare `sudo calamares` — Debian 12's sudo strips DISPLAY/XAUTHORITY even with NOPASSWD
+7. Admin NOPASSWD sudo with `env_keep` for DISPLAY, XAUTHORITY, XDG_RUNTIME_DIR, DBUS_SESSION_BUS_ADDRESS
+8. polkit rule (`49-shaughvos-live.rules`) for password-free admin access
+9. `nomodeset` on ALL GRUB/isolinux boot entries — VirtualBox VMSVGA + vmwgfx fails without it
+10. Remove `quiet` from "Install" boot entry — show boot messages for diagnostics; keep `quiet splash` only on "Live (safe graphics)" entry
+11. Never exclude `/boot` from squashfs — strips kernel, initrd, and all shaughvOS scripts
+12. Explicit `update-initramfs -u` after all package installs — ensures live-boot hooks are in initramfs
 
-**Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (removes live-only artifacts).
+**Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (removes live-only artifacts: sudoers, lightdm autologin, getty autologin, polkit rule, launcher script).
 
 #### Desktop Autostart Mechanism
 
