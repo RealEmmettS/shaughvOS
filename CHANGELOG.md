@@ -11,6 +11,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.11.0] — 2026-04-14
+
+### Fixed
+- **CRITICAL**: Fixed login loop on installed system — after entering credentials at the LightDM greeter, the screen went black and returned to the greeter. Root cause: Calamares shellprocess removes `live-autologin.conf` (which specified the Xfce session), leaving LightDM with no session configuration. Added persistent `50-shaughvos.conf` with `user-session=xfce` that survives cleanup.
+- Fixed black LightDM greeter background — wallpaper file at `/usr/share/backgrounds/shaughvos/` depended on a `curl || true` download during base image build that could silently fail. Now copied directly from repo `assets/` during ISO build.
+- Fixed Plymouth boot splash not showing on installed system — `/etc/default/grub` was missing `quiet splash`. Added to the GRUB defaults injected during ISO build (only affects installed system, not the live ISO boot entry).
+
+### Added
+- Plymouth boot splash now shows for a minimum of 5 seconds — even on fast-booting systems, the shaughvOS branding is visible before transitioning to the login screen. Uses a systemd drop-in on `plymouth-quit.service` with no boot performance impact.
+
+---
+
 ## [1.10.0] — 2026-04-13
 
 ### Added

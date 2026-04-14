@@ -709,6 +709,10 @@ SUDOERS
 			chmod 0440 "$live_root/etc/sudoers.d/live-admin"
 			# Set desktop autostart mode for the live session
 			echo 2 > "$live_root/boot/shaughvos/.shaughvos-autostart_index"
+			# Guarantee greeter wallpaper exists — the base image downloads it via curl with || true,
+			# so if that download failed the squashfs would be missing the file and the greeter shows black.
+			G_EXEC mkdir -p "$live_root/usr/share/backgrounds/shaughvos"
+			G_EXEC cp "$FP_ORIGIN/assets/desktop_background.jpg" "$live_root/usr/share/backgrounds/shaughvos/desktop_background.jpg"
 			# Ensure desktop autologin for the live session
 			G_EXEC mkdir -p "$live_root/etc/lightdm/lightdm.conf.d"
 			cat > "$live_root/etc/lightdm/lightdm.conf.d/live-autologin.conf" << 'AUTOLOGIN'
@@ -716,6 +720,13 @@ SUDOERS
 autologin-user=admin
 autologin-session=xfce
 AUTOLOGIN
+			# Set persistent Xfce session default for installed system — live-autologin.conf (which includes
+			# autologin-session=xfce) gets removed by Calamares shellprocess. Without an explicit
+			# user-session, LightDM may fail to start any session, causing a login loop.
+			cat > "$live_root/etc/lightdm/lightdm.conf.d/50-shaughvos.conf" << 'SHAUGHVOS_SESSION'
+[Seat:*]
+user-session=xfce
+SHAUGHVOS_SESSION
 			chroot "$live_root" systemctl enable lightdm 2>/dev/null || true
 			# Belt and suspenders: create the display-manager symlink directly in case systemctl enable failed in chroot
 			ln -sf /lib/systemd/system/lightdm.service "$live_root/etc/systemd/system/display-manager.service"
@@ -755,9 +766,10 @@ GREETER
 FONTCONF
 			# Set graphical.target as default so systemd starts lightdm on boot (base image defaults to multi-user.target)
 			chroot "$live_root" systemctl set-default graphical.target 2>/dev/null || ln -sf /lib/systemd/system/graphical.target "$live_root/etc/systemd/system/default.target"
-			# Add nomodeset to GRUB defaults — carries to installed system via squashfs extraction.
-			# VirtualBox vmwgfx driver errors without it; can freeze input on the installed system.
-			sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0"/GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0 nomodeset"/' "$live_root/etc/default/grub"
+			# Add nomodeset + quiet splash to GRUB defaults — carries to installed system via squashfs.
+			# nomodeset: VirtualBox vmwgfx errors without it; quiet splash: enables Plymouth boot splash.
+			# (quiet splash intentionally omitted from live ISO boot entry per v1.8.7 for install diagnostics)
+			sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0"/GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0 nomodeset quiet splash"/' "$live_root/etc/default/grub"
 			# Create Calamares launcher script — uses sudo -E to preserve DISPLAY/XAUTHORITY,
 			# xhost to grant root X11 access, and software rendering for VirtualBox compatibility.
 			# Every major distro avoids bare "sudo calamares" because sudo strips env vars.
