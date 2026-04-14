@@ -711,8 +711,9 @@ SUDOERS
 			echo 2 > "$live_root/boot/shaughvos/.shaughvos-autostart_index"
 			# Guarantee greeter wallpaper exists — the base image downloads it via curl with || true,
 			# so if that download failed the squashfs would be missing the file and the greeter shows black.
+			# Download from GitHub since the imager runs outside the repo checkout in CI.
 			G_EXEC mkdir -p "$live_root/usr/share/backgrounds/shaughvos"
-			G_EXEC cp "$FP_ORIGIN/assets/desktop_background.jpg" "$live_root/usr/share/backgrounds/shaughvos/desktop_background.jpg"
+			[[ -f "$live_root/usr/share/backgrounds/shaughvos/desktop_background.jpg" ]] || G_EXEC curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background.jpg" "https://raw.githubusercontent.com/${G_GITOWNER:-RealEmmettS}/shaughvOS/${G_GITBRANCH:-master}/assets/desktop_background.jpg"
 			# Ensure desktop autologin for the live session
 			G_EXEC mkdir -p "$live_root/etc/lightdm/lightdm.conf.d"
 			cat > "$live_root/etc/lightdm/lightdm.conf.d/live-autologin.conf" << 'AUTOLOGIN'
