@@ -11,6 +11,20 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.10.0] — 2026-04-13
+
+### Added
+- **SHAUGHV panel brandmark** — replaces the default Xfce mouse icon on the Applications Menu button with the SHAUGHV logo. Uses a GTK3 symbolic icon (`shaughvos-panel-symbolic.svg`) that automatically recolors to match the active theme — white on dark themes (Dracula), black on light themes. No scripts or detection logic needed.
+- **4 additional desktop wallpapers** — retro Mac + green banker's lamp in multiple lighting variants:
+  - `desktop_background_dark1.png` — dark, lamp off
+  - `desktop_background_dark2.png` — dark, warm lamp light
+  - `desktop_background_dark3.png` — dark, glowing green lamp
+  - `desktop_background_4k.png` — uncompressed 4K version of the default wallpaper (light background)
+  All wallpapers are downloaded to `/usr/share/backgrounds/shaughvos/` during Xfce install and are selectable via Settings > Desktop.
+- **White logo variant** (`shaughv-logo-white.svg`) — Dracula-themed white (`#f8f8f2`) version of the SHAUGHV logo for use on dark backgrounds (Plymouth, Calamares, etc.).
+
+---
+
 ## [1.9.0] — 2026-04-13
 
 ### Fixed

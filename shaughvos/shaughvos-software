@@ -3369,9 +3369,18 @@ _EOF_"
 			done
 			G_EXEC fc-cache -f
 
-			# Set wallpaper from GitHub
+			# Set wallpapers from GitHub
 			G_EXEC mkdir -p /usr/share/backgrounds/shaughvos
 			curl -sSfLo /usr/share/backgrounds/shaughvos/desktop_background.jpg "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/assets/desktop_background.jpg" || true
+			curl -sSfLo /usr/share/backgrounds/shaughvos/desktop_background_dark1.png "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/assets/desktop_background_dark1.png" || true
+			curl -sSfLo /usr/share/backgrounds/shaughvos/desktop_background_dark2.png "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/assets/desktop_background_dark2.png" || true
+			curl -sSfLo /usr/share/backgrounds/shaughvos/desktop_background_dark3.png "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/assets/desktop_background_dark3.png" || true
+			curl -sSfLo /usr/share/backgrounds/shaughvos/desktop_background_4k.png "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/assets/desktop_background_4k.png" || true
+
+			# Install panel brandmark as symbolic icon (auto-recolors with theme)
+			G_EXEC mkdir -p /usr/share/icons/hicolor/symbolic/apps
+			curl -sSfLo /usr/share/icons/hicolor/symbolic/apps/shaughvos-panel-symbolic.svg "https://raw.githubusercontent.com/$G_GITOWNER/shaughvOS/$G_GITBRANCH/assets/shaughvos-panel-symbolic.svg" || true
+			gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
 
 			# Apply Xfce settings for all users via /etc/xdg defaults
 			G_EXEC mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml
@@ -3481,7 +3490,10 @@ _EOF_
     </property>
   </property>
   <property name="plugins" type="empty">
-    <property name="plugin-1" type="string" value="applicationsmenu"/>
+    <property name="plugin-1" type="string" value="applicationsmenu">
+      <property name="button-icon" type="string" value="shaughvos-panel-symbolic"/>
+      <property name="show-button-title" type="bool" value="false"/>
+    </property>
     <property name="plugin-2" type="string" value="tasklist"/>
     <property name="plugin-3" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>

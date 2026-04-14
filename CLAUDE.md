@@ -87,6 +87,7 @@ Pushing to `master` with a bumped `.update/version` is sufficient for OTA — de
 - **Makira** — system UI sans-serif font (`assets/fonts/Makira/`)
 - **IBM Plex Mono** — terminal/monospace font (`assets/fonts/IBMPlexMono/`)
 - **Desktop wallpaper:** `assets/desktop_background.jpg`
+- **Panel brandmark:** SHAUGHV logo as GTK symbolic icon — auto-recolors with theme (light on dark, dark on light)
 - **`desktop on/off/status`** — toggle between desktop and CLI mode (`rootfs/usr/local/bin/desktop`)
 
 ### Boot & Terminal Experience
@@ -99,7 +100,13 @@ Pushing to `master` with a bumped `.update/version` is sufficient for OTA — de
 ```
 assets/
   shaughv-logo.svg         Official OS logo / boot splash source
-  desktop_background.jpg   Default Xfce wallpaper
+  shaughv-logo-white.svg        White variant for dark backgrounds (Plymouth, Calamares)
+  shaughvos-panel-symbolic.svg  GTK symbolic icon for panel (auto-recolors with theme)
+  desktop_background.jpg        Default Xfce wallpaper
+  desktop_background_dark1.png  Dark wallpaper — retro Mac + green lamp
+  desktop_background_dark2.png  Dark wallpaper — retro Mac + warm lamp light
+  desktop_background_dark3.png  Dark wallpaper — retro Mac + glowing green lamp
+  desktop_background_4k.png     Uncompressed 4K version of default wallpaper
   fonts/
     Makira/                System UI font (6 weights, TTF)
     IBMPlexMono/           Terminal font (7 weights + italics, TTF)
@@ -234,4 +241,4 @@ Two mechanisms exist (important for understanding conflicts):
 
 ## Current Version
 
-shaughvOS v1.9.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.10.0 (`.update/version`). Minimum Debian version: 7+.
