@@ -11,6 +11,16 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.8.8] — 2026-04-13
+
+### Fixed
+- **CRITICAL**: Fixed keyboard and mouse unresponsive on installed system — the installed system's GRUB was missing `nomodeset`. Calamares's bootloader module reads `/etc/default/grub` from the squashfs, which had `consoleblank=0` but no `nomodeset`. Without it, VirtualBox's `vmwgfx` kernel module error can freeze input handling. Now inject `nomodeset` into `/etc/default/grub` during ISO build so it carries through to the installed system.
+- Fixed potential input driver absence — explicitly install `xserver-xorg-input-libinput` in the imager's package list as a safety measure. The base image should already include it, but `--no-install-recommends` could theoretically cause apt to resolve a conflict by removing it.
+- Fixed Calamares `shellprocess` potentially removing autologin created by the `users` module — renamed the live-session autologin config from `shaughvos-autologin.conf` to `live-autologin.conf` so it doesn't collide with Calamares's own autologin output.
+- Added `update-grub` to Calamares `shellprocess` to regenerate the installed system's GRUB config with the correct kernel parameters including `nomodeset`.
+
+---
+
 ## [1.8.7] — 2026-04-13
 
 ### Fixed

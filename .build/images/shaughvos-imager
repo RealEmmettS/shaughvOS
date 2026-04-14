@@ -656,8 +656,8 @@ _EOF_
 			G_EXEC mount -t tmpfs tmpfs "$live_root/run"
 			# Ensure DNS works inside chroot
 			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
-			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, and display drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa'
+			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, and display/input drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
+				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput'
 
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
@@ -711,7 +711,7 @@ SUDOERS
 			echo 2 > "$live_root/boot/shaughvos/.shaughvos-autostart_index"
 			# Ensure desktop autologin for the live session
 			G_EXEC mkdir -p "$live_root/etc/lightdm/lightdm.conf.d"
-			cat > "$live_root/etc/lightdm/lightdm.conf.d/shaughvos-autologin.conf" << 'AUTOLOGIN'
+			cat > "$live_root/etc/lightdm/lightdm.conf.d/live-autologin.conf" << 'AUTOLOGIN'
 [Seat:*]
 autologin-user=admin
 autologin-session=xfce
@@ -721,6 +721,9 @@ AUTOLOGIN
 			ln -sf /lib/systemd/system/lightdm.service "$live_root/etc/systemd/system/display-manager.service"
 			# Set graphical.target as default so systemd starts lightdm on boot (base image defaults to multi-user.target)
 			chroot "$live_root" systemctl set-default graphical.target 2>/dev/null || ln -sf /lib/systemd/system/graphical.target "$live_root/etc/systemd/system/default.target"
+			# Add nomodeset to GRUB defaults — carries to installed system via squashfs extraction.
+			# VirtualBox vmwgfx driver errors without it; can freeze input on the installed system.
+			sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0"/GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0 nomodeset"/' "$live_root/etc/default/grub"
 			# Create Calamares launcher script — uses sudo -E to preserve DISPLAY/XAUTHORITY,
 			# xhost to grant root X11 access, and software rendering for VirtualBox compatibility.
 			# Every major distro avoids bare "sudo calamares" because sudo strips env vars.

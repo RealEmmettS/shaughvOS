@@ -205,7 +205,7 @@ The live session differs fundamentally from the base image's boot flow. The base
 6. Calamares launcher script (`/usr/local/bin/launch-calamares`) — uses `xhost` + `sudo -E` + `LIBGL_ALWAYS_SOFTWARE=1`. Never use bare `sudo calamares` — Debian 12's sudo strips DISPLAY/XAUTHORITY even with NOPASSWD
 7. Admin NOPASSWD sudo with `env_keep` for DISPLAY, XAUTHORITY, XDG_RUNTIME_DIR, DBUS_SESSION_BUS_ADDRESS
 8. polkit rule (`49-shaughvos-live.rules`) for password-free admin access
-9. `nomodeset` on ALL GRUB/isolinux boot entries — VirtualBox VMSVGA + vmwgfx fails without it
+9. `nomodeset` on ALL GRUB/isolinux boot entries AND in `/etc/default/grub` — VirtualBox VMSVGA + vmwgfx fails without it. The `/etc/default/grub` setting carries to the installed system via squashfs extraction + Calamares bootloader module
 10. Remove `quiet` from "Install" boot entry — show boot messages for diagnostics; keep `quiet splash` only on "Live (safe graphics)" entry
 11. Never exclude `/boot` from squashfs — strips kernel, initrd, and all shaughvOS scripts
 12. Explicit `update-initramfs -u` after all package installs — ensures live-boot hooks are in initramfs
@@ -221,4 +221,4 @@ Two mechanisms exist (important for understanding conflicts):
 
 ## Current Version
 
-shaughvOS v1.8.7 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.8.8 (`.update/version`). Minimum Debian version: 7+.
