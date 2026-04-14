@@ -210,7 +210,20 @@ The live session differs fundamentally from the base image's boot flow. The base
 11. Never exclude `/boot` from squashfs — strips kernel, initrd, and all shaughvOS scripts
 12. Explicit `update-initramfs -u` after all package installs — ensures live-boot hooks are in initramfs
 
-**Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (removes live-only artifacts: sudoers, lightdm autologin, getty autologin, polkit rule, launcher script).
+13. LightDM greeter configured with desktop wallpaper background, Makira font, Dracula theme, Papirus-Dark icons
+14. System-wide fontconfig defaults — Makira for sans-serif/serif, IBM Plex Mono for monospace (`/etc/fonts/local.conf`)
+15. `xserver-xorg-input-libinput` explicitly installed — safety measure for input drivers
+16. `apt-get clean` + `autoremove` + list cleanup before squashfs creation — reduces ISO size
+
+**Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (comprehensive post-install cleanup — see below).
+
+**Calamares shellprocess.conf cleanup sequence** (runs inside target chroot, BEFORE bootloader module):
+1. Remove live-session files: sudoers, autologin, polkit rule, launcher script, Calamares .desktop files, `/etc/calamares/`
+2. Purge packages: `live-boot`, `calamares`, `calamares-settings-debian` + autoremove
+3. Security: delete SSH host keys + `ssh-keygen -A` (regenerate unique keys per install)
+4. Remove stale `.check_user_passwords` flag (prevents false password-change prompts)
+5. Rebuild initramfs (without live-boot hooks)
+6. NOTE: Does NOT run `update-grub` — the `bootloader` module runs after shellprocess and handles GRUB itself
 
 #### Desktop Autostart Mechanism
 
