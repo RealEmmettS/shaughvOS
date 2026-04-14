@@ -719,6 +719,40 @@ AUTOLOGIN
 			chroot "$live_root" systemctl enable lightdm 2>/dev/null || true
 			# Belt and suspenders: create the display-manager symlink directly in case systemctl enable failed in chroot
 			ln -sf /lib/systemd/system/lightdm.service "$live_root/etc/systemd/system/display-manager.service"
+			# Configure LightDM greeter — desktop wallpaper background, Makira font, Dracula theme
+			G_EXEC mkdir -p "$live_root/etc/lightdm"
+			cat > "$live_root/etc/lightdm/lightdm-gtk-greeter.conf" << 'GREETER'
+[greeter]
+background = /usr/share/backgrounds/shaughvos/desktop_background.jpg
+font-name = Makira Medium 10
+theme-name = Dracula
+icon-theme-name = Papirus-Dark
+indicators = ~host;~spacer;~clock;~spacer;~session;~power
+GREETER
+			# Set system-wide fontconfig defaults — Makira for sans-serif UI, IBM Plex Mono for monospace
+			G_EXEC mkdir -p "$live_root/etc/fonts"
+			cat > "$live_root/etc/fonts/local.conf" << 'FONTCONF'
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <alias>
+    <family>sans-serif</family>
+    <prefer><family>Makira</family></prefer>
+  </alias>
+  <alias>
+    <family>sans</family>
+    <prefer><family>Makira</family></prefer>
+  </alias>
+  <alias>
+    <family>monospace</family>
+    <prefer><family>IBM Plex Mono</family></prefer>
+  </alias>
+  <alias>
+    <family>serif</family>
+    <prefer><family>Makira</family></prefer>
+  </alias>
+</fontconfig>
+FONTCONF
 			# Set graphical.target as default so systemd starts lightdm on boot (base image defaults to multi-user.target)
 			chroot "$live_root" systemctl set-default graphical.target 2>/dev/null || ln -sf /lib/systemd/system/graphical.target "$live_root/etc/systemd/system/default.target"
 			# Add nomodeset to GRUB defaults — carries to installed system via squashfs extraction.
@@ -753,6 +787,12 @@ POLKIT
 			cp "$live_root"/boot/vmlinuz-* tmpiso/live/vmlinuz
 			# shellcheck disable=SC2086
 			cp "$live_root"/boot/initrd.img-* tmpiso/live/initrd
+
+			# Clean apt caches before squashfs to reduce ISO size
+			chroot "$live_root" apt-get clean 2>/dev/null || true
+			chroot "$live_root" apt-get autoremove -y 2>/dev/null || true
+			# Clear apt lists (will be regenerated on first apt-get update)
+			rm -rf "$live_root/var/cache/apt/archives"/*.deb "$live_root/var/lib/apt/lists"/* 2>/dev/null || true
 
 			### Step 8: Create squashfs of the root filesystem ###
 			# Unmount bind mounts before squashfs creation

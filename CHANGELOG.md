@@ -11,6 +11,30 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.9.0] — 2026-04-13
+
+### Fixed
+- **SECURITY**: Regenerate SSH host keys on installed system — `shaughvos-firstboot` (which normally does this) is disabled for Calamares installs. Without key regeneration, every installed system shared the same SSH host keys from the base image. Added `ssh-keygen -A` to Calamares `shellprocess` cleanup.
+- **CRITICAL**: Overhauled Calamares `shellprocess.conf` post-install cleanup — previous versions left live-session artifacts on the installed system:
+  - Calamares autostart `.desktop` files (caused Calamares to re-launch on every login)
+  - `live-boot` package with initramfs hooks (confused the installed system's boot, scanned for squashfs on every boot)
+  - `calamares` and `calamares-settings-debian` packages (wasted disk space)
+  - `/etc/calamares/` config directory
+  - Stale password change flag (`/var/lib/shaughvos/.check_user_passwords`) that triggered unnecessary prompts
+  All now cleaned up. Initramfs is rebuilt without live-boot hooks before GRUB regeneration.
+- Fixed Calamares branding showing version `1.8.0` instead of current version in the installer UI.
+- Fixed DietPi MOTD URL in daily cron — was fetching from `dietpi.com/motd`, now points to shaughvOS's own MOTD file.
+- Fixed DietPi documentation URL in `shaughvos-cloudshell.service` — was still pointing to `dietpi.com`.
+- Removed redundant `update-grub` from `shellprocess.conf` — the Calamares `bootloader` module runs after `shellprocess` and handles GRUB installation and config generation itself.
+
+### Added
+- **LightDM greeter visual configuration** — desktop wallpaper as login screen background, Makira font, Dracula GTK theme, Papirus-Dark icons. The login screen is no longer a plain black background.
+- **System-wide fontconfig defaults** — Makira set as default sans-serif/serif font, IBM Plex Mono as default monospace font via `/etc/fonts/local.conf`. All applications (terminal, file manager, settings, login screen) now use the correct shaughvOS fonts by default.
+- **shaughvOS MOTD file** (`.update/motd`) — replaces the dietpi.com MOTD URL with shaughvOS-branded content.
+- ISO size reduction: `apt-get clean` + `autoremove` + apt list cleanup before squashfs creation.
+
+---
+
 ## [1.8.8] — 2026-04-13
 
 ### Fixed

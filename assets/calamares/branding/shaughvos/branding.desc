@@ -7,10 +7,10 @@ welcomeExpandingLogo: true
 strings:
     productName:         shaughvOS
     shortProductName:    shaughvOS
-    version:             1.8.0
-    shortVersion:        1.8.0
-    versionedName:       shaughvOS 1.8.0
-    shortVersionedName:  shaughvOS 1.8.0
+    version:             1.9.0
+    shortVersion:        1.9.0
+    versionedName:       shaughvOS 1.9.0
+    shortVersionedName:  shaughvOS 1.9.0
     bootloaderEntryName: shaughvOS
     productUrl:          https://github.com/RealEmmettS/shaughvOS
     supportUrl:          https://github.com/RealEmmettS/shaughvOS/issues
