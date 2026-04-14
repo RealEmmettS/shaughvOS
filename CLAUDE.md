@@ -192,6 +192,29 @@ Configuration: `assets/calamares/` contains settings.conf, branding, and module 
 
 Pre-installed software: Node.js, npm, Claude Code CLI.
 
+#### Live ISO Boot Chain (critical — many non-obvious requirements)
+
+The live session differs fundamentally from the base image's boot flow. The base image uses root autologin → `exec startx` (no display manager). The live ISO uses lightdm → admin autologin → Xfce → Calamares autostart.
+
+**Imager must configure** (all in Step 5b of `.build/images/shaughvos-imager`):
+1. `graphical.target` as systemd default — base image uses `multi-user.target`; lightdm only starts under `graphical.target`
+2. Root's getty autologin removed — otherwise root's `exec startx` conflicts with lightdm and crash-loops invisibly under `quiet splash`
+3. `xserver-xorg-video-fbdev` installed — build container may install vmware driver (if `/dev/dri` exists on runner); fbdev works universally with `nomodeset`
+4. `lightdm` + `lightdm-gtk-greeter` installed — base image has no display manager
+5. `.install_stage=2` — prevents login script's first-run error handler
+6. Admin NOPASSWD sudo — Calamares runs `sudo calamares` with `Terminal=false`
+7. `nomodeset` on ALL GRUB/isolinux boot entries — VirtualBox VMSVGA + vmwgfx fails without it
+8. Never exclude `/boot` from squashfs — strips kernel, initrd, and all shaughvOS scripts
+
+**Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (removes live-only artifacts).
+
+#### Desktop Autostart Mechanism
+
+Two mechanisms exist (important for understanding conflicts):
+- **Root (legacy):** getty autologin on tty1 → `shaughvos-login` → `Run_AutoStart(2)` → `exec startx` — does NOT use a display manager
+- **Non-root (modern):** lightdm (`display-manager.service`) → autologin → Xfce session — comment in `shaughvos-login:34` confirms "non-root autologins are done via LightDM service since v7.2"
+- **`desktop` command:** Uses `systemctl start/stop lightdm` — works with the lightdm mechanism
+
 ## Current Version
 
 shaughvOS v1.8.6 (`.update/version`). Minimum Debian version: 7+.
