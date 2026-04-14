@@ -2,7 +2,7 @@
 Type=Application
 Name=Install shaughvOS
 Comment=Install shaughvOS to your disk
-Exec=sudo calamares
+Exec=/usr/local/bin/launch-calamares
 Icon=calamares
 Terminal=false
 Categories=System;

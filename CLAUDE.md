@@ -217,4 +217,4 @@ Two mechanisms exist (important for understanding conflicts):
 
 ## Current Version
 
-shaughvOS v1.8.6 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.8.7 (`.update/version`). Minimum Debian version: 7+.

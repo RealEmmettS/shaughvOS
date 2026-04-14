@@ -11,6 +11,23 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.8.7] — 2026-04-13
+
+### Fixed
+- **CRITICAL**: Fixed Calamares installer never launching — `Exec=sudo calamares` in the desktop entry silently failed because Debian 12's `sudo` resets the environment by default, stripping `DISPLAY` and `XAUTHORITY`. With `Terminal=false`, the X11 connection failure was completely invisible. Every major distro (Debian, Manjaro, Lubuntu) uses `pkexec` or `sudo -E` with `xhost` — never bare `sudo`. Replaced with a launcher script that preserves the X11 environment.
+- **CRITICAL**: Fixed persistent black screen by removing `quiet splash` from the "Install shaughvOS" boot entry. With `quiet`, ALL boot errors (Xorg crashes, service failures, live-boot issues) were hidden — the user was stuck on VT7 with no visible feedback. Boot messages are now visible during install for diagnostics. The "Live (safe graphics)" entry retains `quiet splash` for a polished fallback.
+- Added `xserver-xorg-video-vesa` as additional Xorg fallback driver — works directly with VESA BIOS Extensions via `libx86emu`, doesn't need `/dev/fb0` or KMS. Catches cases where `fbdev` driver fails.
+- Added `LIBGL_ALWAYS_SOFTWARE=1` to Calamares launcher for VirtualBox compatibility — Qt5 apps render black when VirtualBox's OpenGL 2.1 doesn't meet Qt's requirements.
+- Added `sudoers env_keep` for `DISPLAY`, `XAUTHORITY`, `XDG_RUNTIME_DIR`, and `DBUS_SESSION_BUS_ADDRESS` — defense in depth so `sudo` never strips display variables in the live session.
+- Added explicit `update-initramfs -u` after all package installs in the ISO build — ensures live-boot initramfs hooks are definitely included.
+
+### Added
+- Calamares launcher script (`/usr/local/bin/launch-calamares`) — grants root X11 access via `xhost`, preserves environment with `sudo -E`, forces software GL rendering.
+- polkit rule (`49-shaughvos-live.rules`) — grants admin password-free `pkexec` access in the live session (how every major distro handles Calamares authentication).
+- Both new artifacts are cleaned up on the installed system by Calamares `shellprocess` module.
+
+---
+
 ## [1.8.6] — 2026-04-13
 
 ### Fixed

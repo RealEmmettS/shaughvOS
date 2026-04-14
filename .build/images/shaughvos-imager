@@ -657,7 +657,7 @@ _EOF_
 			# Ensure DNS works inside chroot
 			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
 			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, and display drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev'
+				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa'
 
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
@@ -679,6 +679,9 @@ _EOF_
 			G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
 				'apt-get install -y --no-install-recommends nodejs npm && curl -fsSL https://claude.ai/install.sh | bash || true'
 
+			# Rebuild initramfs to ensure live-boot hooks are included after all package installs
+			chroot "$live_root" update-initramfs -u 2>/dev/null || true
+
 			### Step 5b: Prepare root filesystem for live-boot compatibility ###
 			G_SHAUGHVOS-NOTIFY 2 'Preparing root filesystem for live-boot mode'
 			# Clear fstab — live-boot generates mounts dynamically, Calamares regenerates on install
@@ -698,7 +701,11 @@ _EOF_
 			chroot "$live_root" bash -c "echo 'admin:1234' | chpasswd"
 			chroot "$live_root" bash -c "echo 'root:1234' | chpasswd"
 			# Grant admin passwordless sudo for the live session (required for Calamares + desktop command)
-			echo 'admin ALL=(ALL:ALL) NOPASSWD: ALL' > "$live_root/etc/sudoers.d/live-admin"
+			# Also preserve display-related env vars so GUI apps work under sudo
+			cat > "$live_root/etc/sudoers.d/live-admin" << 'SUDOERS'
+admin ALL=(ALL:ALL) NOPASSWD: ALL
+Defaults env_keep += "DISPLAY XAUTHORITY XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS"
+SUDOERS
 			chmod 0440 "$live_root/etc/sudoers.d/live-admin"
 			# Set desktop autostart mode for the live session
 			echo 2 > "$live_root/boot/shaughvos/.shaughvos-autostart_index"
@@ -714,6 +721,24 @@ AUTOLOGIN
 			ln -sf /lib/systemd/system/lightdm.service "$live_root/etc/systemd/system/display-manager.service"
 			# Set graphical.target as default so systemd starts lightdm on boot (base image defaults to multi-user.target)
 			chroot "$live_root" systemctl set-default graphical.target 2>/dev/null || ln -sf /lib/systemd/system/graphical.target "$live_root/etc/systemd/system/default.target"
+			# Create Calamares launcher script — uses sudo -E to preserve DISPLAY/XAUTHORITY,
+			# xhost to grant root X11 access, and software rendering for VirtualBox compatibility.
+			# Every major distro avoids bare "sudo calamares" because sudo strips env vars.
+			cat > "$live_root/usr/local/bin/launch-calamares" << 'LAUNCHER'
+#!/bin/bash
+xhost +si:localuser:root 2>/dev/null
+exec sudo -E env LIBGL_ALWAYS_SOFTWARE=1 /usr/bin/calamares "$@"
+LAUNCHER
+			chmod +x "$live_root/usr/local/bin/launch-calamares"
+			# Add polkit rule for password-free admin access in the live session
+			G_EXEC mkdir -p "$live_root/etc/polkit-1/rules.d"
+			cat > "$live_root/etc/polkit-1/rules.d/49-shaughvos-live.rules" << 'POLKIT'
+polkit.addRule(function(action, subject) {
+    if (subject.user === "admin") {
+        return polkit.Result.YES;
+    }
+});
+POLKIT
 
 			### Step 6: Create staging directory for ISO ###
 			G_SHAUGHVOS-NOTIFY 2 'Creating ISO staging directory'
@@ -761,7 +786,7 @@ set menu_color_highlight=white/dark-gray
 
 menuentry "Install shaughvOS" {
     search --no-floppy --set=root --label SHAUGHVOS
-    linux ($root)/live/vmlinuz boot=live nomodeset quiet splash
+    linux ($root)/live/vmlinuz boot=live nomodeset
     initrd ($root)/live/initrd
 }
 menuentry "shaughvOS Live (safe graphics)" {
@@ -805,7 +830,7 @@ LABEL install
   MENU LABEL Install shaughvOS
   MENU DEFAULT
   KERNEL /live/vmlinuz
-  APPEND initrd=/live/initrd boot=live nomodeset quiet splash
+  APPEND initrd=/live/initrd boot=live nomodeset
 
 LABEL live
   MENU LABEL shaughvOS Live (safe graphics)
