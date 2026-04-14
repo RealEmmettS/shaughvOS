@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 ## What This Is
 
@@ -33,7 +33,7 @@ After tagging and pushing a new release:
 - `DEPLOYMENT.md` — full release lifecycle: versioning, tagging, CI, image building, OTA updates, GitHub Releases
 
 ### Deployment & Releases
-See `DEPLOYMENT.md` for the full reference. Below is the exact step-by-step workflow Claude should follow when asked to "deploy", "release", "bump", "tag", or any variation:
+See `DEPLOYMENT.md` for the full reference. Below is the exact step-by-step workflow Codex should follow when asked to "deploy", "release", "bump", "tag", or any variation:
 
 #### Release Workflow (execute in order)
 
@@ -41,12 +41,12 @@ See `DEPLOYMENT.md` for the full reference. Below is the exact step-by-step work
 
 1. **Bump version** — Edit `.update/version`, increment `G_REMOTE_VERSION_SUB` (or `_CORE` for breaking changes). Set `G_REMOTE_VERSION_RC=0` for stable.
 2. **Update CHANGELOG.md** — Move `[Unreleased]` contents into a new `## [X.Y.0] — YYYY-MM-DD` section. Add a fresh empty `[Unreleased]` section at the top. Follow [Keep a Changelog](https://keepachangelog.com/) format with `### Fixed`, `### Changed`, `### Added`, `### Removed` subsections.
-3. **Update CLAUDE.md version refs** — Find/replace old version string (e.g., `v1.5.0` -> `v1.8.0`) in this file.
+3. **Update AGENTS.md version refs** — Find/replace old version string (e.g., `v1.5.0` -> `v1.8.0`) in this file.
 4. **Update README.md** if features/install process changed.
 
 **Step 2 — Single commit with everything, then tag before push:**
 
-5. **Stage specific files** — `git add .update/version CHANGELOG.md CLAUDE.md README.md` (and any other changed files). Never `git add -A`.
+5. **Stage specific files** — `git add .update/version CHANGELOG.md AGENTS.md README.md` (and any other changed files). Never `git add -A`.
 6. **Commit** — `git commit -m "Release vX.Y.0 — <one-line summary>"`
 7. **Tag the commit** — `git tag vX.Y.0` (tag BEFORE pushing so the tag and commit go out together)
 8. **Push commit and tag** — `git push origin master && git push origin vX.Y.0` (NEVER use `--tags` — it pushes all local tags including old DietPi-era ones that break CI)
@@ -197,7 +197,7 @@ The installer ISO boots a full shaughvOS live environment using Debian's `live-b
 
 Configuration: `assets/calamares/` contains settings.conf, branding, and module configs.
 
-Pre-installed software: Node.js, npm, Claude Code CLI.
+Pre-installed software: Node.js, npm, Codex CLI.
 
 #### Live ISO Boot Chain (critical — many non-obvious requirements)
 
@@ -239,9 +239,54 @@ Two mechanisms exist (important for understanding conflicts):
 - **Non-root (modern):** lightdm (`display-manager.service`) → autologin → Xfce session — comment in `shaughvos-login:34` confirms "non-root autologins are done via LightDM service since v7.2"
 - **`desktop` command:** Uses `systemctl start/stop lightdm` — works with the lightdm mechanism
 
-## AGENTS.md Sync Requirement
+### Installed System LightDM Configuration (v1.11.0+)
 
-**`CLAUDE.md` is the source of truth.** `AGENTS.md` always pulls from `CLAUDE.md` — never the other way around. When making changes to `CLAUDE.md` (version bumps, new sections, learnings, architecture updates), always propagate those changes to `AGENTS.md`. When saving new project memories, add relevant learnings to the "Key Learnings & Gotchas" section of `AGENTS.md`. This ensures all AI agents (Claude Code, Codex, Gemini, etc.) have consistent context about the project.
+After Calamares installs from the live ISO, the installed system's LightDM state:
+- `/etc/lightdm/lightdm.conf.d/50-shaughvos.conf` — persistent config with `user-session=xfce` (survives shellprocess cleanup)
+- `/etc/lightdm/lightdm-gtk-greeter.conf` — greeter appearance (wallpaper, Makira font, Dracula theme, Papirus-Dark icons)
+- `/etc/lightdm/lightdm.conf.d/live-autologin.conf` — **REMOVED** by shellprocess (was only for the live session)
+- `/etc/default/grub` has `GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0 nomodeset quiet splash"` — enables Plymouth boot splash
+
+### Plymouth Boot Splash (v1.11.0+)
+
+Plymouth requires three things on the installed system:
+1. `quiet splash` in `/etc/default/grub` — injected by imager into squashfs
+2. Plymouth theme set + initramfs rebuilt — handled by `shaughvos-software` during base image build
+3. `rootfs/etc/systemd/system/plymouth-quit.service.d/shaughvos-delay.conf` — 5-second minimum splash duration via `ExecStartPre=/bin/sleep 5`
+
+**Important:** `quiet splash` was intentionally removed from the live ISO "Install" boot entry (v1.8.7) for diagnostics. The GRUB defaults only affect the installed system's everyday boot.
+
+## Key Learnings & Gotchas
+
+### Imager Runs Outside Repo Checkout in CI
+The imager is downloaded via `curl` and runs from `/tmp/shaughvos-build`. It does NOT have access to the repo's `assets/` directory via `$FP_ORIGIN`. To access repo files, download from GitHub using `curl` with `$G_GITOWNER`/`$G_GITBRANCH` variables (set by shaughvos-globals).
+
+### LightDM Session Config Must Survive Calamares
+Calamares `shellprocess.conf` removes `live-autologin.conf` (which contained `autologin-session=xfce`). Without a persistent `user-session=xfce` somewhere, LightDM has no session config and login loops (black screen → back to greeter). Use named files in `.conf.d/` that shellprocess doesn't target.
+
+### Greeter Wallpaper Must Not Rely on `curl || true`
+The base image's `shaughvos-software` downloads wallpapers with `curl ... || true` (silent fail). If the download fails, the greeter shows a black background. The imager now checks if the file exists and downloads from GitHub if missing.
+
+### Never Use `git push --tags`
+Push specific tags only (e.g., `git push origin v1.11.0`). `--tags` leaks old DietPi-era tags that break CI workflows.
+
+### Never Create GitHub Releases Manually
+CI (`release-images.yml`) creates the Release and attaches build artifacts automatically when a `v*` tag is pushed. Running `gh release create` first blocks CI with "release already exists."
+
+### Tag Retag Workflow (When CI Fails)
+1. Delete remote tag: `git push --delete origin v1.X.0`
+2. Delete local tag: `git tag -d v1.X.0`
+3. Fix the code, commit
+4. Retag: `git tag v1.X.0`
+5. Push: `git push origin master && git push origin v1.X.0`
+
+### Rootfs Overlay Mechanism
+Files in `rootfs/` are copied to `/` by the installer via `cp -a "$dir/rootfs/." /` (shaughvos-installer:861). Systemd drop-ins, config files, and service units placed in `rootfs/etc/systemd/system/` automatically end up on the installed system.
+
+### Live ISO vs Installed System Boot — Two Different Worlds
+- **Live ISO:** lightdm + admin autologin → Xfce → Calamares autostart. Getty autologin REMOVED.
+- **Installed system:** lightdm (graphical.target) → greeter → user login → Xfce session. Uses `50-shaughvos.conf` for session config, NOT `live-autologin.conf`.
+- **Base image (non-ISO):** root getty autologin → `exec startx`. No display manager. Completely different path.
 
 ## Current Version
 
