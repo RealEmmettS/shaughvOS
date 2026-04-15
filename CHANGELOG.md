@@ -11,6 +11,22 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.13.0] — 2026-04-15
+
+### Fixed
+- **CRITICAL**: Login loop after install (visual glitch -> back to login screen) — two root causes survived from v1.12.0:
+  1. `displaymanager.conf` was missing from the Calamares module download loop in the imager. The `displaymanager` module was in `settings.conf`'s exec sequence but its config file was never copied to the chroot, so LightDM was never properly configured for the installed user.
+  2. xfwm4 compositor was not explicitly disabled in the imager — it relied on the base image's `shaughvos-software`-generated config. On VirtualBox with `nomodeset` (no hardware GL), the compositor crashed on login, producing a "random colors" visual glitch that crashed the session back to the greeter. Now enforced directly in the imager as a safety net.
+- **Plymouth boot splash not showing** — three root causes resolved:
+  1. `plymouth` and `plymouth-themes` packages were never installed in the live ISO build. Added to the imager's `apt-get install`.
+  2. `shaughvos-logo-white.png` was missing from `rootfs/usr/share/plymouth/themes/shaughvos/` — the Plymouth script referenced it but only `.plymouth` and `.script` files existed. Generated 400x400 PNG from `assets/shaughv-logo-white.svg`.
+  3. Plymouth theme was never registered (`plymouth-set-default-theme shaughvos`) and never included in the initramfs. Added theme registration + `update-initramfs -u` after package install.
+
+### Added
+- **"Try shaughvOS" live boot option** — renamed "shaughvOS Live (safe graphics)" to "Try shaughvOS (without installing)". Uses a `shaughvos.live=1` kernel parameter + `shaughvos-live-check.service` (systemd oneshot, runs before LightDM) to suppress Calamares autostart. Users can explore the desktop without the installer launching. The "Install shaughvOS" shortcut remains in the Applications menu for manual install. Cleaned up from installed systems by `shellprocess.conf`.
+
+---
+
 ## [1.12.0] — 2026-04-14
 
 ### Fixed

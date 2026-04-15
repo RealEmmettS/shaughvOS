@@ -221,11 +221,15 @@ The live session differs fundamentally from the base image's boot flow. The base
 14. System-wide fontconfig defaults — Makira for sans-serif/serif, IBM Plex Mono for monospace (`/etc/fonts/local.conf`)
 15. `xserver-xorg-input-libinput` explicitly installed — safety measure for input drivers
 16. `apt-get clean` + `autoremove` + list cleanup before squashfs creation — reduces ISO size
+17. `plymouth` + `plymouth-themes` installed, shaughvOS theme registered, initramfs rebuilt to include it
+18. xfwm4 compositor explicitly disabled (`use_compositing=false`) — crashes on VirtualBox with nomodeset
+19. `shaughvos-live-check` script + service — suppresses Calamares autostart when `shaughvos.live=1` in kernel cmdline
+20. `apt-mark manual plymouth plymouth-themes` before autoremove — prevents silent removal
 
-**Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (comprehensive post-install cleanup — see below).
+**Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (comprehensive post-install cleanup — see below), `displaymanager.conf` (configures LightDM + Xfce session for installed system).
 
 **Calamares shellprocess.conf cleanup sequence** (runs inside target chroot, BEFORE bootloader module):
-1. Remove live-session files: sudoers, autologin, polkit rule, launcher script, Calamares .desktop files, `/etc/calamares/`
+1. Remove live-session files: sudoers, autologin, polkit rule, launcher script, Calamares .desktop files, `/etc/calamares/`, live-check service
 2. Purge packages: `live-boot`, `calamares`, `calamares-settings-debian` + autoremove
 3. Security: delete SSH host keys + `ssh-keygen -A` (regenerate unique keys per install)
 4. Remove stale `.check_user_passwords` flag (prevents false password-change prompts)
@@ -245,4 +249,4 @@ Two mechanisms exist (important for understanding conflicts):
 
 ## Current Version
 
-shaughvOS v1.12.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.13.0 (`.update/version`). Minimum Debian version: 7+.

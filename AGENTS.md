@@ -239,22 +239,37 @@ Two mechanisms exist (important for understanding conflicts):
 - **Non-root (modern):** lightdm (`display-manager.service`) → autologin → Xfce session — comment in `shaughvos-login:34` confirms "non-root autologins are done via LightDM service since v7.2"
 - **`desktop` command:** Uses `systemctl start/stop lightdm` — works with the lightdm mechanism
 
-### Installed System LightDM Configuration (v1.12.0+)
+### Installed System LightDM Configuration (v1.13.0+)
 
 After Calamares installs from the live ISO, the installed system's LightDM state:
 - `/etc/lightdm/lightdm.conf.d/50-shaughvos.conf` — persistent config with `user-session=xfce` (survives shellprocess cleanup)
 - `/etc/lightdm/lightdm-gtk-greeter.conf` — greeter appearance (wallpaper, Makira font, Dracula theme, Papirus-Dark icons)
 - `/etc/lightdm/lightdm.conf.d/live-autologin.conf` — **REMOVED** by shellprocess (was only for the live session)
 - `/etc/default/grub` has `GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0 nomodeset quiet splash"` — enables Plymouth boot splash
+- Calamares `displaymanager` module configures LightDM autologin + Xfce session via `displaymanager.conf`
 
-### Plymouth Boot Splash (v1.12.0+)
+### Plymouth Boot Splash (v1.13.0+)
 
-Plymouth requires three things on the installed system:
-1. `quiet splash` in `/etc/default/grub` — injected by imager into squashfs
-2. Plymouth theme set + initramfs rebuilt — handled by `shaughvos-software` during base image build
-3. `rootfs/etc/systemd/system/plymouth-quit.service.d/shaughvos-delay.conf` — 5-second minimum splash duration via `ExecStartPre=/bin/sleep 5`
+Plymouth requires these things on the installed system:
+1. `plymouth` + `plymouth-themes` packages installed — added to imager's apt-get install
+2. `shaughvos-logo-white.png` in `rootfs/usr/share/plymouth/themes/shaughvos/` — generated from SVG
+3. Theme registered via `plymouth-set-default-theme shaughvos` + `update-initramfs -u` — done in imager after package install
+4. `quiet splash` in `/etc/default/grub` — injected by imager into squashfs
+5. `rootfs/etc/systemd/system/plymouth-quit.service.d/shaughvos-delay.conf` — 5-second minimum splash duration via `ExecStartPre=/bin/sleep 5`
 
 **Important:** `quiet splash` was intentionally removed from the live ISO "Install" boot entry (v1.8.7) for diagnostics. The GRUB defaults only affect the installed system's everyday boot.
+
+### Live Boot Mode (v1.13.0+)
+
+Two boot entries: "Install shaughvOS" (default) and "Try shaughvOS (without installing)".
+- "Try" entry adds `shaughvos.live=1` to kernel cmdline
+- `shaughvos-live-check.service` (oneshot, Before=lightdm.service) reads `/proc/cmdline` and removes Calamares autostart `.desktop` if live mode detected
+- User auto-logs in as admin, gets clean Xfce desktop, can still launch Calamares from Applications menu
+- Service + script cleaned up from installed systems by `shellprocess.conf`
+
+### xfwm4 Compositor (v1.13.0+)
+
+xfwm4 compositor is explicitly disabled in the imager via `/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml` with `use_compositing=false`. Without this, the compositor crashes on VirtualBox with nomodeset (no hardware GL), producing a visual glitch and session crash → login loop.
 
 ## Key Learnings & Gotchas
 
@@ -268,7 +283,7 @@ Calamares `shellprocess.conf` removes `live-autologin.conf` (which contained `au
 The base image's `shaughvos-software` downloads wallpapers with `curl ... || true` (silent fail). If the download fails, the greeter shows a black background. The imager now checks if the file exists and downloads from GitHub if missing.
 
 ### Never Use `git push --tags`
-Push specific tags only (e.g., `git push origin v1.12.0`). `--tags` leaks old DietPi-era tags that break CI workflows.
+Push specific tags only (e.g., `git push origin v1.13.0`). `--tags` leaks old DietPi-era tags that break CI workflows.
 
 ### Never Create GitHub Releases Manually
 CI (`release-images.yml`) creates the Release and attaches build artifacts automatically when a `v*` tag is pushed. Running `gh release create` first blocks CI with "release already exists."
@@ -284,10 +299,17 @@ CI (`release-images.yml`) creates the Release and attaches build artifacts autom
 Files in `rootfs/` are copied to `/` by the installer via `cp -a "$dir/rootfs/." /` (shaughvos-installer:861). Systemd drop-ins, config files, and service units placed in `rootfs/etc/systemd/system/` automatically end up on the installed system.
 
 ### Live ISO vs Installed System Boot — Two Different Worlds
-- **Live ISO:** lightdm + admin autologin → Xfce → Calamares autostart. Getty autologin REMOVED.
+- **Live ISO (Install):** lightdm + admin autologin → Xfce → Calamares autostart. Getty autologin REMOVED.
+- **Live ISO (Try):** lightdm + admin autologin → Xfce desktop only (Calamares autostart suppressed by `shaughvos-live-check`).
 - **Installed system:** lightdm (graphical.target) → greeter → user login → Xfce session. Uses `50-shaughvos.conf` for session config, NOT `live-autologin.conf`.
 - **Base image (non-ISO):** root getty autologin → `exec startx`. No display manager. Completely different path.
 
+### Calamares displaymanager.conf Must Be in Download Loop
+The imager downloads Calamares module configs in a `for` loop. If a config file exists in `assets/calamares/modules/` and is referenced in `settings.conf` but NOT in the download loop, the module runs with defaults and silently fails. Always add new module configs to BOTH `settings.conf` AND the imager's download loop.
+
+### xfwm4 Compositor Must Be Disabled for VirtualBox
+Don't rely on `shaughvos-software`'s base image config alone — the imager must enforce `use_compositing=false` in `/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml`. Without hardware GL (nomodeset + fbdev/vesa), the compositor crashes the Xfce session on login.
+
 ## Current Version
 
-shaughvOS v1.12.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.13.0 (`.update/version`). Minimum Debian version: 7+.

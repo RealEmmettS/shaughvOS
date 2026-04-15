@@ -657,7 +657,7 @@ _EOF_
 			# Ensure DNS works inside chroot
 			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
 			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, and display/input drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput'
+				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput plymouth plymouth-themes'
 
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
@@ -665,7 +665,7 @@ _EOF_
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/settings.conf" -o "$live_root/etc/calamares/settings.conf"
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/branding/shaughvos/branding.desc" -o "$live_root/etc/calamares/branding/shaughvos/branding.desc"
 			G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/shaughv-logo.svg" -o "$live_root/etc/calamares/branding/shaughvos/shaughv-logo.svg"
-			for f in unpackfs.conf bootloader.conf finished.conf users.conf partition.conf welcome.conf services-systemd.conf shellprocess.conf; do
+			for f in unpackfs.conf bootloader.conf finished.conf users.conf partition.conf welcome.conf services-systemd.conf shellprocess.conf displaymanager.conf; do
 				G_EXEC curl -sSf "$SHAUGHVOS_REPO/assets/calamares/modules/$f" -o "$live_root/etc/calamares/modules/$f"
 			done
 
@@ -681,6 +681,13 @@ _EOF_
 
 			# Rebuild initramfs to ensure live-boot hooks are included after all package installs
 			chroot "$live_root" update-initramfs -u 2>/dev/null || true
+
+			# Register shaughvOS Plymouth theme and rebuild initramfs to include it
+			chroot "$live_root" bash -c \
+				'if [[ -f /usr/share/plymouth/themes/shaughvos/shaughvos.plymouth ]]; then
+					plymouth-set-default-theme shaughvos
+					update-initramfs -u
+				fi' 2>/dev/null || true
 
 			### Step 5b: Prepare root filesystem for live-boot compatibility ###
 			G_SHAUGHVOS-NOTIFY 2 'Preparing root filesystem for live-boot mode'
@@ -750,6 +757,42 @@ XWRAPPER
 			chroot "$live_root" systemctl enable lightdm 2>/dev/null || true
 			# Belt and suspenders: create the display-manager symlink directly in case systemctl enable failed in chroot
 			ln -sf /lib/systemd/system/lightdm.service "$live_root/etc/systemd/system/display-manager.service"
+			# Live mode guard — suppresses Calamares autostart when booted with shaughvos.live=1
+			# Fail-safe: if this script fails, Calamares launches (install mode behavior).
+			# The /usr/share/applications/ copy of the .desktop is NOT removed — user can still
+			# launch "Install shaughvOS" from the Applications menu in live mode.
+			cat > "$live_root/usr/local/bin/shaughvos-live-check" << 'LIVECHECK'
+#!/bin/sh
+# If shaughvos.live=1 is in the kernel cmdline, remove Calamares autostart
+# so the user gets a plain desktop without the installer launching.
+LOG="/var/log/shaughvos-live-check.log"
+echo "=== Live check: $(date) ===" >> "$LOG" 2>/dev/null
+echo "cmdline: $(cat /proc/cmdline)" >> "$LOG" 2>/dev/null
+if grep -q 'shaughvos\.live=1' /proc/cmdline 2>/dev/null; then
+    echo "Live mode detected — suppressing Calamares autostart" >> "$LOG" 2>/dev/null
+    rm -f /etc/xdg/autostart/calamares-installer.desktop
+else
+    echo "Install mode — Calamares autostart preserved" >> "$LOG" 2>/dev/null
+fi
+LIVECHECK
+			chmod +x "$live_root/usr/local/bin/shaughvos-live-check"
+			# Systemd service runs the guard before LightDM starts the desktop
+			cat > "$live_root/etc/systemd/system/shaughvos-live-check.service" << 'LIVESVC'
+[Unit]
+Description=shaughvOS live mode check
+Before=lightdm.service display-manager.service
+After=local-fs.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/shaughvos-live-check
+RemainAfterExit=yes
+
+[Install]
+WantedBy=graphical.target
+LIVESVC
+			chroot "$live_root" systemctl enable shaughvos-live-check 2>/dev/null || true
 			# Configure LightDM greeter — desktop wallpaper background, Makira font, Dracula theme
 			G_EXEC mkdir -p "$live_root/etc/lightdm"
 			cat > "$live_root/etc/lightdm/lightdm-gtk-greeter.conf" << 'GREETER'
@@ -760,6 +803,20 @@ theme-name = Dracula
 icon-theme-name = Papirus-Dark
 indicators = ~host;~spacer;~clock;~spacer;~session;~power
 GREETER
+			# Disable xfwm4 compositor — crashes on VirtualBox with nomodeset (no hardware GL),
+			# producing visual glitch + session crash -> login loop. Enforced here as safety net
+			# over the base image's shaughvos-software-generated config.
+			G_EXEC mkdir -p "$live_root/etc/xdg/xfce4/xfconf/xfce-perchannel-xml"
+			cat > "$live_root/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml" << 'XFWM4'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfwm4" version="1.0">
+  <property name="general" type="empty">
+    <property name="theme" type="string" value="Dracula"/>
+    <property name="title_font" type="string" value="Makira SemiBold 10"/>
+    <property name="use_compositing" type="bool" value="false"/>
+  </property>
+</channel>
+XFWM4
 			# Set system-wide fontconfig defaults — Makira for sans-serif UI, IBM Plex Mono for monospace
 			G_EXEC mkdir -p "$live_root/etc/fonts"
 			cat > "$live_root/etc/fonts/local.conf" << 'FONTCONF'
@@ -820,6 +877,8 @@ POLKIT
 			# shellcheck disable=SC2086
 			cp "$live_root"/boot/initrd.img-* tmpiso/live/initrd
 
+			# Mark plymouth as manually installed so autoremove doesn't remove it
+			chroot "$live_root" apt-mark manual plymouth plymouth-themes 2>/dev/null || true
 			# Clean apt caches before squashfs to reduce ISO size
 			chroot "$live_root" apt-get clean 2>/dev/null || true
 			chroot "$live_root" apt-get autoremove -y 2>/dev/null || true
@@ -864,9 +923,9 @@ menuentry "Install shaughvOS" {
     linux ($root)/live/vmlinuz boot=live nomodeset
     initrd ($root)/live/initrd
 }
-menuentry "shaughvOS Live (safe graphics)" {
+menuentry "Try shaughvOS (without installing)" {
     search --no-floppy --set=root --label SHAUGHVOS
-    linux ($root)/live/vmlinuz boot=live nomodeset quiet splash
+    linux ($root)/live/vmlinuz boot=live nomodeset quiet splash shaughvos.live=1
     initrd ($root)/live/initrd
 }
 menuentry "Power off" {
@@ -908,9 +967,9 @@ LABEL install
   APPEND initrd=/live/initrd boot=live nomodeset
 
 LABEL live
-  MENU LABEL shaughvOS Live (safe graphics)
+  MENU LABEL Try shaughvOS (without installing)
   KERNEL /live/vmlinuz
-  APPEND initrd=/live/initrd boot=live nomodeset quiet splash
+  APPEND initrd=/live/initrd boot=live nomodeset quiet splash shaughvos.live=1
 
 LABEL poweroff
   MENU LABEL Power off
