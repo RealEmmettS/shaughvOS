@@ -11,6 +11,20 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.13.1] — 2026-04-15
+
+### Fixed
+- **CRITICAL**: Login loop after install AND live session crash — the actual root cause discovered after 5 release iterations (v1.11.0–v1.13.0): **Xfce was never installed in the ISO rootfs.** The build pipeline defers Xfce installation to first boot via `shaughvos.txt`, but the imager sets `.install_stage=2` which suppresses first-boot software install. The live ISO had `lightdm` (a login screen) pointing at Xfce (a desktop that didn't exist). All previous fixes (session configs, compositor disable, displaymanager module, etc.) were correct but addressed downstream effects of this upstream cause.
+  - Added full Xfce desktop stack to the imager's `apt-get install`: `xfce4`, `xfce4-session`, `xfwm4`, `xfdesktop4`, `xfce4-panel`, `thunar`, `xfce4-terminal`, `xinit`, `dbus-user-session`, `dbus-x11`, `x11-xserver-utils`.
+  - Expanded `apt-mark manual` before pre-squashfs `autoremove` to protect ALL critical desktop/session packages. shaughvOS's aggressive APT config (`AutoRemove::RecommendsImportant "false"`) makes autoremove strip packages that stock Debian would protect.
+  - Added per-user xfce4 config cleanup before squashfs creation to prevent compositor override.
+  - Pre-installed `dbus-x11` in the imager (previously only installed by shellprocess post-install, which could silently fail due to no network in chroot).
+
+### Added
+- **QubeTX 300 Series tools pre-installed on ISO** — TR-300 (machine report), ND-300 + SpeedQX (network diagnostics), and SD-300 (system diagnostics) are now downloaded from GitHub Releases during ISO build, matching the Claude Code CLI install pattern. Previously deferred to first boot which was suppressed by `.install_stage=2`.
+
+---
+
 ## [1.13.0] — 2026-04-15
 
 ### Fixed

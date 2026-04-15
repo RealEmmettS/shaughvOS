@@ -197,7 +197,9 @@ The installer ISO boots a full shaughvOS live environment using Debian's `live-b
 
 Configuration: `assets/calamares/` contains settings.conf, branding, and module configs.
 
-Pre-installed software: Node.js, npm, Claude Code CLI.
+Pre-installed software: Node.js, npm, Claude Code CLI, full Xfce desktop, QubeTX 300 Series (TR-300, ND-300, SD-300).
+
+**CRITICAL: The base image does NOT include Xfce.** The build pipeline (`shaughvos-build` → `shaughvos-installer`) creates a minimal server image. Xfce installation is deferred to first boot via `AUTO_SETUP_INSTALL_SOFTWARE_ID=25` in `shaughvos.txt`. But the imager sets `.install_stage=2`, suppressing first-boot software install. Therefore the imager MUST explicitly install the Xfce desktop stack (`xfce4 xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xfce4-terminal xinit dbus-user-session dbus-x11 x11-xserver-utils`) in its own `apt-get install` step. Without this, the ISO has LightDM pointing at a desktop that doesn't exist.
 
 #### Live ISO Boot Chain (critical — many non-obvious requirements)
 
@@ -249,4 +251,4 @@ Two mechanisms exist (important for understanding conflicts):
 
 ## Current Version
 
-shaughvOS v1.13.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.13.1 (`.update/version`). Minimum Debian version: 7+.

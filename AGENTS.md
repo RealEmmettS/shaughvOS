@@ -310,6 +310,12 @@ The imager downloads Calamares module configs in a `for` loop. If a config file 
 ### xfwm4 Compositor Must Be Disabled for VirtualBox
 Don't rely on `shaughvos-software`'s base image config alone — the imager must enforce `use_compositing=false` in `/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfwm4.xml`. Without hardware GL (nomodeset + fbdev/vesa), the compositor crashes the Xfce session on login.
 
+### Base Image Does NOT Include Xfce (CRITICAL)
+The build pipeline (`shaughvos-build` → `shaughvos-installer`) creates a minimal server image. Xfce installation is deferred to first boot via `AUTO_SETUP_INSTALL_SOFTWARE_ID=25` in `shaughvos.txt`. But the imager sets `.install_stage=2`, suppressing first-boot software install. The imager MUST explicitly install the full Xfce stack in its `apt-get install` step. This was the root cause of the login loop across v1.11.0–v1.13.0.
+
+### Aggressive APT Autoremove Config
+`rootfs/etc/apt/apt.conf.d/97shaughvos` sets `APT::AutoRemove::RecommendsImportant "false"` — autoremove strips packages that stock Debian would protect. Always use `apt-mark manual` for critical packages before any `autoremove` call.
+
 ## Current Version
 
-shaughvOS v1.13.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.13.1 (`.update/version`). Minimum Debian version: 7+.

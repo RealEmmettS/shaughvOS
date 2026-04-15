@@ -656,8 +656,8 @@ _EOF_
 			G_EXEC mount -t tmpfs tmpfs "$live_root/run"
 			# Ensure DNS works inside chroot
 			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
-			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, and display/input drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput plymouth plymouth-themes'
+			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, Xfce desktop, and display/input drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
+				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput plymouth plymouth-themes xfce4 xfce4-terminal xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xinit dbus-user-session dbus-x11 x11-xserver-utils'
 
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
@@ -678,6 +678,25 @@ _EOF_
 			G_SHAUGHVOS-NOTIFY 2 'Installing Node.js, npm, and Claude Code CLI'
 			G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
 				'apt-get install -y --no-install-recommends nodejs npm && curl -fsSL https://claude.ai/install.sh | bash || true'
+
+			### Step 5a: Install QubeTX 300 Series tools (TR-300, ND-300, SD-300) ###
+			G_SHAUGHVOS-NOTIFY 2 'Installing QubeTX 300 Series diagnostic tools'
+			chroot "$live_root" bash -c '
+				arch="x86_64-unknown-linux-gnu"
+				# TR-300 — Machine report
+				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-machine-report/releases/latest" | grep -Po "\"tag_name\": *\"\K[^\"]+") || ver="v3.8.0"
+				curl -sSfL "https://github.com/QubeTX/qube-machine-report/releases/download/$ver/tr-300-$arch.tar.xz" | tar -xJf - -C /tmp/ 2>/dev/null
+				[[ -f /tmp/tr300 ]] && mv /tmp/tr300 /usr/local/bin/tr300 && chmod +x /usr/local/bin/tr300
+				# ND-300 + SpeedQX — Network diagnostics
+				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-network-diagnostics/releases/latest" | grep -Po "\"tag_name\": *\"\K[^\"]+") || ver="v2.8.0"
+				curl -sSfL "https://github.com/QubeTX/qube-network-diagnostics/releases/download/$ver/nd-300-$arch.tar.xz" | tar -xJf - -C /tmp/ 2>/dev/null
+				[[ -f /tmp/nd300 ]] && mv /tmp/nd300 /usr/local/bin/nd300 && chmod +x /usr/local/bin/nd300
+				[[ -f /tmp/speedqx ]] && mv /tmp/speedqx /usr/local/bin/speedqx && chmod +x /usr/local/bin/speedqx
+				# SD-300 — System diagnostics
+				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-system-diagnostics/releases/latest" | grep -Po "\"tag_name\": *\"\K[^\"]+") || ver="v1.3.0"
+				curl -sSfL "https://github.com/QubeTX/qube-system-diagnostics/releases/download/$ver/sd-300-$arch.tar.xz" | tar -xJf - -C /tmp/ 2>/dev/null
+				[[ -f /tmp/sd300 ]] && mv /tmp/sd300 /usr/local/bin/sd300 && chmod +x /usr/local/bin/sd300
+			' 2>/dev/null || true
 
 			# Rebuild initramfs to ensure live-boot hooks are included after all package installs
 			chroot "$live_root" update-initramfs -u 2>/dev/null || true
@@ -817,6 +836,9 @@ GREETER
   </property>
 </channel>
 XFWM4
+			# Remove per-user xfce4 configs — they override /etc/xdg/ system defaults.
+			# The base image build may have run Xfce, creating configs with compositor enabled.
+			rm -rf "$live_root/root/.config/xfce4" "$live_root/home/admin/.config/xfce4" 2>/dev/null || true
 			# Set system-wide fontconfig defaults — Makira for sans-serif UI, IBM Plex Mono for monospace
 			G_EXEC mkdir -p "$live_root/etc/fonts"
 			cat > "$live_root/etc/fonts/local.conf" << 'FONTCONF'
@@ -878,7 +900,14 @@ POLKIT
 			cp "$live_root"/boot/initrd.img-* tmpiso/live/initrd
 
 			# Mark plymouth as manually installed so autoremove doesn't remove it
-			chroot "$live_root" apt-mark manual plymouth plymouth-themes 2>/dev/null || true
+			# Mark ALL critical desktop/session packages manual before autoremove.
+			# shaughvOS's aggressive APT config (AutoRemove::RecommendsImportant "false")
+			# makes autoremove strip packages that stock Debian would protect.
+			chroot "$live_root" apt-mark manual \
+				xfce4 xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xfce4-terminal \
+				lightdm lightdm-gtk-greeter dbus dbus-user-session dbus-x11 \
+				xserver-xorg-core xinit x11-common x11-xserver-utils \
+				polkitd libpam-systemd plymouth plymouth-themes 2>/dev/null || true
 			# Clean apt caches before squashfs to reduce ISO size
 			chroot "$live_root" apt-get clean 2>/dev/null || true
 			chroot "$live_root" apt-get autoremove -y 2>/dev/null || true
