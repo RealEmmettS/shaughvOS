@@ -681,6 +681,7 @@ _EOF_
 
 			### Step 5a: Install QubeTX 300 Series tools (TR-300, ND-300, SD-300) ###
 			G_SHAUGHVOS-NOTIFY 2 'Installing QubeTX 300 Series diagnostic tools'
+			# shellcheck disable=SC2016
 			chroot "$live_root" bash -c '
 				arch="x86_64-unknown-linux-gnu"
 				# TR-300 — Machine report
