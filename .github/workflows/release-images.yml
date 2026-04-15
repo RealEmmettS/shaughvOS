@@ -16,7 +16,35 @@ concurrency:
 permissions:
   contents: write
 jobs:
+  shellcheck:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v6
+    - name: Setup shaughvOS-Globals
+      run: |
+        sudo mkdir -p /boot/shaughvos/func
+        sudo cp shaughvos/func/shaughvos-globals /boot/shaughvos/func/
+        sudo ./shaughvos/func/shaughvos-obtain_hw_model
+        echo -e 'G_HW_MEMORY_SIZE=1024\nG_HW_ONBOARD_WIFI=1\nG_HW_REVISION=1.1' | sudo tee -a /boot/shaughvos/.hw_model
+    - name: Download shellcheck
+      run: |
+        curl -sSfLo shellcheck.tar.xz "$(curl -sSfH 'Authorization: Bearer ${{ github.token }}' 'https://api.github.com/repos/koalaman/shellcheck/releases/latest' | mawk -F\" '/^ *"browser_download_url": ".*\.linux\.x86_64\.tar\.xz"$/{print $4;exit}')"
+        tar --wildcards --strip-components=1 -xf shellcheck.tar.xz '*/shellcheck'
+        rm shellcheck.tar.xz
+    - name: Run shellcheck
+      run: |
+        mapfile -t FILES < <(find . -not \( -path './.git' -prune \) -not \( -path './.update/patches' \) -not \( -path './.update/pre-patches' \) -type f)
+        for i in "${!FILES[@]}"
+        do
+            [[ ${FILES[$i]##*/} =~ '.'[^.]*'sh'$ ]] && continue
+            [[ $(mawk '/^#!.*sh([[:blank:]]|$)/;{exit}' "${FILES[$i]}") ]] && continue
+            unset -v "FILES[$i]"
+        done
+        ./shellcheck -C -xo all "${FILES[@]}"
+        rm shellcheck
+
   prep:
+    needs: shellcheck
     outputs:
       targets: ${{ steps.targets.outputs.targets }}
       version: ${{ steps.version.outputs.version }}
