@@ -42,6 +42,14 @@ jobs:
         done
         ./shellcheck -C -xo all "${FILES[@]}"
         rm shellcheck
+    - name: Check for trailing spaces
+      if: always()
+      run: |
+        ! grep -rn --exclude-dir='.git' --exclude='*.txt' --exclude='*.md' -I '[[:blank:]]$' .
+    - name: Check for multiple newlines
+      if: always()
+      run: |
+        ! grep -rzPo --exclude-dir='.git' --exclude='*.png' --exclude='*.ttf' --exclude='*.jpg' --exclude='*.svg' --exclude='*.txt' --exclude='*.md' --exclude='shellcheck*' '(^|\n)\N*\n\n\n+\N*(\n|$)' .
 
   prep:
     needs: shellcheck
