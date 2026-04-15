@@ -684,20 +684,69 @@ _EOF_
 			# shellcheck disable=SC2016
 			chroot "$live_root" bash -c '
 				arch="x86_64-unknown-linux-gnu"
+				log="/var/log/shaughvos-qubetx-install.log"
+				echo "=== QubeTX install: $(date) ===" > "$log"
+
 				# TR-300 — Machine report
-				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-machine-report/releases/latest" | grep -Po "\"tag_name\": *\"\K[^\"]+") || ver="v3.8.0"
-				curl -sSfL "https://github.com/QubeTX/qube-machine-report/releases/download/$ver/tr-300-$arch.tar.xz" | tar -xJf - -C /tmp/ 2>/dev/null
-				[[ -f /tmp/tr300 ]] && mv /tmp/tr300 /usr/local/bin/tr300 && chmod +x /usr/local/bin/tr300
+				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-machine-report/releases/latest" 2>>"$log" | grep -Po "\"tag_name\": *\"\K[^\"]+")
+				if [[ ! $ver ]]; then ver="v3.8.0"; echo "WARN: TR-300 version detection failed, using fallback $ver" >> "$log"; fi
+				echo "TR-300: installing $ver" >> "$log"
+				mkdir -p /tmp/tr300-extract
+				if curl -sSfL "https://github.com/QubeTX/qube-machine-report/releases/download/$ver/tr-300-$arch.tar.xz" 2>>"$log" | tar -xJf - -C /tmp/tr300-extract/ 2>>"$log"; then
+					if [[ -f /tmp/tr300-extract/tr300 ]]; then
+						mv /tmp/tr300-extract/tr300 /usr/local/bin/tr300 && chmod +x /usr/local/bin/tr300
+						echo "TR-300: installed to /usr/local/bin/tr300" >> "$log"
+					else
+						echo "ERROR: TR-300 binary not found in tarball. Contents:" >> "$log"
+						ls -la /tmp/tr300-extract/ >> "$log" 2>&1
+					fi
+				else
+					echo "ERROR: TR-300 download/extract failed" >> "$log"
+				fi
+				rm -rf /tmp/tr300-extract
+
 				# ND-300 + SpeedQX — Network diagnostics
-				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-network-diagnostics/releases/latest" | grep -Po "\"tag_name\": *\"\K[^\"]+") || ver="v2.8.0"
-				curl -sSfL "https://github.com/QubeTX/qube-network-diagnostics/releases/download/$ver/nd-300-$arch.tar.xz" | tar -xJf - -C /tmp/ 2>/dev/null
-				[[ -f /tmp/nd300 ]] && mv /tmp/nd300 /usr/local/bin/nd300 && chmod +x /usr/local/bin/nd300
-				[[ -f /tmp/speedqx ]] && mv /tmp/speedqx /usr/local/bin/speedqx && chmod +x /usr/local/bin/speedqx
+				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-network-diagnostics/releases/latest" 2>>"$log" | grep -Po "\"tag_name\": *\"\K[^\"]+")
+				if [[ ! $ver ]]; then ver="v2.8.0"; echo "WARN: ND-300 version detection failed, using fallback $ver" >> "$log"; fi
+				echo "ND-300: installing $ver" >> "$log"
+				mkdir -p /tmp/nd300-extract
+				if curl -sSfL "https://github.com/QubeTX/qube-network-diagnostics/releases/download/$ver/nd-300-$arch.tar.xz" 2>>"$log" | tar -xJf - -C /tmp/nd300-extract/ 2>>"$log"; then
+					if [[ -f /tmp/nd300-extract/nd300 ]]; then
+						mv /tmp/nd300-extract/nd300 /usr/local/bin/nd300 && chmod +x /usr/local/bin/nd300
+						echo "ND-300: installed to /usr/local/bin/nd300" >> "$log"
+					else
+						echo "ERROR: ND-300 binary not found. Contents:" >> "$log"
+						ls -la /tmp/nd300-extract/ >> "$log" 2>&1
+					fi
+					if [[ -f /tmp/nd300-extract/speedqx ]]; then
+						mv /tmp/nd300-extract/speedqx /usr/local/bin/speedqx && chmod +x /usr/local/bin/speedqx
+						echo "SpeedQX: installed to /usr/local/bin/speedqx" >> "$log"
+					fi
+				else
+					echo "ERROR: ND-300 download/extract failed" >> "$log"
+				fi
+				rm -rf /tmp/nd300-extract
+
 				# SD-300 — System diagnostics
-				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-system-diagnostics/releases/latest" | grep -Po "\"tag_name\": *\"\K[^\"]+") || ver="v1.3.0"
-				curl -sSfL "https://github.com/QubeTX/qube-system-diagnostics/releases/download/$ver/sd-300-$arch.tar.xz" | tar -xJf - -C /tmp/ 2>/dev/null
-				[[ -f /tmp/sd300 ]] && mv /tmp/sd300 /usr/local/bin/sd300 && chmod +x /usr/local/bin/sd300
-			' 2>/dev/null || true
+				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-system-diagnostics/releases/latest" 2>>"$log" | grep -Po "\"tag_name\": *\"\K[^\"]+")
+				if [[ ! $ver ]]; then ver="v1.3.0"; echo "WARN: SD-300 version detection failed, using fallback $ver" >> "$log"; fi
+				echo "SD-300: installing $ver" >> "$log"
+				mkdir -p /tmp/sd300-extract
+				if curl -sSfL "https://github.com/QubeTX/qube-system-diagnostics/releases/download/$ver/sd-300-$arch.tar.xz" 2>>"$log" | tar -xJf - -C /tmp/sd300-extract/ 2>>"$log"; then
+					if [[ -f /tmp/sd300-extract/sd300 ]]; then
+						mv /tmp/sd300-extract/sd300 /usr/local/bin/sd300 && chmod +x /usr/local/bin/sd300
+						echo "SD-300: installed to /usr/local/bin/sd300" >> "$log"
+					else
+						echo "ERROR: SD-300 binary not found. Contents:" >> "$log"
+						ls -la /tmp/sd300-extract/ >> "$log" 2>&1
+					fi
+				else
+					echo "ERROR: SD-300 download/extract failed" >> "$log"
+				fi
+				rm -rf /tmp/sd300-extract
+
+				echo "=== QubeTX install complete ===" >> "$log"
+			'
 
 			# Rebuild initramfs to ensure live-boot hooks are included after all package installs
 			chroot "$live_root" update-initramfs -u 2>/dev/null || true
@@ -740,6 +789,11 @@ SUDOERS
 			# Don't trust the base image's copy (curl || true could have silently failed).
 			G_EXEC mkdir -p "$live_root/usr/share/backgrounds/shaughvos"
 			G_EXEC curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background.jpg" "https://raw.githubusercontent.com/${G_GITOWNER:-RealEmmettS}/shaughvOS/${G_GITBRANCH:-master}/assets/desktop_background.jpg"
+			# Download wallpaper variants
+			curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background_dark1.png" "$SHAUGHVOS_REPO/assets/desktop_background_dark1.png" || true
+			curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background_dark2.png" "$SHAUGHVOS_REPO/assets/desktop_background_dark2.png" || true
+			curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background_dark3.png" "$SHAUGHVOS_REPO/assets/desktop_background_dark3.png" || true
+			curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background_4k.png" "$SHAUGHVOS_REPO/assets/desktop_background_4k.png" || true
 			# Ensure desktop autologin for the live session
 			G_EXEC mkdir -p "$live_root/etc/lightdm/lightdm.conf.d"
 			cat > "$live_root/etc/lightdm/lightdm.conf.d/live-autologin.conf" << 'AUTOLOGIN'
@@ -813,6 +867,21 @@ RemainAfterExit=yes
 WantedBy=graphical.target
 LIVESVC
 			chroot "$live_root" systemctl enable shaughvos-live-check 2>/dev/null || true
+
+			### Step 5c: Install Dracula GTK theme, Papirus icons, and full Xfce theming ###
+			G_SHAUGHVOS-NOTIFY 2 'Installing Dracula GTK theme and Papirus-Dark icons'
+			# Dracula GTK theme
+			chroot "$live_root" bash -c '
+				if [[ ! -d /usr/share/themes/Dracula ]]; then
+					mkdir -p /tmp/dracula-theme
+					curl -sSfL "https://github.com/dracula/gtk/archive/master.tar.gz" | tar -xzf - -C /tmp/dracula-theme/
+					mv /tmp/dracula-theme/gtk-master /usr/share/themes/Dracula
+					rm -rf /tmp/dracula-theme
+				fi
+			'
+			# Papirus-Dark icon theme
+			G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" apt-get install -y --no-install-recommends papirus-icon-theme
+
 			# Configure LightDM greeter — desktop wallpaper background, Makira font, Dracula theme
 			G_EXEC mkdir -p "$live_root/etc/lightdm"
 			cat > "$live_root/etc/lightdm/lightdm-gtk-greeter.conf" << 'GREETER'
@@ -837,6 +906,122 @@ GREETER
   </property>
 </channel>
 XFWM4
+
+			# GTK theme, icon theme, and font settings
+			cat > "$live_root/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml" << 'XSETTINGS'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xsettings" version="1.0">
+  <property name="Net" type="empty">
+    <property name="ThemeName" type="string" value="Dracula"/>
+    <property name="IconThemeName" type="string" value="Papirus-Dark"/>
+  </property>
+  <property name="Gtk" type="empty">
+    <property name="FontName" type="string" value="Makira Medium 10"/>
+    <property name="MonospaceFontName" type="string" value="IBM Plex Mono 10"/>
+  </property>
+</channel>
+XSETTINGS
+
+			# Desktop wallpaper
+			cat > "$live_root/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" << 'XFCEDESKTOP'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitorscreen" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/shaughvos/desktop_background.jpg"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+    </property>
+  </property>
+</channel>
+XFCEDESKTOP
+
+			# Bottom panel layout with shaughvOS brandmark
+			cat > "$live_root/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml" << 'XFCEPANEL'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <value type="int" value="1"/>
+    <property name="panel-1" type="empty">
+      <property name="position" type="string" value="p=8;x=0;y=0"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="36"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="3"/>
+        <value type="int" value="4"/>
+        <value type="int" value="5"/>
+        <value type="int" value="6"/>
+      </property>
+    </property>
+  </property>
+  <property name="plugins" type="empty">
+    <property name="plugin-1" type="string" value="applicationsmenu">
+      <property name="button-icon" type="string" value="shaughvos-panel-symbolic"/>
+      <property name="show-button-title" type="bool" value="false"/>
+    </property>
+    <property name="plugin-2" type="string" value="tasklist"/>
+    <property name="plugin-3" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-4" type="string" value="systray"/>
+    <property name="plugin-5" type="string" value="clock"/>
+    <property name="plugin-6" type="string" value="actions"/>
+  </property>
+</channel>
+XFCEPANEL
+
+			# Xfce Terminal with IBM Plex Mono and Dracula colors
+			G_EXEC mkdir -p "$live_root/etc/xdg/xfce4/terminal"
+			cat > "$live_root/etc/xdg/xfce4/terminal/terminalrc" << 'TERMINALRC'
+[Configuration]
+FontName=IBM Plex Mono 11
+MiscAlwaysShowTabs=FALSE
+MiscBell=FALSE
+MiscBellUrgent=FALSE
+MiscBordersDefault=TRUE
+MiscCursorBlinks=FALSE
+MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
+MiscDefaultGeometry=120x35
+MiscInheritGeometry=FALSE
+MiscMenubarDefault=TRUE
+MiscMouseAutohide=FALSE
+MiscMouseWheelZoom=TRUE
+MiscToolbarDefault=FALSE
+MiscConfirmClose=TRUE
+MiscCycleTabs=TRUE
+MiscTabCloseButtons=TRUE
+MiscTabCloseMiddleClick=TRUE
+MiscTabPosition=GTK_POS_TOP
+MiscHighlightUrls=TRUE
+MiscMiddleClickOpensUri=FALSE
+MiscCopyOnSelect=FALSE
+MiscShowRelaunchDialog=TRUE
+MiscRewrapOnResize=TRUE
+MiscUseShiftArrowsToScroll=FALSE
+MiscSlimTabs=FALSE
+MiscNewTabAdjacent=FALSE
+MiscSearchDialogOpacity=100
+MiscShowUnsafePasteDialog=TRUE
+MiscRightClickAction=TERMINAL_RIGHT_CLICK_ACTION_CONTEXT_MENU
+ScrollingBar=TERMINAL_SCROLLBAR_NONE
+ColorForeground=#f8f8f2
+ColorBackground=#282a36
+ColorCursor=#f8f8f2
+ColorPalette=#21222c;#ff5555;#50fa7b;#f1fa8c;#bd93f9;#ff79c6;#8be9fd;#f8f8f2;#6272a4;#ff6e6e;#69ff94;#ffffa5;#d6acff;#ff92df;#a4ffff;#ffffff
+TERMINALRC
+
+			# Install panel brandmark as symbolic icon (auto-recolors with theme)
+			G_EXEC mkdir -p "$live_root/usr/share/icons/hicolor/symbolic/apps"
+			curl -sSfLo "$live_root/usr/share/icons/hicolor/symbolic/apps/shaughvos-panel-symbolic.svg" "$SHAUGHVOS_REPO/assets/shaughvos-panel-symbolic.svg" || true
+			chroot "$live_root" gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
+
 			# Remove per-user xfce4 configs — they override /etc/xdg/ system defaults.
 			# The base image build may have run Xfce, creating configs with compositor enabled.
 			rm -rf "$live_root/root/.config/xfce4" "$live_root/home/admin/.config/xfce4" 2>/dev/null || true
@@ -864,6 +1049,21 @@ XFWM4
   </alias>
 </fontconfig>
 FONTCONF
+			# Download shaughvOS fonts (Makira + IBM Plex Mono) from GitHub
+			G_SHAUGHVOS-NOTIFY 2 'Installing shaughvOS fonts (Makira + IBM Plex Mono)'
+			G_EXEC mkdir -p "$live_root/usr/share/fonts/truetype/shaughvos"
+			local font_base="$SHAUGHVOS_REPO/assets/fonts"
+			local font
+			for font in Makira/Makira-Regular.ttf Makira/Makira-Medium.ttf Makira/Makira-SemiBold.ttf Makira/Makira-Bold.ttf Makira/Makira-ExtraBold.ttf Makira/Makira-Black.ttf
+			do
+				curl -sSfLo "$live_root/usr/share/fonts/truetype/shaughvos/${font##*/}" "$font_base/$font" || true
+			done
+			for font in IBMPlexMono/IBMPlexMono-Regular.ttf IBMPlexMono/IBMPlexMono-Medium.ttf IBMPlexMono/IBMPlexMono-SemiBold.ttf IBMPlexMono/IBMPlexMono-Bold.ttf IBMPlexMono/IBMPlexMono-Italic.ttf IBMPlexMono/IBMPlexMono-MediumItalic.ttf IBMPlexMono/IBMPlexMono-BoldItalic.ttf
+			do
+				curl -sSfLo "$live_root/usr/share/fonts/truetype/shaughvos/${font##*/}" "$font_base/$font" || true
+			done
+			chroot "$live_root" fc-cache -f
+
 			# Set graphical.target as default so systemd starts lightdm on boot (base image defaults to multi-user.target)
 			chroot "$live_root" systemctl set-default graphical.target 2>/dev/null || ln -sf /lib/systemd/system/graphical.target "$live_root/etc/systemd/system/default.target"
 			# Add nomodeset + quiet splash to GRUB defaults — carries to installed system via squashfs.
@@ -908,7 +1108,7 @@ POLKIT
 				xfce4 xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xfce4-terminal \
 				lightdm lightdm-gtk-greeter dbus dbus-user-session dbus-x11 \
 				xserver-xorg-core xinit x11-common x11-xserver-utils \
-				polkitd libpam-systemd plymouth plymouth-themes 2>/dev/null || true
+				polkitd libpam-systemd plymouth plymouth-themes papirus-icon-theme 2>/dev/null || true
 			# Clean apt caches before squashfs to reduce ISO size
 			chroot "$live_root" apt-get clean 2>/dev/null || true
 			chroot "$live_root" apt-get autoremove -y 2>/dev/null || true

@@ -11,6 +11,21 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.14.0] — 2026-04-15
+
+### Fixed
+- **Fonts not loading** — The imager created fontconfig aliases (`/etc/fonts/local.conf`) mapping sans-serif to Makira and monospace to IBM Plex Mono, but never downloaded the actual TTF files or ran `fc-cache`. Font manager showed no custom fonts. Now downloads all 13 TTFs (6 Makira + 7 IBM Plex Mono) to `/usr/share/fonts/truetype/shaughvos/` and rebuilds the font cache.
+- **Black desktop background** — The imager downloaded the wallpaper JPG but never created `xfce4-desktop.xml` to tell Xfce where to find it. Xfce showed "Unable to load images from folder '(null)'". Now creates `xfce4-desktop.xml`, `xsettings.xml`, and `xfce4-panel.xml` in `/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/`.
+- **No GTK theme or icons** — Dracula GTK theme and Papirus-Dark icon theme were referenced in greeter and xfwm4 configs but never installed. Now downloads Dracula theme and installs `papirus-icon-theme` via apt, protected from autoremove with `apt-mark manual`.
+- **QubeTX tools "command not found"** — The QubeTX install block swallowed all errors (`2>/dev/null || true`), making download/extraction failures invisible. Now logs to `/var/log/shaughvos-qubetx-install.log` and extracts to dedicated subdirectories for reliable binary detection.
+- **ASCII art misspelling** — Terminal splash banner showed "shaughOS" instead of "shaughvOS" (missing the lowercase "v"). Regenerated figlet ASCII art with correct spelling.
+
+### Added
+- Full Xfce theming in the imager — `xsettings.xml` (Dracula theme, Papirus-Dark icons, Makira/IBM Plex Mono fonts), `xfce4-desktop.xml` (wallpaper), `xfce4-panel.xml` (bottom panel with shaughvOS brandmark), terminal config (Dracula colors, IBM Plex Mono 11), and panel brandmark SVG.
+- Wallpaper variants (dark1, dark2, dark3, 4K) downloaded during ISO build for the wallpaper picker.
+
+---
+
 ## [1.13.1] — 2026-04-15
 
 ### Fixed

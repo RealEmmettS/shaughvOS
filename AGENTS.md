@@ -316,6 +316,17 @@ The build pipeline (`shaughvos-build` → `shaughvos-installer`) creates a minim
 ### Aggressive APT Autoremove Config
 `rootfs/etc/apt/apt.conf.d/97shaughvos` sets `APT::AutoRemove::RecommendsImportant "false"` — autoremove strips packages that stock Debian would protect. Always use `apt-mark manual` for critical packages before any `autoremove` call.
 
+### Imager Must Replicate All Theming from shaughvos-software (CRITICAL)
+The Xfce install block in `shaughvos-software` (ID 25) handles fonts, wallpapers, GTK theme, icon theme, panel config, terminal config, and all Xfce XML configs. Since the imager sets `.install_stage=2` (suppressing first-boot software install), the imager must replicate ALL of these steps — not just the packages. Missing any step means the desktop boots with bare Xfce defaults (no fonts, black background, default grey theme). Specifically, the imager must:
+- Download font TTF files + run `fc-cache -f` (not just create fontconfig aliases)
+- Create `xsettings.xml`, `xfce4-desktop.xml`, `xfce4-panel.xml` (not just `xfwm4.xml`)
+- Install Dracula GTK theme + Papirus icon theme
+- Create terminal config with Dracula colors
+- Download panel brandmark SVG + update icon cache
+
+### QubeTX Install Must Log Errors
+Never swallow QubeTX download/extraction errors with `2>/dev/null || true`. Extract to dedicated subdirectories and log to `/var/log/shaughvos-qubetx-install.log`. If the binary name inside the tarball doesn't match expectations, the log reveals the actual contents.
+
 ## Current Version
 
-shaughvOS v1.13.1 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.14.0 (`.update/version`). Minimum Debian version: 7+.
