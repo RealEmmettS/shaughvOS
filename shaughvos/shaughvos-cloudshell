@@ -481,7 +481,7 @@
 	# shaughvOS
 	SHAUGHVOS_VERSION_CURRENT=0
 	SHAUGHVOS_UPDATE_AVAILABLE=0
-	SHAUGHVOS_WEBSITE='dietpi.com'
+	SHAUGHVOS_WEBSITE='github.com/RealEmmettS/shaughvOS'
 	SHAUGHVOS_TWITTER='@shaughvOS_'
 	# shellcheck disable=SC2329
 	Obtain_SHAUGHVOSINFO(){

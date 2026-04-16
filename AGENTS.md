@@ -324,8 +324,18 @@ The Xfce install block in `shaughvos-software` (ID 25) handles fonts, wallpapers
 - Create terminal config with Dracula colors
 - Download panel brandmark SVG + update icon cache
 
-### QubeTX Install Must Log Errors
-Never swallow QubeTX download/extraction errors with `2>/dev/null || true`. Extract to dedicated subdirectories and log to `/var/log/shaughvos-qubetx-install.log`. If the binary name inside the tarball doesn't match expectations, the log reveals the actual contents.
+### QubeTX Must Use Official Installer Scripts (CRITICAL)
+The imager's raw tarball approach (`tr-300-x86_64-unknown-linux-gnu.tar.xz`) fails silently because cargo-dist tarballs nest binaries inside a subdirectory. The imager extracted flat and checked the root — binary was one level deeper, never found. Use the official cargo-dist installer scripts instead:
+- TR-300: `https://github.com/QubeTX/qube-machine-report/releases/latest/download/tr-300-installer.sh`
+- ND-300: `https://github.com/QubeTX/qube-network-diagnostics/releases/latest/download/nd-300-installer.sh`
+- SD-300: `https://github.com/QubeTX/qube-system-diagnostics/releases/latest/download/sd-300-installer.sh`
+After running in chroot, copy binaries from `~/.cargo/bin/` to `/usr/local/bin/` for system-wide access. Public install docs: `reports.qubetx.com`.
+
+### monitorscreen Is NOT a Valid Xfce Fallback
+`xfce4-desktop.xml` requires the exact XRandR output name for each monitor (e.g., `monitorVirtual-1` for VirtualBox, `monitorHDMI-1` for real hardware). `monitorscreen` is NOT a wildcard. Use multi-monitor XML entries for common names PLUS a dynamic autostart script (`shaughvos-set-wallpaper`) that detects the actual monitor via `xrandr` at login.
+
+### shaughvos-init-software Recovery Command
+New command at `/usr/local/bin/shaughvos-init-software` that (re)installs all bundled software: Node.js, npm, Claude Code CLI, QubeTX TR-300/ND-300/SD-300/SpeedQX, Firefox ESR. Run `sudo shaughvos-init-software` anytime as a safety net if software failed during ISO build.
 
 ## Current Version
 

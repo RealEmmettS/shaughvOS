@@ -67,12 +67,12 @@
 		'Kernel'
 	)
 
-	# Set defaults: Disable CPU temp by default in VMs
+	# Set defaults: Clean splash — only useful commands shown above ASCII art
 	if (( $G_HW_MODEL == 20 ))
 	then
-		aENABLED=(1 0 0 0 0 1 0 1 0 0 0 1 1 0 0 1 0 0 0 0 0)
+		aENABLED=(0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0)
 	else
-		aENABLED=(1 0 1 0 0 1 0 0 0 0 0 1 1 0 0 1 0 0 0 0 0)
+		aENABLED=(0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0)
 	fi
 
 	COLOUR_RESET='\e[0m'
@@ -226,14 +226,12 @@ $GREEN_LINE"
 
 	Print_Credits()
 	{
-		echo -e " ${aCOLOUR[2]}shaughvOS Team     : https://github.com/RealEmmettS/shaughvOS#the-shaughvos-project-team"
+		echo -e " ${aCOLOUR[2]}shaughvOS          : https://github.com/RealEmmettS/shaughvOS"
 
 		[[ -f '/boot/shaughvos/.prep_info' ]] && mawk 'NR==1 {sub(/^0$/,"shaughvOS Core Team");a=$0} NR==2 {print " Image by        : "a" (pre-image: "$0")"}' /boot/shaughvos/.prep_info
 
-		echo -e " Patreon Legends : ADSB.im, Oliver C. Radke
- Website         : https://dietpi.com/ | https://x.com/shaughvOS_ | Bsky: @dietpi.com
- Contribute      : https://dietpi.com/contribute.html
- Web Hosting by  : https://login-online.com/$COLOUR_RESET\n"
+		echo -e " Website         : https://github.com/RealEmmettS/shaughvOS | https://x.com/shaughvOS_
+ Contribute      : https://github.com/RealEmmettS/shaughvOS/issues$COLOUR_RESET\n"
 	}
 
 	Print_Updates()
@@ -263,10 +261,12 @@ $GREEN_LINE"
 	Print_Useful_Commands()
 	{
 		echo -e " ${aCOLOUR[1]}shaughvos-launcher$COLOUR_RESET $GREEN_SEPARATOR All the shaughvOS programs in one place
- ${aCOLOUR[1]}shaughvos-config$COLOUR_RESET   $GREEN_SEPARATOR Feature rich configuration tool for your device
- ${aCOLOUR[1]}shaughvos-software$COLOUR_RESET $GREEN_SEPARATOR Select optimised software for installation
- ${aCOLOUR[1]}htop$COLOUR_RESET            $GREEN_SEPARATOR Resource monitor
- ${aCOLOUR[1]}cpu$COLOUR_RESET             $GREEN_SEPARATOR Shows CPU information and stats\n"
+ ${aCOLOUR[1]}shaughvos-config$COLOUR_RESET   $GREEN_SEPARATOR Configuration tool for your device
+ ${aCOLOUR[1]}shaughvos-software$COLOUR_RESET $GREEN_SEPARATOR Install optimised software
+ ${aCOLOUR[1]}tr300 / report$COLOUR_RESET     $GREEN_SEPARATOR Machine report (CPU, memory, disk, network)
+ ${aCOLOUR[1]}sd300$COLOUR_RESET              $GREEN_SEPARATOR Real-time system diagnostics TUI
+ ${aCOLOUR[1]}htop$COLOUR_RESET               $GREEN_SEPARATOR Resource monitor
+ ${aCOLOUR[1]}claude$COLOUR_RESET             $GREEN_SEPARATOR Claude Code AI assistant\n"
 	}
 
 	Print_Banner_raw()
@@ -323,7 +323,7 @@ $GREEN_LINE"
 		if (( ${aENABLED[12]} ))
 		then
 			local motd fp_motd='/run/shaughvos/.shaughvos_motd'
-			[[ -f $fp_motd ]] || curl -sSfLm 3 'https://dietpi.com/motd' -o "$fp_motd"
+			[[ -f $fp_motd ]] || curl -sSfLm 3 'https://raw.githubusercontent.com/RealEmmettS/shaughvOS/master/.update/motd' -o "$fp_motd"
 			# shellcheck disable=SC1090
 			[[ -f $fp_motd ]] && . "$fp_motd" &> /dev/null && [[ $motd ]] && echo -e "$GREEN_BULLET ${aCOLOUR[1]}${aDESCRIPTION[12]} $GREEN_SEPARATOR $motd"
 		fi

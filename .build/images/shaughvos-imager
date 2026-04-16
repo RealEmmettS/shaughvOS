@@ -656,8 +656,8 @@ _EOF_
 			G_EXEC mount -t tmpfs tmpfs "$live_root/run"
 			# Ensure DNS works inside chroot
 			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
-			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, Xfce desktop, and display/input drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput plymouth plymouth-themes xfce4 xfce4-terminal xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xinit dbus-user-session dbus-x11 x11-xserver-utils'
+			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, Xfce desktop, browser, and display/input drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
+				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput plymouth plymouth-themes xfce4 xfce4-terminal xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xinit dbus-user-session dbus-x11 x11-xserver-utils firefox-esr xz-utils'
 
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
@@ -677,76 +677,43 @@ _EOF_
 			### Step 5: Install Node.js/npm and Claude Code CLI ###
 			G_SHAUGHVOS-NOTIFY 2 'Installing Node.js, npm, and Claude Code CLI'
 			G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get install -y --no-install-recommends nodejs npm && curl -fsSL https://claude.ai/install.sh | bash || true'
+				'apt-get install -y --no-install-recommends nodejs npm'
+			# Install Claude Code CLI — runs as root, || true since it may fail in chroot without full env
+			G_SHAUGHVOS-NOTIFY 2 'Installing Claude Code CLI'
+			chroot "$live_root" bash -c 'curl -fsSL https://claude.ai/install.sh | bash' || G_SHAUGHVOS-NOTIFY 1 'Claude Code CLI install failed (non-fatal)'
+			# Ensure claude is accessible system-wide
+			[[ -f "$live_root/root/.claude/bin/claude" ]] && ln -sf /root/.claude/bin/claude "$live_root/usr/local/bin/claude"
 
 			### Step 5a: Install QubeTX 300 Series tools (TR-300, ND-300, SD-300) ###
-			G_SHAUGHVOS-NOTIFY 2 'Installing QubeTX 300 Series diagnostic tools'
-			# shellcheck disable=SC2016
-			chroot "$live_root" bash -c '
-				arch="x86_64-unknown-linux-gnu"
-				log="/var/log/shaughvos-qubetx-install.log"
-				echo "=== QubeTX install: $(date) ===" > "$log"
+			# Uses official cargo-dist installer scripts from GitHub Releases (https://reports.qubetx.com)
+			# These handle architecture detection and version resolution automatically.
+			G_SHAUGHVOS-NOTIFY 2 'Installing QubeTX TR-300 (machine report)'
+			G_EXEC_OUTPUT=1 chroot "$live_root" bash -c \
+				'curl --proto "=https" --tlsv1.2 -LsSf https://github.com/QubeTX/qube-machine-report/releases/latest/download/tr-300-installer.sh | sh' \
+				|| G_SHAUGHVOS-NOTIFY 1 'TR-300 installer failed'
 
-				# TR-300 — Machine report
-				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-machine-report/releases/latest" 2>>"$log" | grep -Po "\"tag_name\": *\"\K[^\"]+")
-				if [[ ! $ver ]]; then ver="v3.8.0"; echo "WARN: TR-300 version detection failed, using fallback $ver" >> "$log"; fi
-				echo "TR-300: installing $ver" >> "$log"
-				mkdir -p /tmp/tr300-extract
-				if curl -sSfL "https://github.com/QubeTX/qube-machine-report/releases/download/$ver/tr-300-$arch.tar.xz" 2>>"$log" | tar -xJf - -C /tmp/tr300-extract/ 2>>"$log"; then
-					if [[ -f /tmp/tr300-extract/tr300 ]]; then
-						mv /tmp/tr300-extract/tr300 /usr/local/bin/tr300 && chmod +x /usr/local/bin/tr300
-						echo "TR-300: installed to /usr/local/bin/tr300" >> "$log"
-					else
-						echo "ERROR: TR-300 binary not found in tarball. Contents:" >> "$log"
-						ls -la /tmp/tr300-extract/ >> "$log" 2>&1
-					fi
-				else
-					echo "ERROR: TR-300 download/extract failed" >> "$log"
+			G_SHAUGHVOS-NOTIFY 2 'Installing QubeTX ND-300 + SpeedQX (network diagnostics)'
+			G_EXEC_OUTPUT=1 chroot "$live_root" bash -c \
+				'curl --proto "=https" --tlsv1.2 -LsSf https://github.com/QubeTX/qube-network-diagnostics/releases/latest/download/nd-300-installer.sh | sh' \
+				|| G_SHAUGHVOS-NOTIFY 1 'ND-300 installer failed'
+
+			G_SHAUGHVOS-NOTIFY 2 'Installing QubeTX SD-300 (system diagnostics)'
+			G_EXEC_OUTPUT=1 chroot "$live_root" bash -c \
+				'curl --proto "=https" --tlsv1.2 -LsSf https://github.com/QubeTX/qube-system-diagnostics/releases/latest/download/sd-300-installer.sh | sh' \
+				|| G_SHAUGHVOS-NOTIFY 1 'SD-300 installer failed'
+
+			# Copy QubeTX binaries to /usr/local/bin/ for system-wide access
+			# cargo-dist installers place binaries in ~/.cargo/bin/ by default
+			G_SHAUGHVOS-NOTIFY 2 'Ensuring QubeTX binaries are on system PATH'
+			for bin in tr300 nd300 speedqx sd300; do
+				if [[ -f "$live_root/root/.cargo/bin/$bin" ]]; then
+					cp "$live_root/root/.cargo/bin/$bin" "$live_root/usr/local/bin/$bin"
+					chmod +x "$live_root/usr/local/bin/$bin"
+					G_SHAUGHVOS-NOTIFY 0 "Installed $bin to /usr/local/bin/"
+				elif [[ ! -f "$live_root/usr/local/bin/$bin" ]]; then
+					G_SHAUGHVOS-NOTIFY 1 "WARNING: $bin not found after install"
 				fi
-				rm -rf /tmp/tr300-extract
-
-				# ND-300 + SpeedQX — Network diagnostics
-				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-network-diagnostics/releases/latest" 2>>"$log" | grep -Po "\"tag_name\": *\"\K[^\"]+")
-				if [[ ! $ver ]]; then ver="v2.8.0"; echo "WARN: ND-300 version detection failed, using fallback $ver" >> "$log"; fi
-				echo "ND-300: installing $ver" >> "$log"
-				mkdir -p /tmp/nd300-extract
-				if curl -sSfL "https://github.com/QubeTX/qube-network-diagnostics/releases/download/$ver/nd-300-$arch.tar.xz" 2>>"$log" | tar -xJf - -C /tmp/nd300-extract/ 2>>"$log"; then
-					if [[ -f /tmp/nd300-extract/nd300 ]]; then
-						mv /tmp/nd300-extract/nd300 /usr/local/bin/nd300 && chmod +x /usr/local/bin/nd300
-						echo "ND-300: installed to /usr/local/bin/nd300" >> "$log"
-					else
-						echo "ERROR: ND-300 binary not found. Contents:" >> "$log"
-						ls -la /tmp/nd300-extract/ >> "$log" 2>&1
-					fi
-					if [[ -f /tmp/nd300-extract/speedqx ]]; then
-						mv /tmp/nd300-extract/speedqx /usr/local/bin/speedqx && chmod +x /usr/local/bin/speedqx
-						echo "SpeedQX: installed to /usr/local/bin/speedqx" >> "$log"
-					fi
-				else
-					echo "ERROR: ND-300 download/extract failed" >> "$log"
-				fi
-				rm -rf /tmp/nd300-extract
-
-				# SD-300 — System diagnostics
-				ver=$(curl -sSfL "https://api.github.com/repos/QubeTX/qube-system-diagnostics/releases/latest" 2>>"$log" | grep -Po "\"tag_name\": *\"\K[^\"]+")
-				if [[ ! $ver ]]; then ver="v1.3.0"; echo "WARN: SD-300 version detection failed, using fallback $ver" >> "$log"; fi
-				echo "SD-300: installing $ver" >> "$log"
-				mkdir -p /tmp/sd300-extract
-				if curl -sSfL "https://github.com/QubeTX/qube-system-diagnostics/releases/download/$ver/sd-300-$arch.tar.xz" 2>>"$log" | tar -xJf - -C /tmp/sd300-extract/ 2>>"$log"; then
-					if [[ -f /tmp/sd300-extract/sd300 ]]; then
-						mv /tmp/sd300-extract/sd300 /usr/local/bin/sd300 && chmod +x /usr/local/bin/sd300
-						echo "SD-300: installed to /usr/local/bin/sd300" >> "$log"
-					else
-						echo "ERROR: SD-300 binary not found. Contents:" >> "$log"
-						ls -la /tmp/sd300-extract/ >> "$log" 2>&1
-					fi
-				else
-					echo "ERROR: SD-300 download/extract failed" >> "$log"
-				fi
-				rm -rf /tmp/sd300-extract
-
-				echo "=== QubeTX install complete ===" >> "$log"
-			'
+			done
 
 			# Rebuild initramfs to ensure live-boot hooks are included after all package installs
 			chroot "$live_root" update-initramfs -u 2>/dev/null || true
@@ -922,13 +889,45 @@ XFWM4
 </channel>
 XSETTINGS
 
-			# Desktop wallpaper
+			# Desktop wallpaper — entries for common XRandR monitor names
+			# Xfce requires the exact monitor name, not a generic placeholder.
+			# Cover VirtualBox (Virtual-1/Virtual1), QEMU, and common physical outputs.
 			cat > "$live_root/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml" << 'XFCEDESKTOP'
 <?xml version="1.0" encoding="UTF-8"?>
 <channel name="xfce4-desktop" version="1.0">
   <property name="backdrop" type="empty">
     <property name="screen0" type="empty">
-      <property name="monitorscreen" type="empty">
+      <property name="monitorVirtual-1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/shaughvos/desktop_background.jpg"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+      <property name="monitorVirtual1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/shaughvos/desktop_background.jpg"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+      <property name="monitorHDMI-1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/shaughvos/desktop_background.jpg"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+      <property name="monitorDP-1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/shaughvos/desktop_background.jpg"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+      <property name="monitoreDP-1" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/shaughvos/desktop_background.jpg"/>
+          <property name="image-style" type="int" value="5"/>
+        </property>
+      </property>
+      <property name="monitorVGA-1" type="empty">
         <property name="workspace0" type="empty">
           <property name="last-image" type="string" value="/usr/share/backgrounds/shaughvos/desktop_background.jpg"/>
           <property name="image-style" type="int" value="5"/>
@@ -938,6 +937,35 @@ XSETTINGS
   </property>
 </channel>
 XFCEDESKTOP
+
+			# Dynamic wallpaper setter — detects actual monitor name at login via xrandr
+			# Catches any monitor not covered by the static XML above
+			cat > "$live_root/usr/local/bin/shaughvos-set-wallpaper" << 'SETWP'
+#!/bin/bash
+# shaughvOS wallpaper setter — runs at each Xfce login
+WP="/usr/share/backgrounds/shaughvos/desktop_background.jpg"
+[[ -f "$WP" ]] || exit 0
+sleep 2
+while IFS= read -r monitor; do
+	[[ $monitor ]] || continue
+	xfconf-query -c xfce4-desktop \
+		-p "/backdrop/screen0/monitor${monitor}/workspace0/last-image" \
+		-n -t string -s "$WP" 2>/dev/null
+	xfconf-query -c xfce4-desktop \
+		-p "/backdrop/screen0/monitor${monitor}/workspace0/image-style" \
+		-n -t int -s 5 2>/dev/null
+done < <(xrandr --query 2>/dev/null | grep -oP '^\S+(?= connected)')
+SETWP
+			chmod +x "$live_root/usr/local/bin/shaughvos-set-wallpaper"
+			G_EXEC mkdir -p "$live_root/etc/xdg/autostart"
+			cat > "$live_root/etc/xdg/autostart/shaughvos-wallpaper.desktop" << 'WPDESKTOP'
+[Desktop Entry]
+Type=Application
+Name=shaughvOS Wallpaper
+Exec=/usr/local/bin/shaughvos-set-wallpaper
+NoDisplay=true
+X-XFCE-Autostart-Override=true
+WPDESKTOP
 
 			# Bottom panel layout with shaughvOS brandmark
 			cat > "$live_root/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml" << 'XFCEPANEL'
@@ -1053,15 +1081,24 @@ FONTCONF
 			G_SHAUGHVOS-NOTIFY 2 'Installing shaughvOS fonts (Makira + IBM Plex Mono)'
 			G_EXEC mkdir -p "$live_root/usr/share/fonts/truetype/shaughvos"
 			local font_base="$SHAUGHVOS_REPO/assets/fonts"
-			local font
+			local font font_ok=1
 			for font in Makira/Makira-Regular.ttf Makira/Makira-Medium.ttf Makira/Makira-SemiBold.ttf Makira/Makira-Bold.ttf Makira/Makira-ExtraBold.ttf Makira/Makira-Black.ttf
 			do
-				curl -sSfLo "$live_root/usr/share/fonts/truetype/shaughvos/${font##*/}" "$font_base/$font" || true
+				if ! curl --retry 3 --retry-delay 5 -sSfLo "$live_root/usr/share/fonts/truetype/shaughvos/${font##*/}" "$font_base/$font"; then
+					G_SHAUGHVOS-NOTIFY 1 "Failed to download font: $font"
+					font_ok=0
+				fi
 			done
 			for font in IBMPlexMono/IBMPlexMono-Regular.ttf IBMPlexMono/IBMPlexMono-Medium.ttf IBMPlexMono/IBMPlexMono-SemiBold.ttf IBMPlexMono/IBMPlexMono-Bold.ttf IBMPlexMono/IBMPlexMono-Italic.ttf IBMPlexMono/IBMPlexMono-MediumItalic.ttf IBMPlexMono/IBMPlexMono-BoldItalic.ttf
 			do
-				curl -sSfLo "$live_root/usr/share/fonts/truetype/shaughvos/${font##*/}" "$font_base/$font" || true
+				if ! curl --retry 3 --retry-delay 5 -sSfLo "$live_root/usr/share/fonts/truetype/shaughvos/${font##*/}" "$font_base/$font"; then
+					G_SHAUGHVOS-NOTIFY 1 "Failed to download font: $font"
+					font_ok=0
+				fi
 			done
+			# Verify primary UI font exists — abort build if missing
+			[[ -f "$live_root/usr/share/fonts/truetype/shaughvos/Makira-Regular.ttf" ]] || { G_SHAUGHVOS-NOTIFY 1 'CRITICAL: Makira-Regular.ttf missing — cannot build ISO without primary UI font'; exit 1; }
+			(( font_ok )) || G_SHAUGHVOS-NOTIFY 1 'Some fonts failed to download — check GitHub rate limits'
 			chroot "$live_root" fc-cache -f
 
 			# Set graphical.target as default so systemd starts lightdm on boot (base image defaults to multi-user.target)
@@ -1108,7 +1145,8 @@ POLKIT
 				xfce4 xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xfce4-terminal \
 				lightdm lightdm-gtk-greeter dbus dbus-user-session dbus-x11 \
 				xserver-xorg-core xinit x11-common x11-xserver-utils \
-				polkitd libpam-systemd plymouth plymouth-themes papirus-icon-theme 2>/dev/null || true
+				polkitd libpam-systemd plymouth plymouth-themes papirus-icon-theme \
+				firefox-esr nodejs npm 2>/dev/null || true
 			# Clean apt caches before squashfs to reduce ISO size
 			chroot "$live_root" apt-get clean 2>/dev/null || true
 			chroot "$live_root" apt-get autoremove -y 2>/dev/null || true

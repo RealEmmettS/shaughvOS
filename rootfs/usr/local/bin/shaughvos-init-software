@@ -1,0 +1,139 @@
+#!/bin/bash
+# shaughvOS Software Initializer
+# (Re)installs all bundled shaughvOS software: QubeTX tools, Node.js, Claude Code, Firefox
+# Safe to re-run — idempotent, won't break existing installs.
+# Usage: sudo shaughvos-init-software
+
+set -euo pipefail
+
+# Colors
+RED='\e[91m'
+GREEN='\e[92m'
+YELLOW='\e[93m'
+CYAN='\e[96m'
+BOLD='\e[1m'
+RESET='\e[0m'
+
+ok() { echo -e " ${GREEN}[OK]${RESET} $1"; }
+fail() { echo -e " ${RED}[FAIL]${RESET} $1"; FAILURES=$((FAILURES + 1)); }
+warn() { echo -e " ${YELLOW}[WARN]${RESET} $1"; }
+info() { echo -e " ${CYAN}>>>${RESET} $1"; }
+
+FAILURES=0
+
+echo -e "\n${BOLD}shaughvOS Software Initializer${RESET}"
+echo -e "─────────────────────────────────────────────────────\n"
+
+# Check network connectivity
+info 'Checking network connectivity...'
+if ! ping -c 1 -W 5 github.com &>/dev/null; then
+	echo -e "\n ${RED}No network connectivity.${RESET} Connect to a network and try again."
+	echo -e " Usage: ${BOLD}sudo shaughvos-init-software${RESET}\n"
+	exit 1
+fi
+ok 'Network available'
+echo
+
+# ── Node.js + npm ──────────────────────────────────────
+info 'Installing Node.js and npm...'
+if command -v node &>/dev/null && command -v npm &>/dev/null; then
+	ok "Node.js $(node --version) and npm $(npm --version) already installed"
+else
+	if apt-get install -y --no-install-recommends nodejs npm &>/dev/null; then
+		ok "Node.js installed ($(node --version 2>/dev/null || echo 'unknown'))"
+	else
+		fail 'Node.js/npm installation failed — try: sudo apt-get install nodejs npm'
+	fi
+fi
+
+# ── Claude Code CLI ────────────────────────────────────
+info 'Installing Claude Code CLI...'
+if command -v claude &>/dev/null; then
+	ok "Claude Code already installed ($(claude --version 2>/dev/null || echo 'available'))"
+else
+	if curl -fsSL https://claude.ai/install.sh | bash 2>/dev/null; then
+		# Ensure it's accessible system-wide
+		for p in "$HOME/.claude/bin/claude" /root/.claude/bin/claude; do
+			if [[ -f "$p" ]] && [[ ! -f /usr/local/bin/claude ]]; then
+				ln -sf "$p" /usr/local/bin/claude 2>/dev/null || true
+			fi
+		done
+		ok 'Claude Code CLI installed'
+	else
+		fail 'Claude Code install failed — try: curl -fsSL https://claude.ai/install.sh | bash'
+	fi
+fi
+
+# ── QubeTX TR-300 ──────────────────────────────────────
+info 'Installing QubeTX TR-300 (machine report)...'
+if command -v tr300 &>/dev/null; then
+	ok "TR-300 already installed ($(tr300 --version 2>/dev/null || echo 'available'))"
+else
+	if curl --proto '=https' --tlsv1.2 -LsSf https://github.com/QubeTX/qube-machine-report/releases/latest/download/tr-300-installer.sh | sh 2>/dev/null; then
+		# Copy to system PATH if installed to cargo bin
+		for p in "$HOME/.cargo/bin/tr300" /root/.cargo/bin/tr300; do
+			if [[ -f "$p" ]] && [[ ! -f /usr/local/bin/tr300 ]]; then
+				cp "$p" /usr/local/bin/tr300 && chmod +x /usr/local/bin/tr300
+			fi
+		done
+		ok 'TR-300 installed'
+	else
+		fail 'TR-300 install failed — see https://reports.qubetx.com'
+	fi
+fi
+
+# ── QubeTX ND-300 + SpeedQX ───────────────────────────
+info 'Installing QubeTX ND-300 + SpeedQX (network diagnostics)...'
+if command -v nd300 &>/dev/null; then
+	ok "ND-300 already installed ($(nd300 --version 2>/dev/null || echo 'available'))"
+else
+	if curl --proto '=https' --tlsv1.2 -LsSf https://github.com/QubeTX/qube-network-diagnostics/releases/latest/download/nd-300-installer.sh | sh 2>/dev/null; then
+		for bin in nd300 speedqx; do
+			for p in "$HOME/.cargo/bin/$bin" "/root/.cargo/bin/$bin"; do
+				if [[ -f "$p" ]] && [[ ! -f "/usr/local/bin/$bin" ]]; then
+					cp "$p" "/usr/local/bin/$bin" && chmod +x "/usr/local/bin/$bin"
+				fi
+			done
+		done
+		ok 'ND-300 + SpeedQX installed'
+	else
+		fail 'ND-300 install failed — see https://reports.qubetx.com/nd300'
+	fi
+fi
+
+# ── QubeTX SD-300 ──────────────────────────────────────
+info 'Installing QubeTX SD-300 (system diagnostics)...'
+if command -v sd300 &>/dev/null; then
+	ok "SD-300 already installed ($(sd300 --version 2>/dev/null || echo 'available'))"
+else
+	if curl --proto '=https' --tlsv1.2 -LsSf https://github.com/QubeTX/qube-system-diagnostics/releases/latest/download/sd-300-installer.sh | sh 2>/dev/null; then
+		for p in "$HOME/.cargo/bin/sd300" /root/.cargo/bin/sd300; do
+			if [[ -f "$p" ]] && [[ ! -f /usr/local/bin/sd300 ]]; then
+				cp "$p" /usr/local/bin/sd300 && chmod +x /usr/local/bin/sd300
+			fi
+		done
+		ok 'SD-300 installed'
+	else
+		fail 'SD-300 install failed — see https://reports.qubetx.com/sd300'
+	fi
+fi
+
+# ── Firefox ESR ────────────────────────────────────────
+info 'Installing Firefox ESR...'
+if command -v firefox-esr &>/dev/null || command -v firefox &>/dev/null; then
+	ok 'Firefox already installed'
+else
+	if apt-get install -y --no-install-recommends firefox-esr &>/dev/null; then
+		ok 'Firefox ESR installed'
+	else
+		fail 'Firefox install failed — try: sudo apt-get install firefox-esr'
+	fi
+fi
+
+# ── Summary ────────────────────────────────────────────
+echo -e "\n─────────────────────────────────────────────────────"
+if (( FAILURES == 0 )); then
+	echo -e " ${GREEN}${BOLD}All software installed successfully.${RESET}\n"
+else
+	echo -e " ${YELLOW}${BOLD}$FAILURES item(s) failed.${RESET} Check errors above and retry.\n"
+fi

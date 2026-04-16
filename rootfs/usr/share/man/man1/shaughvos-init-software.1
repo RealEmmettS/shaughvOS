@@ -1,0 +1,42 @@
+.TH SHAUGHVOS-INIT-SOFTWARE 1 "April 2026" "shaughvOS" "User Commands"
+.SH NAME
+shaughvos-init-software \- (re)install all bundled shaughvOS software
+.SH SYNOPSIS
+.B sudo shaughvos-init-software
+.SH DESCRIPTION
+Installs or reinstalls all software bundled with shaughvOS: QubeTX diagnostic tools (TR-300, ND-300, SD-300, SpeedQX), Node.js, npm, Claude Code CLI, and Firefox ESR.
+.PP
+Safe to re-run at any time. Skips software that is already installed. Requires network connectivity.
+.SH SOFTWARE INSTALLED
+.TP
+.B Node.js + npm
+JavaScript runtime and package manager (via apt).
+.TP
+.B Claude Code CLI
+AI coding assistant (via claude.ai installer).
+.TP
+.B TR-300
+Machine report tool \(em CPU, memory, disk, network overview.
+.TP
+.B ND-300 + SpeedQX
+Network diagnostics and quad-provider speed test.
+.TP
+.B SD-300
+Real-time interactive system diagnostics TUI.
+.TP
+.B Firefox ESR
+Web browser (via apt).
+.SH EXIT STATUS
+.TP
+0
+All software installed successfully.
+.TP
+1
+Network connectivity check failed, or one or more installs failed.
+.SH SEE ALSO
+.BR tr300 (1),
+.BR nd300 (1),
+.BR sd300 (1),
+.BR shaughvos-software (1)
+.SH AUTHOR
+Emmett Shaughnessy <hey@emmetts.dev>

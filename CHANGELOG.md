@@ -9,6 +9,23 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- **No web browser** — Firefox ESR was completely absent from the ISO build. Clicking the browser icon gave "Failed to execute child process 'www-browser'". Added `firefox-esr` to the imager's package list and protected it from autoremove in both the imager and Calamares shellprocess.
+- **QubeTX tools "command not found"** — The imager downloaded raw tarballs and extracted flat, but cargo-dist tarballs nest binaries in a subdirectory. The binary check always failed silently. Rewrote to use the official cargo-dist installer scripts (`*-installer.sh`) from GitHub Releases, which handle architecture detection and version resolution automatically. Binaries are copied to `/usr/local/bin/` for system-wide access.
+- **Makira font missing** — Font downloads used `curl ... || true`, silently swallowing failures from GitHub CDN rate limits. Removed `|| true`, added `--retry 3 --retry-delay 5`, and added a hard build failure if the primary UI font (`Makira-Regular.ttf`) is missing after download.
+- **Wallpaper "(null)" error** — `xfce4-desktop.xml` used `monitorscreen` as the property name, which doesn't match any real XRandR output. Xfce requires the exact monitor name (e.g., `Virtual-1` in VirtualBox, `HDMI-1` on hardware). Replaced with entries for 6 common monitor names. Also added a dynamic XDG autostart script (`shaughvos-set-wallpaper`) that detects the actual monitor at login via `xrandr` and sets the wallpaper via `xfconf-query`.
+- **DietPi URLs in terminal splash** — `shaughvos-banner` still showed dietpi.com URLs for Website, Contribute, and MOTD. Replaced with shaughvOS GitHub URLs. Also fixed `shaughvos-cloudshell` website variable.
+- **Packages removed by autoremove** — Calamares `shellprocess.conf` didn't protect `plymouth`, `papirus-icon-theme`, `nodejs`, `npm`, `dbus-x11`, or `firefox-esr` from `apt-get autoremove`. Added all to `apt-mark manual`.
+- **Claude Code CLI install** — Was combined with Node.js install in a single line with `|| true` hiding failures. Split into separate step with visible error reporting. Symlinks to `/usr/local/bin/claude` for system-wide access.
+
+### Changed
+- **Terminal splash defaults** — Disabled noisy banner sections (device info, LAN IP, disk usage, credits, MOTD) by default. Only the useful commands list is shown above the ASCII art. Users can re-enable sections via `shaughvos-banner`.
+- **Useful commands list** — Replaced `cpu` with `tr300 / report` and added `sd300`, `claude`. Now showcases QubeTX diagnostic tools and Claude Code alongside system admin commands.
+
+### Added
+- **`shaughvos-init-software` command** — Recovery tool that (re)installs all bundled software: Node.js, npm, Claude Code CLI, QubeTX TR-300/ND-300/SD-300/SpeedQX, and Firefox ESR. Checks network connectivity, reports per-tool pass/fail, idempotent. Run `sudo shaughvos-init-software` anytime if software failed during initial install.
+- Dynamic wallpaper autostart script (`/usr/local/bin/shaughvos-set-wallpaper`) — detects actual monitor name via xrandr and applies wallpaper at each login.
+
 ---
 
 ## [1.14.0] — 2026-04-15
