@@ -11,6 +11,22 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.16.0] — 2026-04-16
+
+### Fixed
+- **Claude Code CLI inaccessible** — installed as root but admin user couldn't traverse `/root/` (mode 0700) to follow the symlink. Now installs as `admin` user so the binary lives at `/home/admin/.claude/bin/claude` with a symlink in `/usr/local/bin/`.
+- **`desktop off` crashes the system** — stopped LightDM instantly, killing the terminal and leaving no console (getty autologin was removed for the live session). Now creates getty autologin drop-ins, starts getty, switches to tty1, THEN stops LightDM.
+- **Blank square in taskbar** — panel brandmark SVG couldn't render because `librsvg2-common` was missing (`--no-install-recommends` skipped it). Added to the imager's package list. Also fixed the brandmark download which used `|| true` hiding failures.
+- **Papirus icon cache stale** — only `hicolor` icon cache was rebuilt, not Papirus-Dark. Now explicitly rebuilds both caches.
+
+### Added
+- "Boot from installed system" entry in both GRUB (EFI) and ISOLINUX (BIOS) boot menus — lets users boot the installed OS without removing the ISO from VirtualBox.
+- `desktop on/off` added to the terminal useful commands list.
+- GTK3 CSS panel button padding — reduces cramped appearance of taskbar buttons.
+- Panel size increased from 36px to 40px for better visual spacing.
+
+---
+
 ## [1.15.0] — 2026-04-15
 
 ### Fixed

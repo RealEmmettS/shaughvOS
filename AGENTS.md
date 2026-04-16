@@ -339,4 +339,4 @@ New command at `/usr/local/bin/shaughvos-init-software` that (re)installs all bu
 
 ## Current Version
 
-shaughvOS v1.15.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.16.0 (`.update/version`). Minimum Debian version: 7+.

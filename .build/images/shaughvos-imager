@@ -657,7 +657,7 @@ _EOF_
 			# Ensure DNS works inside chroot
 			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
 			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, Xfce desktop, browser, and display/input drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput plymouth plymouth-themes xfce4 xfce4-terminal xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xinit dbus-user-session dbus-x11 x11-xserver-utils firefox-esr xz-utils'
+				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput plymouth plymouth-themes xfce4 xfce4-terminal xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xinit dbus-user-session dbus-x11 x11-xserver-utils firefox-esr xz-utils librsvg2-common'
 
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
@@ -678,11 +678,16 @@ _EOF_
 			G_SHAUGHVOS-NOTIFY 2 'Installing Node.js, npm, and Claude Code CLI'
 			G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
 				'apt-get install -y --no-install-recommends nodejs npm'
-			# Install Claude Code CLI — runs as root, || true since it may fail in chroot without full env
+			# Install Claude Code CLI as admin user (not root) — root's home is mode 0700,
+			# so a symlink through /root/ would give admin "Permission denied".
 			G_SHAUGHVOS-NOTIFY 2 'Installing Claude Code CLI'
-			chroot "$live_root" bash -c 'curl -fsSL https://claude.ai/install.sh | bash' || G_SHAUGHVOS-NOTIFY 1 'Claude Code CLI install failed (non-fatal)'
-			# Ensure claude is accessible system-wide
-			[[ -f "$live_root/root/.claude/bin/claude" ]] && ln -sf /root/.claude/bin/claude "$live_root/usr/local/bin/claude"
+			chroot "$live_root" su - admin -c 'curl -fsSL https://claude.ai/install.sh | bash' \
+				|| G_SHAUGHVOS-NOTIFY 1 'Claude Code CLI install failed (non-fatal)'
+			# Symlink to system PATH — /home/admin/ is world-readable
+			if [[ -f "$live_root/home/admin/.claude/bin/claude" ]]; then
+				ln -sf /home/admin/.claude/bin/claude "$live_root/usr/local/bin/claude"
+				G_SHAUGHVOS-NOTIFY 0 'Claude Code CLI installed to /usr/local/bin/claude'
+			fi
 
 			### Step 5a: Install QubeTX 300 Series tools (TR-300, ND-300, SD-300) ###
 			# Uses official cargo-dist installer scripts from GitHub Releases (https://reports.qubetx.com)
@@ -977,7 +982,7 @@ WPDESKTOP
     <property name="panel-1" type="empty">
       <property name="position" type="string" value="p=8;x=0;y=0"/>
       <property name="position-locked" type="bool" value="true"/>
-      <property name="size" type="uint" value="36"/>
+      <property name="size" type="uint" value="40"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="1"/>
         <value type="int" value="2"/>
@@ -1047,8 +1052,13 @@ TERMINALRC
 
 			# Install panel brandmark as symbolic icon (auto-recolors with theme)
 			G_EXEC mkdir -p "$live_root/usr/share/icons/hicolor/symbolic/apps"
-			curl -sSfLo "$live_root/usr/share/icons/hicolor/symbolic/apps/shaughvos-panel-symbolic.svg" "$SHAUGHVOS_REPO/assets/shaughvos-panel-symbolic.svg" || true
+			if ! curl --retry 3 --retry-delay 5 -sSfLo "$live_root/usr/share/icons/hicolor/symbolic/apps/shaughvos-panel-symbolic.svg" "$SHAUGHVOS_REPO/assets/shaughvos-panel-symbolic.svg"; then
+				G_SHAUGHVOS-NOTIFY 1 'Failed to download panel brandmark SVG'
+			fi
+			# Rebuild icon caches for hicolor (brandmark) and Papirus (theme icons)
 			chroot "$live_root" gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
+			chroot "$live_root" gtk-update-icon-cache -f -t /usr/share/icons/Papirus-Dark 2>/dev/null || true
+			chroot "$live_root" gtk-update-icon-cache -f -t /usr/share/icons/Papirus 2>/dev/null || true
 
 			# Remove per-user xfce4 configs — they override /etc/xdg/ system defaults.
 			# The base image build may have run Xfce, creating configs with compositor enabled.
@@ -1101,6 +1111,18 @@ FONTCONF
 			(( font_ok )) || G_SHAUGHVOS-NOTIFY 1 'Some fonts failed to download — check GitHub rate limits'
 			chroot "$live_root" fc-cache -f
 
+			# GTK3 CSS override for panel button padding — reduces cramped appearance
+			G_EXEC mkdir -p "$live_root/etc/xdg/gtk-3.0"
+			cat > "$live_root/etc/xdg/gtk-3.0/gtk.css" << 'GTKCSS'
+/* shaughvOS panel button padding */
+.xfce4-panel button {
+	padding: 2px 6px;
+}
+.xfce4-panel .tasklist button {
+	padding: 2px 8px;
+}
+GTKCSS
+
 			# Set graphical.target as default so systemd starts lightdm on boot (base image defaults to multi-user.target)
 			chroot "$live_root" systemctl set-default graphical.target 2>/dev/null || ln -sf /lib/systemd/system/graphical.target "$live_root/etc/systemd/system/default.target"
 			# Add nomodeset + quiet splash to GRUB defaults — carries to installed system via squashfs.
@@ -1146,7 +1168,7 @@ POLKIT
 				lightdm lightdm-gtk-greeter dbus dbus-user-session dbus-x11 \
 				xserver-xorg-core xinit x11-common x11-xserver-utils \
 				polkitd libpam-systemd plymouth plymouth-themes papirus-icon-theme \
-				firefox-esr nodejs npm 2>/dev/null || true
+				firefox-esr nodejs npm librsvg2-common 2>/dev/null || true
 			# Clean apt caches before squashfs to reduce ISO size
 			chroot "$live_root" apt-get clean 2>/dev/null || true
 			chroot "$live_root" apt-get autoremove -y 2>/dev/null || true
@@ -1186,6 +1208,9 @@ set timeout=30
 set menu_color_normal=white/black
 set menu_color_highlight=white/dark-gray
 
+menuentry "Boot from installed system" {
+    exit
+}
 menuentry "Install shaughvOS" {
     search --no-floppy --set=root --label SHAUGHVOS
     linux ($root)/live/vmlinuz boot=live nomodeset
@@ -1227,6 +1252,10 @@ MENU COLOR border       30;44   #40ffffff #a0000000 std
 MENU COLOR title        1;36;44 #9033ccff #a0000000 std
 MENU COLOR sel          7;37;40 #e0ffffff #20ffffff all
 MENU COLOR unsel        37;44   #50ffffff #a0000000 std
+
+LABEL bootdisk
+  MENU LABEL Boot from installed system
+  LOCALBOOT 0x80
 
 LABEL install
   MENU LABEL Install shaughvOS

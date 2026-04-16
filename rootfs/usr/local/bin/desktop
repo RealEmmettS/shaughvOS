@@ -25,6 +25,14 @@ Options:
   --help  Show this help message'
 	}
 
+	# Get the autologin user from shaughvos.txt, default to admin
+	Get_Login_User()
+	{
+		local user
+		user=$(sed -n '/^[[:blank:]]*AUTO_SETUP_AUTOSTART_LOGIN_USER=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt)
+		echo "${user:-admin}"
+	}
+
 	case ${1,,} in
 		'on')
 			G_SHAUGHVOS-NOTIFY 2 'Switching to desktop mode ...'
@@ -33,8 +41,29 @@ Options:
 			G_SHAUGHVOS-NOTIFY 0 'Desktop mode enabled. Will persist across reboots.'
 		;;
 		'off')
-			G_SHAUGHVOS-NOTIFY 2 'Switching to console mode ...'
+			G_SHAUGHVOS-NOTIFY 2 'Switching to console mode — the desktop session will close.'
 			echo 7 > /boot/shaughvos/.shaughvos-autostart_index
+
+			# Create getty autologin so there's a console to land on.
+			# Without this, stopping LightDM leaves the user with no UI at all
+			# (the imager removes getty autologin for the live session).
+			user=$(Get_Login_User)
+			mkdir -p /etc/systemd/system/getty@tty1.service.d
+			cat > /etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf << _EOF_
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty -a $user -J %I \$TERM
+_EOF_
+			mkdir -p /etc/systemd/system/console-getty.service.d
+			cat > /etc/systemd/system/console-getty.service.d/shaughvos-autologin.conf << _EOF_
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty -a $user -J --noclear --keep-baud console 115200,38400,9600 \$TERM
+_EOF_
+			systemctl daemon-reload
+			systemctl start getty@tty1 2>/dev/null
+			# Switch to tty1 so the user sees the console before LightDM dies
+			chvt 1 2>/dev/null
 			systemctl stop lightdm 2>/dev/null
 			G_SHAUGHVOS-NOTIFY 0 'Console mode enabled. Will persist across reboots.'
 		;;
