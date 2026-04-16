@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+---
+
+## [1.15.0] — 2026-04-15
+
 ### Fixed
 - **No web browser** — Firefox ESR was completely absent from the ISO build. Clicking the browser icon gave "Failed to execute child process 'www-browser'". Added `firefox-esr` to the imager's package list and protected it from autoremove in both the imager and Calamares shellprocess.
 - **QubeTX tools "command not found"** — The imager downloaded raw tarballs and extracted flat, but cargo-dist tarballs nest binaries in a subdirectory. The binary check always failed silently. Rewrote to use the official cargo-dist installer scripts (`*-installer.sh`) from GitHub Releases, which handle architecture detection and version resolution automatically. Binaries are copied to `/usr/local/bin/` for system-wide access.
