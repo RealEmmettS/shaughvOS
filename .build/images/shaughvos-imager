@@ -995,7 +995,7 @@ WPDESKTOP
   </property>
   <property name="plugins" type="empty">
     <property name="plugin-1" type="string" value="applicationsmenu">
-      <property name="button-icon" type="string" value="shaughvos-panel-symbolic"/>
+      <property name="button-icon" type="string" value="/usr/share/icons/shaughvos-panel-white.svg"/>
       <property name="show-button-title" type="bool" value="false"/>
     </property>
     <property name="plugin-2" type="string" value="tasklist"/>
@@ -1053,7 +1053,11 @@ TERMINALRC
 			# Install panel brandmark as symbolic icon (auto-recolors with theme)
 			G_EXEC mkdir -p "$live_root/usr/share/icons/hicolor/symbolic/apps"
 			if ! curl --retry 3 --retry-delay 5 -sSfLo "$live_root/usr/share/icons/hicolor/symbolic/apps/shaughvos-panel-symbolic.svg" "$SHAUGHVOS_REPO/assets/shaughvos-panel-symbolic.svg"; then
-				G_SHAUGHVOS-NOTIFY 1 'Failed to download panel brandmark SVG'
+				G_SHAUGHVOS-NOTIFY 1 'Failed to download panel brandmark SVG (symbolic)'
+			fi
+			# White panel icon for the Dracula dark theme — used by absolute path in xfce4-panel.xml
+			if ! curl --retry 3 --retry-delay 5 -sSfLo "$live_root/usr/share/icons/shaughvos-panel-white.svg" "$SHAUGHVOS_REPO/assets/shaughvos-panel-white.svg"; then
+				G_SHAUGHVOS-NOTIFY 1 'Failed to download panel brandmark SVG (white)'
 			fi
 			# Rebuild icon caches for hicolor (brandmark) and Papirus (theme icons)
 			chroot "$live_root" gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
