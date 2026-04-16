@@ -1,8 +1,11 @@
 name: Rebrand Audit
+# Disabled — rebrand is complete. Re-enable by uncommenting the triggers below.
+# on:
+#   pull_request:
+#   push:
+#     tags: ['v*']
 on:
-  pull_request:
-  push:
-    tags: ['v*']
+  workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
