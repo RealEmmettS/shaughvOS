@@ -11,12 +11,13 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [1.16.0] — 2026-04-16
+## [1.17.0] — 2026-04-16
 
 ### Fixed
 - **Claude Code CLI inaccessible** — installed as root but admin user couldn't traverse `/root/` (mode 0700) to follow the symlink. Now installs as `admin` user so the binary lives at `/home/admin/.claude/bin/claude` with a symlink in `/usr/local/bin/`.
 - **`desktop off` crashes the system** — stopped LightDM instantly, killing the terminal and leaving no console (getty autologin was removed for the live session). Now creates getty autologin drop-ins, starts getty, switches to tty1, THEN stops LightDM.
 - **Blank square in taskbar** — panel brandmark SVG couldn't render because `librsvg2-common` was missing (`--no-install-recommends` skipped it). Added to the imager's package list. Also fixed the brandmark download which used `|| true` hiding failures.
+- **Black logo on dark panel** — GTK symbolic icon auto-recolor wasn't working with Dracula theme. Created white SVG variant (`shaughvos-panel-white.svg`) and reference by absolute path instead of the symbolic icon system.
 - **Papirus icon cache stale** — only `hicolor` icon cache was rebuilt, not Papirus-Dark. Now explicitly rebuilds both caches.
 
 ### Added
