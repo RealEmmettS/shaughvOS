@@ -1,0 +1,92 @@
+# shaughvOS .gitignore
+# See CLAUDE.md for project context.
+
+# ─── Claude Code local state ────────────────────────────────────
+# Per-project settings written by Claude Code — user-specific, not shared.
+.claude/settings.local.json
+
+# ─── Local AI session transcripts ───────────────────────────────
+# Saved Claude Code transcripts from dev sessions.
+# Do not commit new ad-hoc scratch files. Existing tracked transcripts
+# (build_convo_thread.txt, fix-calamares-attempt.txt, etc.) are
+# grandfathered in — gitignore only affects untracked files.
+big_fix_*.txt
+
+# ─── OS metadata ────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ─── Editor / IDE scratch ───────────────────────────────────────
+*~
+*.swp
+*.swo
+*.swn
+.#*
+\#*\#
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# ─── Generated image-build artifacts ────────────────────────────
+# shaughvos-imager / shaughvos-build outputs. Normally written to /tmp,
+# but a developer running the pipeline locally inside the repo must
+# never commit these large binaries.
+*.img
+*.img.xz
+*.img.gz
+*.iso
+*.squashfs
+*.rootfs.tar*
+*.sha256
+*.asc
+
+# ─── Debian packaging artifacts ─────────────────────────────────
+*.deb
+*.ddeb
+*.udeb
+*.buildinfo
+*.changes
+
+# ─── Logs & crash dumps ─────────────────────────────────────────
+*.log
+core
+core.*
+
+# ─── Secrets / credentials ──────────────────────────────────────
+.env
+.env.*
+.envrc
+*.pem
+*.key
+*.p12
+id_rsa
+id_ed25519
+
+# ─── Python helper scripts ──────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+
+# ─── Node / NPM tooling ─────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ─── Misc ───────────────────────────────────────────────────────
+*.bak
+*.tmp
+*.orig
+.rsync_cache/

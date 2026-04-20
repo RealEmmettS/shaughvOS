@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- **`.gitignore`** — first `.gitignore` for the repo. Covers Claude Code session transcripts (`big_fix_*.txt`), OS metadata (`.DS_Store`, `Thumbs.db`, `desktop.ini`), editor/IDE scratch (`.vscode/`, `.idea/`, `*.swp`, `*~`), image-build artifacts (`*.img`, `*.iso`, `*.squashfs`, `*.img.xz`), Debian packaging output (`*.deb`, `*.changes`, `*.buildinfo`), logs, secrets (`.env*`, `*.pem`, `*.key`), Python (`__pycache__/`, `.venv/`), and Node (`node_modules/`). Existing tracked transcript files (`build_convo_thread.txt`, `fix-calamares-attempt.txt`, etc.) are grandfathered in — only affects untracked files going forward. No shipped-device impact.
+
 ---
 
 ## [1.17.0] — 2026-04-16
