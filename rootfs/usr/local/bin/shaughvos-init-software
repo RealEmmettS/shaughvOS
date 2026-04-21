@@ -176,7 +176,7 @@ fi
 
 # ── Tailscale ──────────────────────────────────────────
 if (( BINARIES_ONLY == 0 )); then
-	info 'Installing Tailscale (not pre-authed — run `sudo tailscale up` after install)...'
+	info 'Installing Tailscale (not pre-authed — run "sudo tailscale up" after install)...'
 	if command -v tailscale &>/dev/null; then
 		ok "Tailscale already installed ($(tailscale version | head -1 2>/dev/null || echo 'available'))"
 	else
@@ -187,7 +187,7 @@ if (( BINARIES_ONLY == 0 )); then
 			&& apt-get update -qq \
 			&& apt-get install -y --no-install-recommends tailscale &>/dev/null \
 			&& systemctl enable tailscaled.service &>/dev/null; then
-			ok 'Tailscale installed and tailscaled enabled (run `sudo tailscale up` to authenticate)'
+			ok 'Tailscale installed and tailscaled enabled (run "sudo tailscale up" to authenticate)'
 		else
 			fail 'Tailscale install failed — see https://tailscale.com/kb/1174/install-debian-'"${suite:-bookworm}"
 		fi

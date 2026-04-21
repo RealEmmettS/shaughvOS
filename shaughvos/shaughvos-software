@@ -12886,17 +12886,17 @@ _EOF_
 		if To_Install 218 # TR-300
 		then
 			G_SHAUGHVOS-NOTIFY 2 "Installing ${aSOFTWARE_NAME[218]} via cargo-dist installer script"
-			echo "=== $(date -Is) TR-300 install via shaughvos-software ===" >> $qubetx_log
-			if ! curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-machine-report/releases/latest/download/tr-300-installer.sh' 2>>$qubetx_log | sh 2>&1 | tee -a $qubetx_log
+			echo "=== $(date -Is) TR-300 install via shaughvos-software ===" >> "$qubetx_log"
+			if ! curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-machine-report/releases/latest/download/tr-300-installer.sh' 2>&1 | sh 2>&1 | tee -a "$qubetx_log"
 			then
 				sleep 5
-				curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-machine-report/releases/latest/download/tr-300-installer.sh' 2>>$qubetx_log | sh 2>&1 | tee -a $qubetx_log || G_SHAUGHVOS-NOTIFY 1 'TR-300 installer failed after retry (see /var/log/shaughvos-qubetx-install.log)'
+				curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-machine-report/releases/latest/download/tr-300-installer.sh' 2>&1 | sh 2>&1 | tee -a "$qubetx_log" || G_SHAUGHVOS-NOTIFY 1 'TR-300 installer failed after retry (see /var/log/shaughvos-qubetx-install.log)'
 			fi
 			if [[ -f '/root/.cargo/bin/tr300' ]]
 			then
 				G_EXEC cp /root/.cargo/bin/tr300 /usr/local/bin/tr300
 				G_EXEC chmod +x /usr/local/bin/tr300
-				/usr/local/bin/tr300 --version >> $qubetx_log 2>&1 || G_SHAUGHVOS-NOTIFY 1 'TR-300 installed but --version smoke test failed'
+				/usr/local/bin/tr300 --version >> "$qubetx_log" 2>&1 || G_SHAUGHVOS-NOTIFY 1 'TR-300 installed but --version smoke test failed'
 			else
 				G_SHAUGHVOS-NOTIFY 1 'TR-300: /root/.cargo/bin/tr300 not found after installer ran (see log)'
 			fi
@@ -12905,11 +12905,11 @@ _EOF_
 		if To_Install 219 # ND-300 + SpeedQX
 		then
 			G_SHAUGHVOS-NOTIFY 2 "Installing ${aSOFTWARE_NAME[219]} via cargo-dist installer script"
-			echo "=== $(date -Is) ND-300 install via shaughvos-software ===" >> $qubetx_log
-			if ! curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-network-diagnostics/releases/latest/download/nd-300-installer.sh' 2>>$qubetx_log | sh 2>&1 | tee -a $qubetx_log
+			echo "=== $(date -Is) ND-300 install via shaughvos-software ===" >> "$qubetx_log"
+			if ! curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-network-diagnostics/releases/latest/download/nd-300-installer.sh' 2>&1 | sh 2>&1 | tee -a "$qubetx_log"
 			then
 				sleep 5
-				curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-network-diagnostics/releases/latest/download/nd-300-installer.sh' 2>>$qubetx_log | sh 2>&1 | tee -a $qubetx_log || G_SHAUGHVOS-NOTIFY 1 'ND-300 installer failed after retry (see /var/log/shaughvos-qubetx-install.log)'
+				curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-network-diagnostics/releases/latest/download/nd-300-installer.sh' 2>&1 | sh 2>&1 | tee -a "$qubetx_log" || G_SHAUGHVOS-NOTIFY 1 'ND-300 installer failed after retry (see /var/log/shaughvos-qubetx-install.log)'
 			fi
 			# nd-300 installer bundles both nd300 and speedqx binaries
 			for bin in nd300 speedqx
@@ -12918,7 +12918,7 @@ _EOF_
 				then
 					G_EXEC cp "/root/.cargo/bin/$bin" "/usr/local/bin/$bin"
 					G_EXEC chmod +x "/usr/local/bin/$bin"
-					"/usr/local/bin/$bin" --version >> $qubetx_log 2>&1 || G_SHAUGHVOS-NOTIFY 1 "$bin installed but --version smoke test failed"
+					"/usr/local/bin/$bin" --version >> "$qubetx_log" 2>&1 || G_SHAUGHVOS-NOTIFY 1 "$bin installed but --version smoke test failed"
 				else
 					G_SHAUGHVOS-NOTIFY 1 "ND-300: /root/.cargo/bin/$bin not found after installer ran (see log)"
 				fi
@@ -12929,17 +12929,17 @@ _EOF_
 		if To_Install 220 # SD-300
 		then
 			G_SHAUGHVOS-NOTIFY 2 "Installing ${aSOFTWARE_NAME[220]} via cargo-dist installer script"
-			echo "=== $(date -Is) SD-300 install via shaughvos-software ===" >> $qubetx_log
-			if ! curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-system-diagnostics/releases/latest/download/sd-300-installer.sh' 2>>$qubetx_log | sh 2>&1 | tee -a $qubetx_log
+			echo "=== $(date -Is) SD-300 install via shaughvos-software ===" >> "$qubetx_log"
+			if ! curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-system-diagnostics/releases/latest/download/sd-300-installer.sh' 2>&1 | sh 2>&1 | tee -a "$qubetx_log"
 			then
 				sleep 5
-				curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-system-diagnostics/releases/latest/download/sd-300-installer.sh' 2>>$qubetx_log | sh 2>&1 | tee -a $qubetx_log || G_SHAUGHVOS-NOTIFY 1 'SD-300 installer failed after retry (see /var/log/shaughvos-qubetx-install.log)'
+				curl --proto '=https' --tlsv1.2 -LsSf 'https://github.com/QubeTX/qube-system-diagnostics/releases/latest/download/sd-300-installer.sh' 2>&1 | sh 2>&1 | tee -a "$qubetx_log" || G_SHAUGHVOS-NOTIFY 1 'SD-300 installer failed after retry (see /var/log/shaughvos-qubetx-install.log)'
 			fi
 			if [[ -f '/root/.cargo/bin/sd300' ]]
 			then
 				G_EXEC cp /root/.cargo/bin/sd300 /usr/local/bin/sd300
 				G_EXEC chmod +x /usr/local/bin/sd300
-				/usr/local/bin/sd300 --version >> $qubetx_log 2>&1 || G_SHAUGHVOS-NOTIFY 1 'SD-300 installed but --version smoke test failed'
+				/usr/local/bin/sd300 --version >> "$qubetx_log" 2>&1 || G_SHAUGHVOS-NOTIFY 1 'SD-300 installed but --version smoke test failed'
 			else
 				G_SHAUGHVOS-NOTIFY 1 'SD-300: /root/.cargo/bin/sd300 not found after installer ran (see log)'
 			fi

@@ -758,6 +758,7 @@ _EOF_
 
 			# Install-guarantee smoke tests — report any missing base commands before squashfs build.
 			G_SHAUGHVOS-NOTIFY 2 'Verifying base commands are available on PATH inside live root'
+			# shellcheck disable=SC2016  # intentional — $cmd must expand inside the chroot's bash, not the outer shell
 			chroot "$live_root" bash -c '
 				for cmd in claude node npm cargo rustc nmap wireshark tshark tcpdump nano less tree batcat ncdu btop fzf curl wget git tr300 nd300 sd300 speedqx tailscale torbrowser-launcher firefox-esr; do
 					command -v "$cmd" > /dev/null 2>&1 || echo "WARN: command not found after install: $cmd"
