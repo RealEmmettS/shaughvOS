@@ -1,26 +1,25 @@
 #!/bin/bash
-# shaughvOS terminal session init
-# Displays ASCII art splash and runs TR-300 machine report on interactive login
+# shaughvOS terminal session init — runs TR-300 machine report on interactive login.
+# ASCII art splash is now rendered inside shaughvos-banner (single source of truth)
+# rather than duplicated here. This file only handles the login-time `tr300 --fast` call.
 
-# Only run on interactive login shells
+# Only run on interactive shells (guards against sourced/non-interactive contexts)
 [[ $- == *i* ]] || return 0
-# Skip if not a login shell or if already displayed this session
+
+# Opt-out: honor ~/.hushlogin (standard Unix convention)
+[[ -f "${HOME:-}/.hushlogin" ]] && return 0
+
+# Opt-out: SHAUGHVOS_NO_AUTORUN=1 disables the login-time machine report
+[[ ${SHAUGHVOS_NO_AUTORUN:-} == 1 ]] && return 0
+
+# Skip if stdout isn't a TTY (scp, rsync, non-interactive ssh, etc.)
+[[ -t 1 ]] || return 0
+
+# Skip if we've already rendered in this process tree (e.g. sudo -i → bash)
 [[ ${SHAUGHVOS_SPLASH_SHOWN:-} ]] && return 0
 export SHAUGHVOS_SPLASH_SHOWN=1
 
-# shaughvOS ASCII art banner
-echo -e '\e[1;35m'
-cat << 'BANNER'
-     _                       _        ___  ____
- ___| |__   __ _ _   _  __ _| |__  __/ _ \/ ___|
-/ __| '_ \ / _` | | | |/ _` | '_ \ \ / | | \___ \
-\__ \ | | | (_| | |_| | (_| | | | |\ V /| |_| |___) |
-|___/_| |_|\__,_|\__,_|\__, |_| |_| \_/  \___/|____/
-                       |___/
-BANNER
-echo -e '\e[0m'
-
-# Run TR-300 machine report (fast mode) if available
+# Run TR-300 machine report in fast mode if available
 if command -v tr300 &>/dev/null
 then
 	tr300 --fast

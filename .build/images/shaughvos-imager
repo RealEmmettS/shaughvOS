@@ -656,8 +656,24 @@ _EOF_
 			G_EXEC mount -t tmpfs tmpfs "$live_root/run"
 			# Ensure DNS works inside chroot
 			G_EXEC cp /etc/resolv.conf "$live_root/etc/resolv.conf"
-			G_EXEC_DESC='Installing live-boot, Calamares, LightDM, Xfce desktop, browser, and display/input drivers' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
-				'apt-get update && apt-get install -y --no-install-recommends live-boot calamares calamares-settings-debian polkitd lightdm lightdm-gtk-greeter xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput plymouth plymouth-themes xfce4 xfce4-terminal xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xinit dbus-user-session dbus-x11 x11-xserver-utils firefox-esr xz-utils librsvg2-common'
+			# Preseed wireshark to allow non-root capture via the `wireshark` group — without this,
+			# the apt install prompts dpkg-reconfigure and blocks non-interactively.
+			G_EXEC chroot "$live_root" bash -c 'echo "wireshark-common wireshark-common/install-setuid boolean true" | debconf-set-selections'
+			G_EXEC_DESC='Installing live-boot, Calamares, desktop, browsers, dev stack, base tools, and panel applets' G_EXEC_OUTPUT=1 G_EXEC chroot "$live_root" bash -c \
+				'apt-get update && apt-get install -y --no-install-recommends \
+					live-boot calamares calamares-settings-debian polkitd \
+					lightdm lightdm-gtk-greeter \
+					xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput \
+					plymouth plymouth-themes \
+					xfce4 xfce4-terminal xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar \
+					xinit dbus-user-session dbus-x11 x11-xserver-utils \
+					firefox-esr torbrowser-launcher \
+					xz-utils librsvg2-common \
+					rustc cargo \
+					nmap wireshark wireshark-common tshark tcpdump \
+					nano less tree bat ncdu btop fzf vim \
+					wget git \
+					network-manager network-manager-gnome xfce4-power-manager xfce4-pulseaudio-plugin pulseaudio pavucontrol'
 
 			### Step 3: Copy shaughvOS Calamares config (overrides Debian defaults) ###
 			G_SHAUGHVOS-NOTIFY 2 'Copying shaughvOS Calamares configuration'
@@ -714,11 +730,43 @@ _EOF_
 				if [[ -f "$live_root/root/.cargo/bin/$bin" ]]; then
 					cp "$live_root/root/.cargo/bin/$bin" "$live_root/usr/local/bin/$bin"
 					chmod +x "$live_root/usr/local/bin/$bin"
+					chroot "$live_root" "/usr/local/bin/$bin" --version >/dev/null 2>&1 \
+						|| G_SHAUGHVOS-NOTIFY 1 "WARNING: $bin --version smoke test failed (binary may not run)"
 					G_SHAUGHVOS-NOTIFY 0 "Installed $bin to /usr/local/bin/"
 				elif [[ ! -f "$live_root/usr/local/bin/$bin" ]]; then
 					G_SHAUGHVOS-NOTIFY 1 "WARNING: $bin not found after install"
 				fi
 			done
+
+			### Step 5b: Install Tailscale (apt repo + service enable, not pre-authed) ###
+			# Users run `sudo tailscale up` to authenticate after first boot.
+			# Matches the paths used by shaughvos-software ID 58 so uninstall there still works.
+			case $G_DISTRO in
+				7) tailscale_suite='bookworm';;
+				8) tailscale_suite='trixie';;
+				*) tailscale_suite='trixie';;  # sensible default for newer Debian
+			esac
+			G_SHAUGHVOS-NOTIFY 2 "Installing Tailscale (Debian $tailscale_suite)"
+			G_EXEC_OUTPUT=1 chroot "$live_root" bash -c "
+				curl -sSfL 'https://pkgs.tailscale.com/stable/debian/${tailscale_suite}.noarmor.gpg' -o /etc/apt/trusted.gpg.d/shaughvos-tailscale.gpg &&
+				echo 'deb https://pkgs.tailscale.com/stable/debian ${tailscale_suite} main' > /etc/apt/sources.list.d/shaughvos-tailscale.list &&
+				apt-get update &&
+				apt-get install -y --no-install-recommends tailscale &&
+				systemctl enable tailscaled.service
+			" || G_SHAUGHVOS-NOTIFY 1 'Tailscale install failed (non-fatal)'
+			unset -v tailscale_suite
+
+			# Install-guarantee smoke tests — report any missing base commands before squashfs build.
+			G_SHAUGHVOS-NOTIFY 2 'Verifying base commands are available on PATH inside live root'
+			chroot "$live_root" bash -c '
+				for cmd in claude node npm cargo rustc nmap wireshark tshark tcpdump nano less tree batcat ncdu btop fzf curl wget git tr300 nd300 sd300 speedqx tailscale torbrowser-launcher firefox-esr; do
+					command -v "$cmd" > /dev/null 2>&1 || echo "WARN: command not found after install: $cmd"
+				done
+			' || true
+
+			# Add the seed admin user to the wireshark group so non-root capture works immediately.
+			# (Calamares shellprocess adds the Calamares-created user to the same group for installed systems.)
+			chroot "$live_root" bash -c 'getent group wireshark > /dev/null && usermod -aG wireshark admin 2>/dev/null || true'
 
 			# Rebuild initramfs to ensure live-boot hooks are included after all package installs
 			chroot "$live_root" update-initramfs -u 2>/dev/null || true
@@ -972,7 +1020,9 @@ NoDisplay=true
 X-XFCE-Autostart-Override=true
 WPDESKTOP
 
-			# Bottom panel layout with shaughvOS brandmark
+			# Bottom panel layout with shaughvOS brandmark + network/volume/power applets.
+			# Plugin order: apps menu, tasklist, expanding-separator, systray (NetworkManager
+			# applet auto-docks here), pulseaudio volume, power-manager, clock, actions.
 			cat > "$live_root/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml" << 'XFCEPANEL'
 <?xml version="1.0" encoding="UTF-8"?>
 <channel name="xfce4-panel" version="1.0">
@@ -990,6 +1040,8 @@ WPDESKTOP
         <value type="int" value="4"/>
         <value type="int" value="5"/>
         <value type="int" value="6"/>
+        <value type="int" value="7"/>
+        <value type="int" value="8"/>
       </property>
     </property>
   </property>
@@ -1004,11 +1056,23 @@ WPDESKTOP
       <property name="style" type="uint" value="0"/>
     </property>
     <property name="plugin-4" type="string" value="systray"/>
-    <property name="plugin-5" type="string" value="clock"/>
-    <property name="plugin-6" type="string" value="actions"/>
+    <property name="plugin-5" type="string" value="pulseaudio">
+      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
+      <property name="show-notifications" type="bool" value="true"/>
+    </property>
+    <property name="plugin-6" type="string" value="power-manager-plugin"/>
+    <property name="plugin-7" type="string" value="clock"/>
+    <property name="plugin-8" type="string" value="actions"/>
   </property>
 </channel>
 XFCEPANEL
+
+			# Ensure nm-applet (NetworkManager systray icon) autostarts for every user.
+			# Debian's nm-applet ships an autostart .desktop; copy it to /etc/xdg/autostart/
+			# so it's not user-specific. Harmless if the file isn't there (e.g. lean builds).
+			if [[ -f "$live_root/usr/share/applications/nm-applet.desktop" ]]; then
+				G_EXEC cp "$live_root/usr/share/applications/nm-applet.desktop" "$live_root/etc/xdg/autostart/nm-applet.desktop"
+			fi
 
 			# Xfce Terminal with IBM Plex Mono and Dracula colors
 			G_EXEC mkdir -p "$live_root/etc/xdg/xfce4/terminal"
@@ -1063,6 +1127,90 @@ TERMINALRC
 			chroot "$live_root" gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
 			chroot "$live_root" gtk-update-icon-cache -f -t /usr/share/icons/Papirus-Dark 2>/dev/null || true
 			chroot "$live_root" gtk-update-icon-cache -f -t /usr/share/icons/Papirus 2>/dev/null || true
+
+			# --- Desktop shortcuts: /etc/skel/ (new users inherit) + /home/admin/ (live session preview) ---
+			# Six shortcuts surfaced on first login: Terminal, Firefox ESR, Tor Browser, shaughvOS Software, shaughvOS Config, Pentest Tools.
+			# X-XFCE-Trusted=true (Xfce 4.18+) bypasses the "Allow this launcher" first-click dialog.
+			for skel_dir in "$live_root/etc/skel/Desktop" "$live_root/home/admin/Desktop"; do
+				G_EXEC mkdir -p "$skel_dir"
+
+				cat > "$skel_dir/Terminal.desktop" << 'DESKTOPTERM'
+[Desktop Entry]
+Type=Application
+Name=Terminal
+Comment=Open xfce4-terminal
+Exec=xfce4-terminal
+Icon=utilities-terminal
+Terminal=false
+Categories=System;TerminalEmulator;
+X-XFCE-Trusted=true
+DESKTOPTERM
+
+				cat > "$skel_dir/Firefox.desktop" << 'DESKTOPFFX'
+[Desktop Entry]
+Type=Application
+Name=Firefox ESR
+Comment=Mozilla Firefox Extended Support Release
+Exec=firefox-esr %u
+Icon=firefox-esr
+Terminal=false
+Categories=Network;WebBrowser;
+X-XFCE-Trusted=true
+DESKTOPFFX
+
+				cat > "$skel_dir/Tor-Browser.desktop" << 'DESKTOPTOR'
+[Desktop Entry]
+Type=Application
+Name=Tor Browser
+Comment=Launch (or download on first run) the latest signature-verified Tor Browser
+Exec=torbrowser-launcher
+Icon=torbrowser
+Terminal=false
+Categories=Network;WebBrowser;
+X-XFCE-Trusted=true
+DESKTOPTOR
+
+				cat > "$skel_dir/shaughvOS-Software.desktop" << 'DESKTOPSW'
+[Desktop Entry]
+Type=Application
+Name=shaughvOS Software
+Comment=Install and manage bundled shaughvOS software
+Exec=xfce4-terminal -e "sudo shaughvos-software"
+Icon=system-software-install
+Terminal=false
+Categories=System;
+X-XFCE-Trusted=true
+DESKTOPSW
+
+				cat > "$skel_dir/shaughvOS-Config.desktop" << 'DESKTOPCF'
+[Desktop Entry]
+Type=Application
+Name=shaughvOS Config
+Comment=Configure shaughvOS system settings
+Exec=xfce4-terminal -e "sudo shaughvos-config"
+Icon=preferences-system
+Terminal=false
+Categories=System;Settings;
+X-XFCE-Trusted=true
+DESKTOPCF
+
+				cat > "$skel_dir/Pentest-Tools.desktop" << 'DESKTOPPT'
+[Desktop Entry]
+Type=Application
+Name=Pentest Tools
+Comment=Browse the pre-installed shaughvOS IT + security toolset manifest
+Exec=xfce4-terminal -e "pentest-tools"
+Icon=utilities-system-monitor
+Terminal=false
+Categories=System;Security;
+X-XFCE-Trusted=true
+DESKTOPPT
+
+				chmod 0755 "$skel_dir"/*.desktop
+			done
+			# Admin's Desktop dir belongs to admin so first boot doesn't surface it as root-owned.
+			chroot "$live_root" chown -R admin:admin /home/admin/Desktop 2>/dev/null || true
+			unset -v skel_dir
 
 			# Remove per-user xfce4 configs — they override /etc/xdg/ system defaults.
 			# The base image build may have run Xfce, creating configs with compositor enabled.
@@ -1172,7 +1320,12 @@ POLKIT
 				lightdm lightdm-gtk-greeter dbus dbus-user-session dbus-x11 \
 				xserver-xorg-core xinit x11-common x11-xserver-utils \
 				polkitd libpam-systemd plymouth plymouth-themes papirus-icon-theme \
-				firefox-esr nodejs npm librsvg2-common 2>/dev/null || true
+				firefox-esr torbrowser-launcher nodejs npm librsvg2-common \
+				rustc cargo \
+				nmap wireshark wireshark-common tshark tcpdump \
+				nano less tree bat ncdu btop fzf vim wget git \
+				network-manager network-manager-gnome xfce4-power-manager xfce4-pulseaudio-plugin pulseaudio pavucontrol \
+				tailscale 2>/dev/null || true
 			# Clean apt caches before squashfs to reduce ISO size
 			chroot "$live_root" apt-get clean 2>/dev/null || true
 			chroot "$live_root" apt-get autoremove -y 2>/dev/null || true

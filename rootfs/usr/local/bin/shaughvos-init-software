@@ -1,10 +1,27 @@
 #!/bin/bash
 # shaughvOS Software Initializer
-# (Re)installs all bundled shaughvOS software: QubeTX tools, Node.js, Claude Code, Firefox
+# (Re)installs all bundled shaughvOS software: QubeTX tools, Node.js, Claude Code,
+# Firefox, Tor Browser launcher, Tailscale.
 # Safe to re-run — idempotent, won't break existing installs.
-# Usage: sudo shaughvos-init-software
+#
+# Usage:
+#   sudo shaughvos-init-software                 # install everything
+#   sudo shaughvos-init-software --binaries-only # only Claude + QubeTX (skip apt steps)
+#                                                # used by `shaughvos-update` to refresh
+#                                                # bundled binaries without disturbing apt.
 
 set -euo pipefail
+
+BINARIES_ONLY=0
+for arg in "$@"; do
+	case $arg in
+		--binaries-only) BINARIES_ONLY=1 ;;
+		-h|--help)
+			sed -n '2,12p' "$0" | sed 's/^# *//'
+			exit 0 ;;
+		*) echo "Unknown option: $arg" >&2; exit 2 ;;
+	esac
+done
 
 # Colors
 RED='\e[91m'
@@ -35,14 +52,16 @@ ok 'Network available'
 echo
 
 # ── Node.js + npm ──────────────────────────────────────
-info 'Installing Node.js and npm...'
-if command -v node &>/dev/null && command -v npm &>/dev/null; then
-	ok "Node.js $(node --version) and npm $(npm --version) already installed"
-else
-	if apt-get install -y --no-install-recommends nodejs npm &>/dev/null; then
-		ok "Node.js installed ($(node --version 2>/dev/null || echo 'unknown'))"
+if (( BINARIES_ONLY == 0 )); then
+	info 'Installing Node.js and npm...'
+	if command -v node &>/dev/null && command -v npm &>/dev/null; then
+		ok "Node.js $(node --version) and npm $(npm --version) already installed"
 	else
-		fail 'Node.js/npm installation failed — try: sudo apt-get install nodejs npm'
+		if apt-get install -y --no-install-recommends nodejs npm &>/dev/null; then
+			ok "Node.js installed ($(node --version 2>/dev/null || echo 'unknown'))"
+		else
+			fail 'Node.js/npm installation failed — try: sudo apt-get install nodejs npm'
+		fi
 	fi
 fi
 
@@ -128,14 +147,50 @@ else
 fi
 
 # ── Firefox ESR ────────────────────────────────────────
-info 'Installing Firefox ESR...'
-if command -v firefox-esr &>/dev/null || command -v firefox &>/dev/null; then
-	ok 'Firefox already installed'
-else
-	if apt-get install -y --no-install-recommends firefox-esr &>/dev/null; then
-		ok 'Firefox ESR installed'
+if (( BINARIES_ONLY == 0 )); then
+	info 'Installing Firefox ESR...'
+	if command -v firefox-esr &>/dev/null || command -v firefox &>/dev/null; then
+		ok 'Firefox already installed'
 	else
-		fail 'Firefox install failed — try: sudo apt-get install firefox-esr'
+		if apt-get install -y --no-install-recommends firefox-esr &>/dev/null; then
+			ok 'Firefox ESR installed'
+		else
+			fail 'Firefox install failed — try: sudo apt-get install firefox-esr'
+		fi
+	fi
+fi
+
+# ── Tor Browser (via torbrowser-launcher) ──────────────
+if (( BINARIES_ONLY == 0 )); then
+	info 'Installing Tor Browser launcher...'
+	if command -v torbrowser-launcher &>/dev/null; then
+		ok 'torbrowser-launcher already installed (run it once as the target user to download Tor Browser)'
+	else
+		if apt-get install -y --no-install-recommends torbrowser-launcher &>/dev/null; then
+			ok 'torbrowser-launcher installed (run it once as the target user to download latest Tor Browser)'
+		else
+			fail 'torbrowser-launcher install failed — try: sudo apt-get install torbrowser-launcher'
+		fi
+	fi
+fi
+
+# ── Tailscale ──────────────────────────────────────────
+if (( BINARIES_ONLY == 0 )); then
+	info 'Installing Tailscale (not pre-authed — run `sudo tailscale up` after install)...'
+	if command -v tailscale &>/dev/null; then
+		ok "Tailscale already installed ($(tailscale version | head -1 2>/dev/null || echo 'available'))"
+	else
+		# Detect Debian codename
+		suite=$(. /etc/os-release 2>/dev/null && echo "${VERSION_CODENAME:-trixie}")
+		if curl -sSfL "https://pkgs.tailscale.com/stable/debian/${suite}.noarmor.gpg" -o /etc/apt/trusted.gpg.d/shaughvos-tailscale.gpg \
+			&& echo "deb https://pkgs.tailscale.com/stable/debian ${suite} main" > /etc/apt/sources.list.d/shaughvos-tailscale.list \
+			&& apt-get update -qq \
+			&& apt-get install -y --no-install-recommends tailscale &>/dev/null \
+			&& systemctl enable tailscaled.service &>/dev/null; then
+			ok 'Tailscale installed and tailscaled enabled (run `sudo tailscale up` to authenticate)'
+		else
+			fail 'Tailscale install failed — see https://tailscale.com/kb/1174/install-debian-'"${suite:-bookworm}"
+		fi
 	fi
 fi
 
