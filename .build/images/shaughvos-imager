@@ -636,8 +636,16 @@ _EOF_
 			### Step 1: Copy root filesystem to a larger temporary image ###
 			# The imager has already shrunk and truncated the .img to minimum size.
 			# We need a larger writable copy to install Calamares, live-boot, etc.
-			G_SHAUGHVOS-NOTIFY 2 'Creating temporary root filesystem image (4 GiB)'
-			G_EXEC dd if=/dev/zero of=/tmp/live-root.img bs=1M count=4096
+			# Temp image sizing: v1.17.0 used 4 GiB, but v1.18.0 adds ~500 MB of new base
+			# packages (tailscale, torbrowser-launcher, network-manager, nmap, wireshark,
+			# rustc/cargo, xfce4-pulseaudio-plugin + pulseaudio, pavucontrol, btop, vim,
+			# etc.) — apt install started failing with "No space left on device" during
+			# tailscale unpack and papirus-icon-theme resolve. Bump to 6 GiB. The shrink
+			# step at the end of the imager still reduces the final squashfs to the
+			# minimum needed for the installed payload, so this only affects peak build
+			# disk usage.
+			G_SHAUGHVOS-NOTIFY 2 'Creating temporary root filesystem image (6 GiB)'
+			G_EXEC dd if=/dev/zero of=/tmp/live-root.img bs=1M count=6144
 			G_EXEC mkfs.ext4 -q -m0 /tmp/live-root.img
 			G_EXEC mkdir -p "$live_root" /tmp/live-src
 			G_EXEC mount "$FP_ROOT_DEV" /tmp/live-src -o ro
