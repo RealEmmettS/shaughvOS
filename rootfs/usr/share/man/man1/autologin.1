@@ -1,0 +1,102 @@
+.TH AUTOLOGIN 1 "April 2026" "shaughvOS" "shaughvOS Commands"
+.SH NAME
+autologin \- shaughvOS autologin control for the current (sudoing) user
+.SH SYNOPSIS
+.B autologin
+.RI [ on | off | status ]
+.SH DESCRIPTION
+.B autologin
+configures
+.B both
+getty autologin (on tty1) and LightDM autologin (for Xfce sessions)
+for the same user. Managing both layers means the user's autologin
+preference survives when switching between desktop and console mode
+via
+.BR desktop (1).
+.PP
+.B on
+and
+.B off
+require root.
+.B status
+does not.
+.SH TARGET USER RESOLUTION
+When
+.B autologin on
+is invoked, the target user is resolved in this order:
+.IP "1." 4
+.B $SUDO_USER
+— the user who invoked
+.BR sudo .
+This is the preferred and normal case.
+.IP "2." 4
+.B AUTO_SETUP_AUTOSTART_LOGIN_USER
+read from
+.IR /boot/shaughvos.txt .
+.IP "3." 4
+.B admin
+— final fallback.
+.PP
+A warning is printed when a fallback is used.
+.SH COMMANDS
+.TP
+.B on
+Enable autologin for the resolved target user. Writes the getty
+drop-in and the LightDM drop-in, then reloads systemd. Requires root.
+.TP
+.B off
+Disable autologin. Removes both drop-in files and reloads systemd.
+Password will be required on next login. Requires root.
+.TP
+.B status
+Print TTY and LightDM autologin state, with the configured user for
+each. Warns if the two layers are out of sync (e.g. LightDM enabled
+but TTY disabled, or the users differ).
+.B Does not require root.
+.SH FILES
+.TP
+.I /etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf
+Systemd drop-in that passes
+.B \-a <user>
+to
+.BR agetty (8)
+for tty1 autologin.
+.TP
+.I /etc/lightdm/lightdm.conf.d/90-shaughvos-autologin.conf
+LightDM configuration fragment setting
+.BR autologin-user ,
+.BR autologin-session=xfce ,
+and
+.BR autologin-user-timeout=0 .
+.SH RELATIONSHIP WITH desktop(1)
+.B desktop on/off
+manages the systemd default target
+.RB ( graphical.target
+vs
+.BR multi-user.target )
+and LightDM enable/start state. It does
+.B not
+touch autologin configuration.
+.PP
+.B autologin on/off
+manages the autologin layer independently. The two commands are
+deliberately orthogonal so that, for example, an administrator can
+leave autologin enabled while switching between GUI and CLI boot
+modes without having to reconfigure it each time.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+Unknown command, root required but not present, target user could
+not be determined, or write error.
+.SH SEE ALSO
+.BR desktop (1),
+.BR shaughvos (1),
+.BR agetty (8),
+.BR lightdm (1)
+.SH AUTHOR
+Emmett Shaughnessy
+.SH COPYRIGHT
+Copyright (C) 2026 Emmett Shaughnessy. Licensed under GPLv2.

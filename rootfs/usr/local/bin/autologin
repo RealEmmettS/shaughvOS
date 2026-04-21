@@ -1,0 +1,199 @@
+#!/bin/bash
+{
+	#////////////////////////////////////
+	# shaughvOS Autologin Control
+	# Usage: autologin on|off|status
+	#
+	# Manages BOTH getty autologin (tty1) AND LightDM autologin (Xfce)
+	# for the same user, so switching between desktop and CLI mode
+	# (via the `desktop` command) preserves autologin intent.
+	#////////////////////////////////////
+
+	# Import globals
+	. /boot/shaughvos/func/shaughvos-globals
+	readonly G_PROGRAM_NAME='shaughvOS-Autologin'
+	G_INIT
+
+	readonly FP_GETTY_DROPIN='/etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf'
+	readonly FP_LIGHTDM_DROPIN='/etc/lightdm/lightdm.conf.d/90-shaughvos-autologin.conf'
+
+	Usage()
+	{
+		echo "shaughvOS Autologin Control
+
+Usage: autologin <command>
+
+Commands:
+  on      Enable autologin for the current (sudoing) user
+  off     Disable autologin — password required on next login
+  status  Show TTY and LightDM autologin state (no root required)
+
+Options:
+  --help  Show this help message
+
+Target user resolution (for 'on'):
+  1. \$SUDO_USER (when invoked via sudo — preferred)
+  2. AUTO_SETUP_AUTOSTART_LOGIN_USER from /boot/shaughvos.txt
+  3. 'admin' (final fallback)
+
+Files managed:
+  /etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf
+  /etc/lightdm/lightdm.conf.d/90-shaughvos-autologin.conf
+
+Relationship with the 'desktop' command:
+  'desktop on/off' switches the systemd default target (graphical vs
+  multi-user) and controls lightdm. It does NOT touch autologin.
+  'autologin on/off' manages the autologin layer independently, so your
+  preference survives mode switches."
+	}
+
+	# Resolve the target user for autologin configuration.
+	# Echoes the user; returns non-zero if none could be determined.
+	Target_User()
+	{
+		local user=''
+		local fallback_used=0
+
+		if [[ -n $SUDO_USER && $SUDO_USER != 'root' ]]
+		then
+			user=$SUDO_USER
+		else
+			# Fallback to shaughvos.txt config.
+			if [[ -f '/boot/shaughvos.txt' ]]
+			then
+				user=$(sed -n '/^[[:blank:]]*AUTO_SETUP_AUTOSTART_LOGIN_USER=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt 2>/dev/null)
+			fi
+			if [[ -z $user ]]
+			then
+				user='admin'
+			fi
+			fallback_used=1
+		fi
+
+		if [[ -z $user ]]
+		then
+			return 1
+		fi
+
+		if (( fallback_used ))
+		then
+			G_SHAUGHVOS-NOTIFY 1 "\$SUDO_USER not set — falling back to user: $user" >&2
+		fi
+
+		echo "$user"
+	}
+
+	Enable_Autologin()
+	{
+		local user=$1
+
+		# Getty autologin for tty1 (honored when system is in multi-user.target).
+		G_EXEC mkdir -p /etc/systemd/system/getty@tty1.service.d
+		cat > "$FP_GETTY_DROPIN" << _EOF_
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty -a $user -J %I \$TERM
+_EOF_
+
+		# LightDM autologin (honored when system is in graphical.target).
+		G_EXEC mkdir -p /etc/lightdm/lightdm.conf.d
+		cat > "$FP_LIGHTDM_DROPIN" << _EOF_
+[Seat:*]
+autologin-user=$user
+autologin-session=xfce
+autologin-user-timeout=0
+_EOF_
+
+		systemctl daemon-reload 2>/dev/null || true
+	}
+
+	Disable_Autologin()
+	{
+		rm -f "$FP_GETTY_DROPIN"
+		rm -f "$FP_LIGHTDM_DROPIN"
+		systemctl daemon-reload 2>/dev/null || true
+	}
+
+	# Read user= from a getty autologin drop-in. Echoes empty if not found.
+	Get_Getty_User()
+	{
+		local user=''
+		if [[ -f $FP_GETTY_DROPIN ]]
+		then
+			user=$(grep -oE -- '-a[[:space:]]+[A-Za-z_][A-Za-z0-9_-]*' "$FP_GETTY_DROPIN" 2>/dev/null | head -n1 | sed -E 's/^-a[[:space:]]+//')
+		fi
+		echo "$user"
+	}
+
+	# Read autologin-user= from the LightDM drop-in. Echoes empty if not found.
+	Get_Lightdm_User()
+	{
+		local user=''
+		if [[ -f $FP_LIGHTDM_DROPIN ]]
+		then
+			user=$(grep -oE '^autologin-user=.*' "$FP_LIGHTDM_DROPIN" 2>/dev/null | head -n1 | sed -E 's/^autologin-user=//')
+		fi
+		echo "$user"
+	}
+
+	case ${1,,} in
+		'on')
+			G_CHECK_ROOT_USER
+			G_CHECK_ROOTFS_RW
+			user=$(Target_User) || {
+				G_SHAUGHVOS-NOTIFY 1 'Could not determine target user for autologin.'
+				exit 1
+			}
+			G_SHAUGHVOS-NOTIFY 2 "Enabling autologin for user: $user"
+			Enable_Autologin "$user"
+			G_SHAUGHVOS-NOTIFY 0 "Autologin enabled for user '$user'. Takes effect on next login/reboot."
+		;;
+		'off')
+			G_CHECK_ROOT_USER
+			G_CHECK_ROOTFS_RW
+			G_SHAUGHVOS-NOTIFY 2 'Disabling autologin ...'
+			Disable_Autologin
+			G_SHAUGHVOS-NOTIFY 0 'Autologin disabled. Password required on next login.'
+		;;
+		'status')
+			# No root required.
+			getty_user=$(Get_Getty_User)
+			lightdm_user=$(Get_Lightdm_User)
+
+			if [[ -f $FP_GETTY_DROPIN ]]
+			then
+				G_SHAUGHVOS-NOTIFY 0 "TTY autologin (tty1): enabled (user=${getty_user:-?})"
+			else
+				G_SHAUGHVOS-NOTIFY 0 'TTY autologin (tty1): disabled'
+			fi
+
+			if [[ -f $FP_LIGHTDM_DROPIN ]]
+			then
+				G_SHAUGHVOS-NOTIFY 0 "LightDM autologin: enabled (user=${lightdm_user:-?})"
+			else
+				G_SHAUGHVOS-NOTIFY 0 'LightDM autologin: disabled'
+			fi
+
+			# Warn on mismatch.
+			if [[ -f $FP_GETTY_DROPIN && ! -f $FP_LIGHTDM_DROPIN ]]
+			then
+				G_SHAUGHVOS-NOTIFY 1 'Autologin state is out of sync (TTY enabled, LightDM disabled).'
+			elif [[ ! -f $FP_GETTY_DROPIN && -f $FP_LIGHTDM_DROPIN ]]
+			then
+				G_SHAUGHVOS-NOTIFY 1 'Autologin state is out of sync (LightDM enabled, TTY disabled).'
+			elif [[ -f $FP_GETTY_DROPIN && -f $FP_LIGHTDM_DROPIN && -n $getty_user && -n $lightdm_user && $getty_user != "$lightdm_user" ]]
+			then
+				G_SHAUGHVOS-NOTIFY 1 "Autologin users differ (TTY=$getty_user vs LightDM=$lightdm_user)."
+			fi
+		;;
+		'--help'|'-h'|'')
+			Usage
+		;;
+		*)
+			G_SHAUGHVOS-NOTIFY 1 "Unknown command: $1"
+			Usage
+			exit 1
+		;;
+	esac
+	exit 0
+}

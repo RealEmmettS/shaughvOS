@@ -267,7 +267,9 @@ $GREEN_LINE"
  ${aCOLOUR[1]}sd300$COLOUR_RESET              $GREEN_SEPARATOR Real-time system diagnostics TUI
  ${aCOLOUR[1]}htop$COLOUR_RESET               $GREEN_SEPARATOR Resource monitor
  ${aCOLOUR[1]}claude$COLOUR_RESET             $GREEN_SEPARATOR Claude Code AI assistant
- ${aCOLOUR[1]}desktop on/off$COLOUR_RESET     $GREEN_SEPARATOR Toggle between desktop and console mode\n"
+ ${aCOLOUR[1]}desktop on/off$COLOUR_RESET     $GREEN_SEPARATOR Toggle between desktop and console mode
+ ${aCOLOUR[1]}autologin on/off$COLOUR_RESET   $GREEN_SEPARATOR Manage autologin for the current user
+ ${aCOLOUR[1]}shaughvos-update$COLOUR_RESET   $GREEN_SEPARATOR Full system refresh (OS + APT + npm + pipx + binaries)\n"
 	}
 
 	Print_Banner_raw()

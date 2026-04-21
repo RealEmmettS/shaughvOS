@@ -28,6 +28,30 @@
 	G_LIVE_PATCH_STATUS=() # Reset potentially exported array, to be freshly sourced via shaughvOS-Globals
 	. /boot/shaughvos/func/shaughvos-globals
 	readonly G_PROGRAM_NAME='shaughvOS-Update'
+
+	# Custom sudo explainer — surfaces the full scope of the command before the generic root-required error fires.
+	if (( $EUID != 0 ))
+	then
+		cat >&2 <<-EOF
+
+		┌─ shaughvos-update ─────────────────────────────────────────────────┐
+		│                                                                    │
+		│  Runs a FULL system refresh:                                       │
+		│    1. shaughvOS code updates from GitHub (patches + pre-patches)   │
+		│    2. Debian APT packages (apt-get update && apt-get upgrade)      │
+		│    3. Global npm packages (npm update -g)                          │
+		│    4. pipx Python tools (pipx upgrade-all)                         │
+		│    5. QubeTX 300 Series + Claude Code CLI binaries                 │
+		│                                                                    │
+		│  This modifies system state — root privileges are required.        │
+		│                                                                    │
+		│  Re-run with:  sudo shaughvos-update                               │
+		│                                                                    │
+		└────────────────────────────────────────────────────────────────────┘
+		EOF
+		exit 1
+	fi
+
 	G_CHECK_ROOT_USER "$@"
 	G_CHECK_ROOTFS_RW
 	G_INIT
@@ -446,11 +470,72 @@ Do you wish to continue and update shaughvOS to v$G_REMOTE_VERSION_CORE.$G_REMOT
 		done
 	}
 
+	# Full system refresh — runs AFTER shaughvOS code update (or standalone when no code update is available).
+	# Idempotent; non-fatal on individual step failures (each step logs its own outcome).
+	# Invoked interactively with Y/n confirmation (unless INPUT=1 forced) from Main Loop.
+	Full_System_Refresh(){
+		G_SHAUGHVOS-NOTIFY 3 "$G_PROGRAM_NAME" 'Full system refresh'
+
+		# 1. APT update + upgrade (most impactful; Debian packages that power the system)
+		G_SHAUGHVOS-NOTIFY 2 'Refreshing APT package index and upgrading Debian packages'
+		G_AGUP -v || G_SHAUGHVOS-NOTIFY 1 'APT update had errors (non-fatal, see log above)'
+		# shellcheck disable=SC2154
+		if (( ${G_AGUP_COUNT:-0} ))
+		then
+			G_AGUG &> >(tee -a /var/tmp/shaughvos/logs/shaughvos-upgrade_apt.log) || G_SHAUGHVOS-NOTIFY 1 'APT upgrade had non-fatal errors'
+		else
+			G_SHAUGHVOS-NOTIFY 0 'APT: no upgrades available'
+		fi
+
+		# 2. Global npm packages (if npm present)
+		if command -v npm > /dev/null 2>&1
+		then
+			G_SHAUGHVOS-NOTIFY 2 'Refreshing global npm packages'
+			npm update -g 2>&1 | tee -a /var/tmp/shaughvos/logs/shaughvos-upgrade_npm.log || G_SHAUGHVOS-NOTIFY 1 'npm update -g had non-fatal errors'
+		fi
+
+		# 3. pipx-managed Python tools (impacket, certipy-ad, etc. once Phase 6 lands)
+		if command -v pipx > /dev/null 2>&1
+		then
+			G_SHAUGHVOS-NOTIFY 2 'Refreshing pipx-managed Python tools'
+			pipx upgrade-all 2>&1 | tee -a /var/tmp/shaughvos/logs/shaughvos-upgrade_pipx.log || G_SHAUGHVOS-NOTIFY 1 'pipx upgrade-all had non-fatal errors'
+		fi
+
+		# 4. shaughvOS bundled binaries — QubeTX 300 Series + Claude Code CLI (idempotent)
+		if [[ -x /usr/local/bin/shaughvos-init-software ]]
+		then
+			G_SHAUGHVOS-NOTIFY 2 'Refreshing QubeTX + Claude Code binaries to latest upstream releases'
+			/usr/local/bin/shaughvos-init-software --binaries-only 2>&1 | tee -a /var/tmp/shaughvos/logs/shaughvos-upgrade_binaries.log || G_SHAUGHVOS-NOTIFY 1 'Binary refresh had non-fatal errors'
+		fi
+
+		G_SHAUGHVOS-NOTIFY 0 'Full system refresh completed — see /var/tmp/shaughvos/logs/ for per-step logs'
+	}
+
 	#/////////////////////////////////////////////////////////////////////////////////////
 	# Main Loop
 	#/////////////////////////////////////////////////////////////////////////////////////
 	#----------------------------------------------------------------
 	G_SHAUGHVOS-NOTIFY 3 "$G_PROGRAM_NAME" 'Checking for available shaughvOS update'
+	#----------------------------------------------------------------
+	# Interactive confirmation (skipped for noninteractive modes: INPUT=1 forced, INPUT=2 check-only)
+	# INPUT=0 means the user ran `shaughvos-update` bare — present a Y/n prompt explaining the full refresh scope.
+	if (( $INPUT == 0 )) && [[ -z $G_SHAUGHVOS_UPDATE_CONFIRMED ]]
+	then
+		echo
+		G_SHAUGHVOS-NOTIFY 2 'shaughvos-update will perform a full system refresh:'
+		echo '  1. Check for and apply shaughvOS code updates from GitHub (if any)'
+		echo '  2. Refresh Debian APT packages (apt-get update && apt-get upgrade)'
+		command -v npm  > /dev/null 2>&1 && echo '  3. Refresh global npm packages (npm update -g)'
+		command -v pipx > /dev/null 2>&1 && echo '  4. Refresh pipx Python tools (pipx upgrade-all)'
+		[[ -x /usr/local/bin/shaughvos-init-software ]] && echo '  5. Refresh QubeTX + Claude Code binaries to latest'
+		echo
+		read -rp 'Proceed with full system refresh? [Y/n] ' reply
+		case ${reply,,} in
+			''|y|yes) : ;;
+			*) G_SHAUGHVOS-NOTIFY 2 'Cancelled — no changes made.'; exit 0 ;;
+		esac
+		unset -v reply
+	fi
 	#----------------------------------------------------------------
 	# Check network connectivity and sync system clock
 	G_CHECK_NET
@@ -497,6 +582,10 @@ Do you wish to continue and update shaughvOS to v$G_REMOTE_VERSION_CORE.$G_REMOT
 				G_SHAUGHVOS-NOTIFY 2 "$INFO_CURRENT_VERSION"
 				G_SHAUGHVOS-NOTIFY 2 "$INFO_REMOTE_VERSION"
 
+				# Post-update full system refresh: APT + npm + pipx + bundled binaries
+				# Skipped for check-only mode (INPUT=2 exits earlier).
+				Full_System_Refresh
+
 				# Failsafe: Force sync to disk
 				G_EXEC sync
 
@@ -541,19 +630,16 @@ Do you wish to continue and update shaughvOS to v$G_REMOTE_VERSION_CORE.$G_REMOT
 		fi
 	fi
 
-	# If no shaughvOS update is available, check for and in case apply APT updates based on input mode and shaughvos.txt choice
-	mode=$(sed -n '/^[[:blank:]]*CONFIG_CHECK_APT_UPDATES=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt)
-	# Forced update input and mode 2: Apply APT updates if available
-	if [[ $INPUT == 1 && $mode == 2 ]]
+	# No shaughvOS code update is available. Behavior depends on INPUT:
+	# - INPUT=2 (check-only): just refresh the APT-updates-available flag for shaughvOS-Banner, no changes.
+	# - INPUT=0 (interactive) or INPUT=1 (forced): user explicitly ran the command; run the full refresh anyway
+	#   since they asked for it. This makes `shaughvos-update` a true one-stop system refresh.
+	if [[ $INPUT == 2 ]]
 	then
-		G_AGUP -v
-		# shellcheck disable=SC2154
-		(( $G_AGUP_COUNT )) && G_AGUG &> >(tee /var/tmp/shaughvos/logs/shaughvos-upgrade_apt.log)
-
-	# No forced update input but APT updates check not disabled: Check for APT updates and store result to /run/shaughvos/.apt_updates to be used by shaughvOS-Banner
-	elif [[ $mode != 0 ]]
-	then
-		G_AGUP -f
+		mode=$(sed -n '/^[[:blank:]]*CONFIG_CHECK_APT_UPDATES=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt)
+		[[ $mode != 0 ]] && G_AGUP -f
+	else
+		Full_System_Refresh
 	fi
 	#----------------------------------------------------------------
 	exit 0

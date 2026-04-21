@@ -6,27 +6,64 @@ desktop \- toggle between desktop and console mode
 .RI [ on | off | status ]
 .SH DESCRIPTION
 .B desktop
-is a shaughvOS utility that switches between the graphical desktop
-environment (Xfce) and console mode. Changes persist across reboots.
+is a shaughvOS utility that switches the system between the graphical
+desktop environment (Xfce via LightDM) and console mode.
 .PP
-Requires root privileges to run.
+Changes are persistent — they are applied via
+.BR "systemctl set-default"
+.RB ( graphical.target
+for desktop mode,
+.B multi-user.target
+for console mode) and survive reboots.
+.PP
+As of shaughvOS v1.18.0, installed systems default to
+.B console mode
+on first boot. The live installer ISO continues to boot to the desktop.
+.PP
+.B desktop
+does
+.B not
+manage autologin. See
+.BR autologin (1)
+for per-user autologin control.
 .SH COMMANDS
 .TP
 .B on
-Switch to desktop mode with autologin. Starts the LightDM display
-manager and sets the system to boot into the desktop on next reboot.
+Switch to desktop mode. Sets the default systemd target to
+.BR graphical.target ,
+enables
+.BR lightdm.service ,
+removes any getty autologin drop-ins that would conflict with LightDM,
+and starts
+.B lightdm
+immediately. Requires root.
 .TP
 .B off
-Switch to console mode with autologin. Stops the LightDM display
-manager and sets the system to boot into a console on next reboot.
+Switch to console mode. Sets the default systemd target to
+.BR multi-user.target ,
+disables
+.BR lightdm.service ,
+ensures
+.B getty@tty1
+is running, switches the active VT to tty1, and stops
+.BR lightdm .
+Requires root. The VT switch happens
+.B before
+LightDM is stopped so the user sees a console immediately.
 .TP
 .B status
-Display the current mode (Desktop or Console) and whether the
-display manager is running.
+Display the configured mode, the persistent systemd default target,
+whether LightDM is currently running, and the TTY / LightDM autologin
+state.
+.B Does not require root.
 .SH OPTIONS
 .TP
 .B \-\-help
 Display usage information.
+.SH FILES
+.TP
+.I /boot/shaughvos/.shaughvos-autostart_index
+Records the configured autostart index (2 = desktop, 7 = console).
 .SH EXIT STATUS
 .TP
 .B 0
@@ -35,7 +72,10 @@ Success.
 .B 1
 Unknown command or error.
 .SH SEE ALSO
-.BR shaughvos (1)
+.BR autologin (1),
+.BR shaughvos (1),
+.BR shaughvos-config (1),
+.BR shaughvos-software (1)
 .SH AUTHOR
 Emmett Shaughnessy
 .SH COPYRIGHT

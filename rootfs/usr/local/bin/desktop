@@ -3,12 +3,16 @@
 	#////////////////////////////////////
 	# shaughvOS Desktop Toggle
 	# Usage: desktop on|off|status
+	#
+	# As of v1.18.0, this command handles the display mode only
+	# (graphical.target vs multi-user.target + LightDM enable/disable).
+	# Autologin is managed separately by the `autologin` command.
 	#////////////////////////////////////
 
 	# Import globals
 	. /boot/shaughvos/func/shaughvos-globals
 	readonly G_PROGRAM_NAME='desktop'
-	G_CHECK_ROOT_USER "$@"
+	G_INIT
 
 	Usage()
 	{
@@ -17,68 +21,133 @@
 Usage: desktop <command>
 
 Commands:
-  on      Switch to desktop mode (Xfce) with autologin
-  off     Switch to console mode with autologin
-  status  Show current display mode
+  on      Switch to desktop mode (Xfce via LightDM) — persists across reboots
+  off     Switch to console mode (multi-user target) — persists across reboots
+  status  Show current display mode and autologin state (no root required)
 
 Options:
-  --help  Show this help message'
+  --help  Show this help message
+
+Notes:
+  on/off require root.
+  Autologin is managed separately — see: autologin --help'
 	}
 
-	# Get the autologin user from shaughvos.txt, default to admin
-	Get_Login_User()
+	# Return 0 if a getty autologin drop-in exists.
+	Has_Getty_Autologin()
 	{
-		local user
-		user=$(sed -n '/^[[:blank:]]*AUTO_SETUP_AUTOSTART_LOGIN_USER=/{s/^[^=]*=//p;q}' /boot/shaughvos.txt)
-		echo "${user:-admin}"
+		[[ -f '/etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf' ]]
+	}
+
+	# Read user= from a getty autologin drop-in. Echoes empty if not found.
+	Get_Getty_Autologin_User()
+	{
+		local user=''
+		if [[ -f '/etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf' ]]
+		then
+			user=$(grep -oE -- '-a[[:space:]]+[A-Za-z_][A-Za-z0-9_-]*' /etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf 2>/dev/null | head -n1 | sed -E 's/^-a[[:space:]]+//')
+		fi
+		echo "$user"
+	}
+
+	# Read autologin-user= from the LightDM drop-in. Echoes empty if not found.
+	Get_Lightdm_Autologin_User()
+	{
+		local user=''
+		if [[ -f '/etc/lightdm/lightdm.conf.d/90-shaughvos-autologin.conf' ]]
+		then
+			user=$(grep -oE '^autologin-user=.*' /etc/lightdm/lightdm.conf.d/90-shaughvos-autologin.conf 2>/dev/null | head -n1 | sed -E 's/^autologin-user=//')
+		fi
+		echo "$user"
 	}
 
 	case ${1,,} in
 		'on')
+			G_CHECK_ROOT_USER
+			G_CHECK_ROOTFS_RW
 			G_SHAUGHVOS-NOTIFY 2 'Switching to desktop mode ...'
+
+			G_EXEC systemctl set-default graphical.target
+			systemctl enable lightdm.service 2>/dev/null
+
+			# Desktop mode owns lightdm — drop any getty autologin overrides
+			# so root/admin don't land on a console getty instead of the greeter.
+			# Note: the persistent autologin state is managed by the `autologin`
+			# command. We only remove the getty@tty1 drop-in here because
+			# lightdm owns tty7 (or the configured VT) when active.
+			rm -f /etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf
+			rm -f /etc/systemd/system/console-getty.service.d/shaughvos-autologin.conf
+			systemctl daemon-reload
+
 			echo 2 > /boot/shaughvos/.shaughvos-autostart_index
-			systemctl start lightdm 2>/dev/null || G_SHAUGHVOS-NOTIFY 1 'Failed to start display manager. Is Xfce installed?'
-			G_SHAUGHVOS-NOTIFY 0 'Desktop mode enabled. Will persist across reboots.'
+
+			# Runtime switch — harmless if lightdm is already running.
+			systemctl start lightdm 2>/dev/null || true
+
+			G_SHAUGHVOS-NOTIFY 0 'Desktop mode enabled. Runtime switch applied; persists across reboots.'
 		;;
 		'off')
+			G_CHECK_ROOT_USER
+			G_CHECK_ROOTFS_RW
 			G_SHAUGHVOS-NOTIFY 2 'Switching to console mode — the desktop session will close.'
-			echo 7 > /boot/shaughvos/.shaughvos-autostart_index
 
-			# Create getty autologin so there's a console to land on.
-			# Without this, stopping LightDM leaves the user with no UI at all
-			# (the imager removes getty autologin for the live session).
-			user=$(Get_Login_User)
-			mkdir -p /etc/systemd/system/getty@tty1.service.d
-			cat > /etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf << _EOF_
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty -a $user -J %I \$TERM
-_EOF_
-			mkdir -p /etc/systemd/system/console-getty.service.d
-			cat > /etc/systemd/system/console-getty.service.d/shaughvos-autologin.conf << _EOF_
-[Service]
-ExecStart=
-ExecStart=-/sbin/agetty -a $user -J --noclear --keep-baud console 115200,38400,9600 \$TERM
-_EOF_
+			G_EXEC systemctl set-default multi-user.target
+			systemctl disable lightdm.service 2>/dev/null
+			echo 7 > /boot/shaughvos/.shaughvos-autostart_index
 			systemctl daemon-reload
-			systemctl start getty@tty1 2>/dev/null
-			# Switch to tty1 so the user sees the console before LightDM dies
-			chvt 1 2>/dev/null
-			systemctl stop lightdm 2>/dev/null
-			G_SHAUGHVOS-NOTIFY 0 'Console mode enabled. Will persist across reboots.'
+
+			# Ensure there's a console getty to land on before LightDM dies.
+			# If the user has configured autologin via `autologin on`, the
+			# drop-in already exists and getty@tty1 will honor it.
+			# Otherwise we still start getty@tty1 so there's a login prompt.
+			systemctl start getty@tty1.service 2>/dev/null || true
+
+			# Switch VT BEFORE stopping LightDM so the user sees the console.
+			chvt 1 2>/dev/null || true
+			systemctl stop lightdm 2>/dev/null || true
+
+			G_SHAUGHVOS-NOTIFY 0 'Console mode enabled. Runtime switch applied; persists across reboots.'
 		;;
 		'status')
-			index=0
-			[[ -f '/boot/shaughvos/.shaughvos-autostart_index' ]] && read -r index < /boot/shaughvos/.shaughvos-autostart_index
+			# No root required for status.
+			index=''
+			if [[ -f '/boot/shaughvos/.shaughvos-autostart_index' ]]
+			then
+				read -r index < /boot/shaughvos/.shaughvos-autostart_index
+			fi
+
 			case $index in
-				2|16) G_SHAUGHVOS-NOTIFY 0 'Current mode: Desktop';;
-				*) G_SHAUGHVOS-NOTIFY 0 'Current mode: Console';;
+				2|16) G_SHAUGHVOS-NOTIFY 0 'Configured mode: Desktop';;
+				7)    G_SHAUGHVOS-NOTIFY 0 'Configured mode: Console';;
+				'')   G_SHAUGHVOS-NOTIFY 0 'Configured mode: (unset)';;
+				*)    G_SHAUGHVOS-NOTIFY 0 "Configured mode: index=$index";;
 			esac
+
+			default_target=$(systemctl get-default 2>/dev/null)
+			G_SHAUGHVOS-NOTIFY 2 "Persistent target: ${default_target:-unknown}"
+
 			if systemctl is-active lightdm &>/dev/null
 			then
-				G_SHAUGHVOS-NOTIFY 2 'Display manager: running'
+				G_SHAUGHVOS-NOTIFY 2 'Display manager (lightdm): running'
 			else
-				G_SHAUGHVOS-NOTIFY 2 'Display manager: stopped'
+				G_SHAUGHVOS-NOTIFY 2 'Display manager (lightdm): stopped'
+			fi
+
+			# Autologin summary (brief — full details via `autologin status`).
+			tty_user=$(Get_Getty_Autologin_User)
+			if Has_Getty_Autologin
+			then
+				G_SHAUGHVOS-NOTIFY 2 "TTY autologin: enabled (user=${tty_user:-?})"
+			else
+				G_SHAUGHVOS-NOTIFY 2 'TTY autologin: disabled'
+			fi
+
+			lightdm_user=$(Get_Lightdm_Autologin_User)
+			if [[ -f '/etc/lightdm/lightdm.conf.d/90-shaughvos-autologin.conf' ]]
+			then
+				G_SHAUGHVOS-NOTIFY 2 "LightDM autologin: enabled (user=${lightdm_user:-?})"
+			else
+				G_SHAUGHVOS-NOTIFY 2 'LightDM autologin: disabled'
 			fi
 		;;
 		'--help'|'-h'|'')
