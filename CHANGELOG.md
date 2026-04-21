@@ -9,8 +9,51 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+---
+
+## [1.18.0] — 2026-04-21
+
 ### Added
-- **`.gitignore`** — first `.gitignore` for the repo. Covers Claude Code session transcripts (`big_fix_*.txt`), OS metadata (`.DS_Store`, `Thumbs.db`, `desktop.ini`), editor/IDE scratch (`.vscode/`, `.idea/`, `*.swp`, `*~`), image-build artifacts (`*.img`, `*.iso`, `*.squashfs`, `*.img.xz`), Debian packaging output (`*.deb`, `*.changes`, `*.buildinfo`), logs, secrets (`.env*`, `*.pem`, `*.key`), Python (`__pycache__/`, `.venv/`), and Node (`node_modules/`). Existing tracked transcript files (`build_convo_thread.txt`, `fix-calamares-attempt.txt`, etc.) are grandfathered in — only affects untracked files going forward. No shipped-device impact.
+
+- **Tailscale pre-installed on every ISO** — `tailscaled.service` is enabled at build time, not pre-authenticated. Run `sudo tailscale up` on first boot to join your tailnet. Package is pinned by the imager + Calamares shellprocess `apt-mark manual` so autoremove never touches it.
+- **Tor Browser via `torbrowser-launcher`** — installed on every ISO. The first click on the Tor Browser desktop shortcut downloads the current-latest Tor Browser from torproject.org with cryptographic signature verification. Handles future updates automatically. No account or authentication required.
+- **New `autologin` command** (`rootfs/usr/local/bin/autologin`) — first-class management of both getty (tty1) and LightDM autologin. Subcommands:
+  - `sudo autologin on` — enable autologin for the current sudoing user (via `$SUDO_USER`, falling back to `AUTO_SETUP_AUTOSTART_LOGIN_USER`, then `admin`). Writes both `/etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf` and `/etc/lightdm/lightdm.conf.d/90-shaughvos-autologin.conf`.
+  - `sudo autologin off` — remove both files. Password will be required on next login.
+  - `autologin status` — read-only, no root required. Reports both the TTY and LightDM autologin state; warns if they're out of sync.
+- **Full system refresh via `sudo shaughvos-update`** — the command now performs a one-stop refresh: shaughvOS code pull + APT update/upgrade + `npm update -g` + `pipx upgrade-all` + `shaughvos-init-software --binaries-only` (QubeTX + Claude Code binaries). When run interactively it presents a Y/n confirmation showing exactly what will run before touching anything. `INPUT=1` (forced) skips the prompt; `INPUT=2` (check-only) is unchanged.
+- **Custom sudo explainer for `shaughvos-update`** — running without sudo now prints a framed box explaining the five things the command does, then instructs the user to re-run with sudo. Replaces the generic root-required error.
+- **`shaughvos-init-software --binaries-only`** flag — refreshes just Claude Code + QubeTX TR-300/ND-300/SD-300 binaries without touching apt packages. Used by the new `shaughvos-update` hook.
+- **Persistent `desktop on/off` across reboots** — `desktop on` runs `systemctl set-default graphical.target` + enables LightDM; `desktop off` sets `multi-user.target` + disables LightDM. Both survive reboot cleanly. Installed systems now default to **`multi-user.target` (console login)** — the live ISO keeps `graphical.target` so Calamares autostarts.
+- **`desktop status` without root** — moved `G_CHECK_ROOT_USER` from the top of the script into the `on`/`off` branches only. `status` and `--help` run as any user. The status output now includes `systemctl get-default`, lightdm active-state, and a brief summary of the autologin state (delegating details to `autologin status`).
+- **Panel applets**: volume (`xfce4-pulseaudio-plugin` via `pulseaudio` + `pavucontrol`), power (`xfce4-power-manager`), and network (`network-manager` + `nm-applet` autostarted into the systray). Relevant for laptop builds which previously had no Wi-Fi picker or battery icon out of the box.
+- **Desktop shortcuts on every install** — `/etc/skel/Desktop/` (new users inherit via `useradd -k /etc/skel`) and `/home/admin/Desktop/` (live-session preview) each seed: Terminal, Firefox ESR, Tor Browser, shaughvOS Software, shaughvOS Config, Pentest Tools. `X-XFCE-Trusted=true` (Xfce 4.18+) bypasses the first-click "allow launcher" dialog.
+- **Splash + auto-run escape hatches** in `rootfs/etc/bashrc.d/shaughvos.bash`:
+  - `~/.hushlogin` — standard Unix convention, suppresses the login `tr300 --fast` report.
+  - `SHAUGHVOS_NO_AUTORUN=1` — env-var opt-out.
+  - Non-TTY guard (`[[ ! -t 1 ]]`) — no auto-run for scp/rsync/non-interactive ssh.
+- **Man pages**: `autologin.1`, `tr300.1`, `nd300.1`, `sd300.1`, `speedqx.1`, `shaughvos-software.1`, `shaughvos-config.1`, `pentest-tools.1`. Plus `desktop.1` updated to describe persistence and autologin decoupling.
+- **Base-tool install guarantees on ALL architectures** (not gated to amd64): `rustc`, `cargo`, `nmap`, `wireshark`, `wireshark-common`, `tshark`, `tcpdump`, `nano`, `less`, `tree`, `bat`, `ncdu`, `btop`, `fzf`, `vim`, `wget`, `git` — plus the existing `nodejs`, `npm`, `claude`, `tr300`, `nd300`, `sd300`, `speedqx`, `report`, `tailscale`, `torbrowser-launcher`, `firefox-esr`. An in-chroot smoke test loop prints a WARN line for each command that isn't on PATH after install.
+- **Wireshark non-root capture** — imager preseeds `wireshark-common/install-setuid=true` so install completes non-interactively, then adds the `admin` user (live) and the Calamares-created user (installed) to the `wireshark` group.
+- **`shaughvos-update` command surfaced on every terminal login** — added to the "Useful Commands" list in `shaughvos-banner` alongside `autologin on/off`.
+
+### Fixed
+
+- **`shaughvos-software install 218/219/220` was silently broken** — the old raw-tarball URLs (`tr-300-$arch.tar.xz`) no longer exist upstream. Rewrote to use the cargo-dist `*-installer.sh` pattern that the imager already uses. Adds `/var/log/shaughvos-qubetx-install.log`, one-retry on installer curl failures, and `<tool> --version` smoke tests per tool. ID 219 (ND-300) now correctly copies both `nd300` and `speedqx` from `/root/.cargo/bin/` to `/usr/local/bin/`.
+- **Double splash on every login** — `shaughvos-legacy.bash` called `shaughvos-login` which rendered the banner, and then `shaughvos.bash` rendered a separate purple ASCII block. Consolidated: the ASCII art now lives in `shaughvos/func/shaughvos-banner` as `Print_Ascii_Art`, gated by `SHAUGHVOS_BANNER_ASCII_SHOWN`. `shaughvos.bash` only handles the `tr300 --fast` run plus the `report` alias.
+- **`shaughvos.1` SEE ALSO referenced nonexistent pages** — `tr300(1)`, `nd300(1)`, `sd300(1)` didn't exist. Stubs created in this release; SEE ALSO updated to include them plus `speedqx(1)`, `autologin(1)`, `shaughvos-software(1)`, `shaughvos-config(1)`, `shaughvos-init-software(1)`, `pentest-tools(1)`.
+- **`tr300 --fast` auto-run had no escape hatch** — re-ran on `sudo -i`, nested shells, scp sessions, CI contexts. Now respects the hushlogin / NO_AUTORUN / non-TTY gates listed above.
+- **`desktop off` implicitly created a getty autologin drop-in** — this hid the user's autologin preference and coupled two independent concerns. Decoupled: `desktop on/off` only handle target flipping + lightdm enable/disable; autologin is solely controlled by the new `autologin` command.
+
+### Changed
+
+- **Installed systems boot to `multi-user.target` (TTY login) by default.** Previously defaulted to `graphical.target` via squashfs inheritance. The live ISO is unchanged — it still boots to the Xfce desktop for Calamares. The flip happens in Calamares `shellprocess.conf` Phase 4a after `unpackfs`, so it applies only to the installed system.
+- **`shaughvos-update` main flow** — no longer exits early when no shaughvOS code update is available. In interactive or forced mode, it now always runs `Full_System_Refresh` afterwards; only `INPUT=2` (check-only) short-circuits.
+- **`shaughvos-banner` "Useful Commands" list** — added `shaughvos-update` and `autologin on/off`, preserving existing entries.
+
+### Deferred / Not in this release
+
+- **The full ~500-tool IT + security toolset** described in `.meta/IT_Security_Toolkit_Reference.md` (adds Kali apt repo with Priority-50 pinning, pipx/go/cargo/github-release batches, full pentest + admin + rescue + PXE boot-server stack) is planned for v1.19.0 in a dedicated follow-up session using an isolated git worktree. v1.18.0 only ships the core guarantees (`nmap`, `wireshark`, `rustc`/`cargo`, etc.) on every architecture.
 
 ---
 

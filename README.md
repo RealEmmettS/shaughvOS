@@ -54,33 +54,46 @@ On all images:
 
 - **QubeTX 300 Series** — TR-300, ND-300, SD-300 diagnostic tools (see above)
 - **Dropbear SSH** — lightweight SSH server for remote access
-- **Xfce desktop** — with Dracula theme, auto-login on boot
-- **Standard Debian tools** — apt, systemd, networking, and the full Debian package ecosystem
+- **Xfce desktop** — with Dracula theme. Installed systems default to **console login**; run `sudo desktop on` to switch to Xfce (persists across reboot). Live ISOs auto-start Xfce for Calamares.
+- **Tailscale** — pre-installed, `tailscaled` enabled at boot. Not pre-authenticated — run `sudo tailscale up` on first boot to join your tailnet.
+- **Tor Browser** — installed via `torbrowser-launcher`. First click downloads the current-latest Tor Browser from torproject.org with signature verification.
+- **Firefox ESR** — Mozilla Firefox Extended Support Release.
+- **Diagnostic + pentest core**: `nmap`, `wireshark` + `tshark`, `tcpdump`.
+- **Dev stack**: `rustc` + `cargo`, `nodejs` + `npm`, `git`, `curl`, `wget`.
+- **Shell + editor niceties**: `nano`, `vim`, `less`, `tree`, `bat`, `ncdu`, `btop`, `fzf`.
+- **Panel applets**: network (`nm-applet`), volume (PulseAudio), power (xfce4-power-manager).
+- **Standard Debian tools** — apt, systemd, networking, and the full Debian package ecosystem.
 
 On installer ISOs only:
 
-- **Node.js & npm** — JavaScript runtime and package manager
-- **Claude Code** — AI-powered coding assistant CLI
+- **Claude Code** — AI-powered coding assistant CLI. Installed per-user under `/home/admin/.claude/` with a system-wide symlink at `/usr/local/bin/claude`.
 
 ### Boot Experience
 
-- **Plymouth boot splash** with the SHAUGHV logo
-- **ASCII art banner** on every terminal session
-- **TR-300 auto-report** after the splash — instant system overview on login
+- **Plymouth boot splash** with the SHAUGHV logo.
+- **ASCII art banner** once per terminal session (honors `~/.hushlogin` and `SHAUGHVOS_NO_AUTORUN=1`).
+- **TR-300 auto-report** after the splash — instant system overview on login. Skipped on non-TTY sessions (scp, rsync, CI).
 
 ### Quick Commands
 
 | Command | Description |
 |---------|-------------|
-| `desktop on` | Switch to desktop mode |
-| `desktop off` | Switch to console mode |
-| `desktop status` | Show current display mode |
+| `desktop on` | Switch to desktop mode (persists across reboot; `sudo`) |
+| `desktop off` | Switch to console mode (persists across reboot; `sudo`) |
+| `desktop status` | Show current display + target state (no sudo) |
+| `autologin on` | Enable autologin for the current user (`sudo`) |
+| `autologin off` | Disable autologin (`sudo`) |
+| `autologin status` | Show TTY + LightDM autologin state (no sudo) |
+| `sudo shaughvos-update` | Full system refresh: shaughvOS + APT + npm + pipx + QubeTX + Claude |
+| `sudo tailscale up` | Authenticate the pre-enabled tailscaled daemon to your tailnet |
+| `torbrowser-launcher` | Launch (or download on first run) the latest Tor Browser |
 | `tr300` or `report` | Machine report |
-| `tr300 --fast` | Quick machine report |
+| `tr300 --fast` | Quick machine report (runs at login by default) |
 | `nd300` | Network diagnostics (user mode) |
 | `nd300 -t` | Network diagnostics (technician mode) |
 | `speedqx` | Quad-provider speed test |
 | `sd300` | Interactive system monitoring TUI |
+| `pentest-tools` | Browse the pre-installed IT + security toolset manifest |
 
 ## Installation
 

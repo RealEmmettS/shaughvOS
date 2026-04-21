@@ -75,25 +75,45 @@ Pushing to `master` with a bumped `.update/version` is sufficient for OTA — de
 
 ## Bundled Software & Experience
 
-### QubeTX 300 Series (software IDs 218-220, pre-installed on first boot)
-- **TR-300** (`tr300`) — Machine report. Auto-runs on every terminal session via `--fast` flag.
-- **ND-300** (`nd300` + `speedqx`) — Network diagnostics + quad-provider speed test.
+### QubeTX 300 Series (software IDs 218-220, pre-installed on ISO + refreshed by shaughvos-update)
+- **TR-300** (`tr300`) — Machine report. Auto-runs on every terminal session via `--fast` flag (skippable via `~/.hushlogin`, `SHAUGHVOS_NO_AUTORUN=1`, or non-TTY stdout).
+- **ND-300** (`nd300` + `speedqx`) — Network diagnostics + quad-provider speed test. The nd-300 cargo-dist installer bundles both binaries.
 - **SD-300** (`sd300`) — Real-time interactive system diagnostic TUI.
 - Repos: `QubeTX/qube-machine-report`, `QubeTX/qube-network-diagnostics`, `QubeTX/qube-system-diagnostics`
+- Install in imager uses the official `*-installer.sh` from `releases/latest/download/` (cargo-dist). `shaughvos-software` IDs 218/219/220 use the same path. Logs to `/var/log/shaughvos-qubetx-install.log`. `shaughvos-init-software --binaries-only` refreshes these without touching apt.
+
+### Networking, VPN, Browsers (pre-installed on every ISO)
+- **Tailscale** — `tailscaled.service` enabled at build time; NOT pre-authenticated. Users run `sudo tailscale up` on first boot. Apt repo added at `/etc/apt/sources.list.d/shaughvos-tailscale.list` with keyring at `/etc/apt/trusted.gpg.d/shaughvos-tailscale.gpg` — same paths as `shaughvos-software` ID 58 so uninstall cleanup stays correct.
+- **Tor Browser (via `torbrowser-launcher`)** — launcher is installed at build time; first click downloads latest Tor Browser from torproject.org with signature verification. Future updates handled by the launcher itself.
+- **Firefox ESR** — Mozilla Firefox Extended Support Release.
+- **Diagnostic/pentest core (all archs):** `nmap`, `wireshark`, `wireshark-common`, `tshark`, `tcpdump`. Admin user is added to the `wireshark` group (live session + Calamares-created user post-install) for non-root capture. Debconf preseeded (`wireshark-common/install-setuid=true`) so apt install is non-interactive.
+
+### Dev stack + shell niceties (all archs)
+- **Claude Code CLI** — installed as `admin` user (root's `/root/` is mode 0700). Binary at `/home/admin/.claude/bin/claude` with system-wide symlink at `/usr/local/bin/claude`.
+- **Node.js + npm** — from Debian apt (Trixie ships Node 20 LTS).
+- **Rust toolchain** — `rustc` + `cargo` from Debian apt. QubeTX binaries are pre-built via cargo-dist, so the toolchain isn't required to run them, but it's there for development.
+- **Shell + editors**: `nano`, `vim`, `less`, `tree`, `bat` (binary name `batcat` on Debian; alias `bat=batcat`), `ncdu`, `btop`, `fzf`, `curl`, `wget`, `git`.
 
 ### Desktop Environment
-- **Xfce** (software ID 25) — default desktop, auto-login on boot
+- **Xfce** (software ID 25) — default desktop. Live ISO auto-starts it (for Calamares); installed systems default to **`multi-user.target` (console login)**. Run `sudo desktop on` to switch to Xfce (persists across reboot).
 - **Dracula theme** — GTK, terminal, window manager, Papirus-Dark icons
 - **Makira** — system UI sans-serif font (`assets/fonts/Makira/`)
 - **IBM Plex Mono** — terminal/monospace font (`assets/fonts/IBMPlexMono/`)
 - **Desktop wallpaper:** `assets/desktop_background.jpg`
 - **Panel brandmark:** SHAUGHV logo as GTK symbolic icon — auto-recolors with theme (light on dark, dark on light)
-- **`desktop on/off/status`** — toggle between desktop and CLI mode (`rootfs/usr/local/bin/desktop`)
+- **Panel applets**: `nm-applet` (NetworkManager), `pulseaudio` plugin (volume), `xfce4-power-manager` (battery)
+- **Desktop shortcuts** on `/etc/skel/Desktop/` + `/home/admin/Desktop/`: Terminal, Firefox ESR, Tor Browser, shaughvOS Software, shaughvOS Config, Pentest Tools. `X-XFCE-Trusted=true` (Xfce 4.18+) bypasses the first-click dialog.
+
+### Boot defaults & `desktop` / `autologin` commands
+- **Installed system default**: `multi-user.target` (TTY login). Flipped by `assets/calamares/modules/shellprocess.conf` Phase 4a after `unpackfs`. The imager itself still runs `systemctl set-default graphical.target` so the live ISO boots into Calamares — the squashfs propagation is reverted only for installed systems.
+- **`desktop on/off/status`** (`rootfs/usr/local/bin/desktop`) — persistent via `systemctl set-default` + `systemctl enable/disable lightdm`. `desktop off` uses the v1.17.0 crash-safe ordering (getty up → `chvt 1` → `systemctl stop lightdm`). Never touches autologin config; that's `autologin(1)`'s job. `status` and `--help` run without sudo.
+- **`autologin on/off/status`** (`rootfs/usr/local/bin/autologin`) — per-sudoer (via `$SUDO_USER`, falling back to `AUTO_SETUP_AUTOSTART_LOGIN_USER`, then `admin`). Manages both `/etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf` AND `/etc/lightdm/lightdm.conf.d/90-shaughvos-autologin.conf` as a unit. Status runs without sudo.
+- **`sudo shaughvos-update`** is now a one-stop full-system refresh: shaughvOS code pull + APT update/upgrade + `npm update -g` + `pipx upgrade-all` + `shaughvos-init-software --binaries-only`. Interactive mode shows a Y/n confirmation with the full scope; forced (`INPUT=1`) skips the prompt; check-only (`INPUT=2`) is unchanged. Running without sudo prints a custom framed explainer instead of the generic root-required error.
 
 ### Boot & Terminal Experience
 1. **Boot splash:** SHAUGHV logo (white on black) via Plymouth (`rootfs/usr/share/plymouth/themes/shaughvos/`)
-2. **Terminal session:** ASCII art shaughvOS splash + TR-300 machine report (`rootfs/etc/bashrc.d/shaughvos.bash`)
-3. All custom commands have **man pages** (`rootfs/usr/share/man/man1/`) and `--help` flags
+2. **Terminal session:** ASCII art splash (rendered once per session via `shaughvos/func/shaughvos-banner`'s `Print_Ascii_Art`, gated by `SHAUGHVOS_BANNER_ASCII_SHOWN`) + TR-300 machine report from `rootfs/etc/bashrc.d/shaughvos.bash`. The bashrc auto-run honors `~/.hushlogin`, `SHAUGHVOS_NO_AUTORUN=1`, and non-TTY stdout.
+3. **User-facing commands have man pages** (`rootfs/usr/share/man/man1/`): `shaughvos`, `desktop`, `autologin`, `shaughvos-software`, `shaughvos-config`, `shaughvos-init-software`, `tr300`, `nd300`, `sd300`, `speedqx`, `pentest-tools`. Internal scripts (`shaughvos-banner`, `shaughvos-autostart`, etc.) do not ship man pages.
 
 ## Assets
 
@@ -251,4 +271,6 @@ Two mechanisms exist (important for understanding conflicts):
 
 ## Current Version
 
-shaughvOS v1.17.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.18.0 (`.update/version`). Minimum Debian version: 7+.
+
+The full ~500-tool IT + security toolset (see `.meta/IT_Security_Toolkit_Reference.md` once copied into the repo) is deferred from v1.18.0 to v1.19.0 — that phase needs a dedicated session with isolated ISO build testing given the multi-GB install size and build-time duration. v1.18.0 ships the core guarantees (`nmap`, `wireshark`, `rustc`/`cargo`, etc.) on every architecture.
