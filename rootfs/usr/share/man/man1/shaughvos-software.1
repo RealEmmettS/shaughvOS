@@ -1,0 +1,41 @@
+.TH SHAUGHVOS-SOFTWARE 1 "April 2026" "shaughvOS" "shaughvOS Tools"
+.SH NAME
+shaughvos-software \- curated software installer
+.SH SYNOPSIS
+.B shaughvos-software
+.RI [ COMMAND ]
+.RI [ SOFTWARE_ID ]...
+.SH DESCRIPTION
+.B shaughvos-software
+is the interactive and command-line installer for the roughly 400
+software options curated for shaughvOS. Each option is identified
+by a numeric ID.
+.PP
+The installer handles dependency resolution, configuration, and
+cleanup. Examples:
+.PP
+.RS
+.B shaughvos-software install 218
+\- install QubeTX TR-300
+.br
+.B shaughvos-software reinstall 58
+\- reinstall Tailscale
+.br
+.B shaughvos-software uninstall 25
+\- remove the Xfce desktop
+.RE
+.SH OPTIONS
+See
+.B shaughvos-software \-\-help
+for the full list of commands and flags.
+.SH SEE ALSO
+.BR shaughvos (1),
+.BR shaughvos-config (1),
+.BR shaughvos-update (1),
+.BR shaughvos-init-software (1),
+.BR desktop (1),
+.BR autologin (1)
+.SH AUTHOR
+Emmett Shaughnessy
+.SH HOMEPAGE
+https://github.com/RealEmmettS/shaughvOS

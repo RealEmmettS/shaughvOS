@@ -1,0 +1,34 @@
+.TH ND300 1 "April 2026" "shaughvOS" "QubeTX 300 Series"
+.SH NAME
+nd300 \- QubeTX network diagnostics (ND-300)
+.SH SYNOPSIS
+.B nd300
+.RI [ OPTIONS ]
+.SH DESCRIPTION
+.B nd300
+is the QubeTX ND-300 Network Diagnostic. In user mode it runs
+eight core network checks covering connectivity, DNS, and latency.
+.PP
+With
+.B \-t
+(technician mode),
+.B nd300
+expands to 17 deep diagnostics including DNS resolution paths,
+gateway reachability, packet loss, MTU probing, and bufferbloat.
+The ND-300 package ships alongside
+.BR speedqx (1),
+a quad-provider speed test.
+.SH OPTIONS
+See
+.B nd300 \-\-help
+for the full list of flags and modes.
+.SH SEE ALSO
+.BR shaughvos (1),
+.BR tr300 (1),
+.BR sd300 (1),
+.BR speedqx (1)
+.SH AUTHOR
+QubeTX \- a department of ES Development LLC.
+Bundled with shaughvOS.
+.SH HOMEPAGE
+https://github.com/QubeTX/qube-network-diagnostics

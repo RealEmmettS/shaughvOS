@@ -2,7 +2,7 @@
 # shellcheck disable=SC2034
 # Available shaughvOS version
 G_REMOTE_VERSION_CORE=1
-G_REMOTE_VERSION_SUB=17
+G_REMOTE_VERSION_SUB=18
 G_REMOTE_VERSION_RC=0
 # Minimum shaughvOS version to allow update
 G_MIN_VERSION_CORE=1
