@@ -102,7 +102,7 @@ Pushing to `master` with a bumped `.update/version` is sufficient for OTA — de
 - **Desktop wallpaper:** `assets/desktop_background.jpg`
 - **Panel brandmark:** SHAUGHV logo as GTK symbolic icon — auto-recolors with theme (light on dark, dark on light)
 - **Panel applets**: `nm-applet` (NetworkManager), `pulseaudio` plugin (volume), `xfce4-power-manager` (battery)
-- **Desktop shortcuts** on `/etc/skel/Desktop/` + `/home/admin/Desktop/`: Terminal, Firefox ESR, Tor Browser, shaughvOS Software, shaughvOS Config, Pentest Tools. `X-XFCE-Trusted=true` (Xfce 4.18+) bypasses the first-click dialog.
+- **Desktop shortcuts** on `/etc/skel/Desktop/` + `/home/admin/Desktop/`: Terminal, Firefox ESR, Tor Browser, shaughvOS Software, shaughvOS Config. `X-XFCE-Trusted=true` (Xfce 4.18+) bypasses the first-click dialog. Software/Config use `xfce4-terminal --hold -x sudo /boot/shaughvos/<tool>`; the imager also creates `/usr/local/bin/` symlinks for every user-facing shaughvOS CLI so sudo's secure_path resolves them.
 
 ### Boot defaults & `desktop` / `autologin` commands
 - **Installed system default**: `multi-user.target` (TTY login). Flipped by `assets/calamares/modules/shellprocess.conf` Phase 4a after `unpackfs`. The imager itself still runs `systemctl set-default graphical.target` so the live ISO boots into Calamares — the squashfs propagation is reverted only for installed systems.
@@ -113,7 +113,7 @@ Pushing to `master` with a bumped `.update/version` is sufficient for OTA — de
 ### Boot & Terminal Experience
 1. **Boot splash:** SHAUGHV logo (white on black) via Plymouth (`rootfs/usr/share/plymouth/themes/shaughvos/`)
 2. **Terminal session:** ASCII art splash (rendered once per session via `shaughvos/func/shaughvos-banner`'s `Print_Ascii_Art`, gated by `SHAUGHVOS_BANNER_ASCII_SHOWN`) + TR-300 machine report from `rootfs/etc/bashrc.d/shaughvos.bash`. The bashrc auto-run honors `~/.hushlogin`, `SHAUGHVOS_NO_AUTORUN=1`, and non-TTY stdout.
-3. **User-facing commands have man pages** (`rootfs/usr/share/man/man1/`): `shaughvos`, `desktop`, `autologin`, `shaughvos-software`, `shaughvos-config`, `shaughvos-init-software`, `tr300`, `nd300`, `sd300`, `speedqx`, `pentest-tools`. Internal scripts (`shaughvos-banner`, `shaughvos-autostart`, etc.) do not ship man pages.
+3. **User-facing commands have man pages** (`rootfs/usr/share/man/man1/`): `shaughvos`, `desktop`, `autologin`, `shaughvos-software`, `shaughvos-config`, `shaughvos-init-software`, `tr300`, `nd300`, `sd300`, `speedqx`. Internal scripts (`shaughvos-banner`, `shaughvos-autostart`, etc.) do not ship man pages.
 
 ## Assets
 
@@ -245,10 +245,13 @@ The live session differs fundamentally from the base image's boot flow. The base
 **Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (comprehensive post-install cleanup — see below).
 
 **Calamares shellprocess.conf cleanup sequence** (runs inside target chroot, BEFORE bootloader module):
-1. Remove live-session files: sudoers, autologin, polkit rule, launcher script, Calamares .desktop files, `/etc/calamares/`
+1. Remove live-session files: sudoers, autologin, polkit rule, launcher script, Calamares `.desktop` files (including the bare `calamares.desktop` shipped by the package itself), `/etc/calamares/`, live-check service. Also sweeps `/home`, `/root`, `/etc/skel` Desktop dirs for any `calamares*.desktop` residue (v1.19.0+).
+1b. `apt-mark manual` every imager-installed package — desktop stack, browsers, dev stack, base tools, and the X11 video/input drivers (`xserver-xorg-video-fbdev`, `xserver-xorg-video-vesa`, `xserver-xorg-input-libinput`) plus `xz-utils` + `xserver-xorg`. Any imager package missing from this list becomes autoremovable after live-boot is purged and surfaces the "automatically installed and no longer required" warning on first boot.
+1d. Repair partial dpkg/apt state: `dpkg --configure -a` + `apt-get -f install -y` (v1.19.0+) — catches half-configured packages from the squashfs snapshot before Phase 2's autoremove runs.
 2. Purge packages: `live-boot`, `calamares`, `calamares-settings-debian` + autoremove
 3. Security: delete SSH host keys + `ssh-keygen -A` (regenerate unique keys per install)
 4. Remove stale `.check_user_passwords` flag (prevents false password-change prompts)
+4a. Flip installed system to CLI-first: `systemctl set-default multi-user.target` + `systemctl disable lightdm.service` + `rm /etc/systemd/system/display-manager.service` and the `graphical.target.wants/lightdm.service` symlink. Without the lightdm-disable step (added v1.19.0), the display-manager symlink that survives `unpackfs` re-starts Xfce on first boot even though the default target is multi-user. Write getty autologin drop-in for the Calamares-created user + matching LightDM drop-in (picks up automatically when user runs `desktop on`).
 5. Rebuild initramfs (without live-boot hooks)
 6. NOTE: Does NOT run `update-grub` — the `bootloader` module runs after shellprocess and handles GRUB itself
 
@@ -357,13 +360,22 @@ After running in chroot, copy binaries from `~/.cargo/bin/` to `/usr/local/bin/`
 ### shaughvos-init-software Recovery Command
 New command at `/usr/local/bin/shaughvos-init-software` that (re)installs all bundled software: Node.js, npm, Claude Code CLI, QubeTX TR-300/ND-300/SD-300/SpeedQX, Firefox ESR. Run `sudo shaughvos-init-software` anytime as a safety net if software failed during ISO build.
 
+### shaughvOS CLI Tools Are Bash Aliases, Not Executables (v1.19.0 fix)
+`shaughvos-config`, `shaughvos-software`, `shaughvos-update`, etc. are defined ONLY as aliases in `rootfs/etc/bashrc.d/shaughvos-legacy.bash`. They work interactively but fail for `sudo <tool>` because sudo drops aliases AND `/boot/shaughvos/` is not in sudo's `secure_path`. The imager now creates `/usr/local/bin/` symlinks to `/boot/shaughvos/<tool>` for every user-facing CLI so non-interactive and sudo invocations resolve. When adding a new user-facing shaughvOS CLI, update BOTH the alias block AND the imager's symlink loop.
+
+### Desktop Shortcut Exec Pattern (v1.19.0 fix)
+Xfdesktop shortcuts that wrap CLI tools must use `Exec=xfce4-terminal --hold -x sudo /boot/shaughvos/<tool>`:
+- `--hold` keeps the terminal open on failure so the user sees the error instead of a flashing window closing instantly.
+- `-x` (modern xfce4-terminal syntax — the old `-e` with a quoted command string is deprecated) + space-separated argv avoids shell-quoting bugs.
+- Absolute `/boot/shaughvos/` paths work even if `/usr/local/bin/` symlinks are somehow missing.
+
+### CLI-First Requires More Than set-default (v1.19.0 fix)
+`systemctl set-default multi-user.target` alone is NOT sufficient to keep the installed system off the GUI — the imager enables lightdm in the squashfs AND creates `/etc/systemd/system/display-manager.service`. Both survive `unpackfs`. Phase 4a of `shellprocess.conf` must ALSO run `systemctl disable lightdm.service` and remove `display-manager.service` + `graphical.target.wants/lightdm.service`, matching `desktop off`. `desktop on` re-enables both.
+
+### pentest-tools Was Removed (v1.19.0)
+The `pentest-tools` command was referenced in a man page, CHANGELOG, README, imager desktop shortcut, and docs — but the script was never written. Every click on the Pentest Tools desktop shortcut produced a flashing command-not-found terminal. All references have been removed. Use `sudo shaughvos-software` to browse and install the IT + security toolset instead.
+
 ## Current Version
 
-shaughvOS v1.18.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.19.0 (`.update/version`). Minimum Debian version: 7+.
 
-**Next release (v1.19.0) is planned — full pentesting/IT toolset pre-install.** v1.18.0 shipped the core guarantees (`nmap`, `wireshark`, `rustc`/`cargo`, etc.) on every architecture. The full ~500-tool toolset is scoped but deferred.
-
-When resuming v1.19.0 work, start here:
-- **Spec**: `.meta/IT_Security_Toolkit_Reference.md` (28 categories, ~400-tool user manifest)
-- **Resume plan**: `.meta/v1.19.0-pentest-toolset-resume-plan.md` (standalone implementation brief — decisions, 39 ordered sub-tasks, risks, release workflow)
-- **Per-tool install method table**: Appendix A of `C:\Users\hey\.claude\plans\i-want-to-accomplish-keen-newt.md`

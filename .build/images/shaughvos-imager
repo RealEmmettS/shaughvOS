@@ -1138,8 +1138,11 @@ TERMINALRC
 			chroot "$live_root" gtk-update-icon-cache -f -t /usr/share/icons/Papirus 2>/dev/null || true
 
 			# --- Desktop shortcuts: /etc/skel/ (new users inherit) + /home/admin/ (live session preview) ---
-			# Six shortcuts surfaced on first login: Terminal, Firefox ESR, Tor Browser, shaughvOS Software, shaughvOS Config, Pentest Tools.
+			# Five shortcuts surfaced on first login: Terminal, Firefox ESR, Tor Browser, shaughvOS Software, shaughvOS Config.
 			# X-XFCE-Trusted=true (Xfce 4.18+) bypasses the "Allow this launcher" first-click dialog.
+			# Exec= uses --hold so failures stay visible instead of flashing the terminal closed,
+			# and absolute /boot/shaughvos/ paths so the command resolves whether or not
+			# /usr/local/bin/ symlinks (installed separately) are present.
 			for skel_dir in "$live_root/etc/skel/Desktop" "$live_root/home/admin/Desktop"; do
 				G_EXEC mkdir -p "$skel_dir"
 
@@ -1184,7 +1187,7 @@ DESKTOPTOR
 Type=Application
 Name=shaughvOS Software
 Comment=Install and manage bundled shaughvOS software
-Exec=xfce4-terminal -e "sudo shaughvos-software"
+Exec=xfce4-terminal --hold -x sudo /boot/shaughvos/shaughvos-software
 Icon=system-software-install
 Terminal=false
 Categories=System;
@@ -1196,30 +1199,30 @@ DESKTOPSW
 Type=Application
 Name=shaughvOS Config
 Comment=Configure shaughvOS system settings
-Exec=xfce4-terminal -e "sudo shaughvos-config"
+Exec=xfce4-terminal --hold -x sudo /boot/shaughvos/shaughvos-config
 Icon=preferences-system
 Terminal=false
 Categories=System;Settings;
 X-XFCE-Trusted=true
 DESKTOPCF
 
-				cat > "$skel_dir/Pentest-Tools.desktop" << 'DESKTOPPT'
-[Desktop Entry]
-Type=Application
-Name=Pentest Tools
-Comment=Browse the pre-installed shaughvOS IT + security toolset manifest
-Exec=xfce4-terminal -e "pentest-tools"
-Icon=utilities-system-monitor
-Terminal=false
-Categories=System;Security;
-X-XFCE-Trusted=true
-DESKTOPPT
-
 				chmod 0755 "$skel_dir"/*.desktop
 			done
 			# Admin's Desktop dir belongs to admin so first boot doesn't surface it as root-owned.
 			chroot "$live_root" chown -R admin:admin /home/admin/Desktop 2>/dev/null || true
 			unset -v skel_dir
+
+			# --- /usr/local/bin/ symlinks: make the shaughvOS CLI tools reachable via sudo's secure_path ---
+			# The bashrc alias block (rootfs/etc/bashrc.d/shaughvos-legacy.bash) only fires in
+			# interactive shells. sudo drops aliases AND uses its own secure_path (which does
+			# NOT include /boot/shaughvos/). Without these symlinks, `sudo shaughvos-config`
+			# fails with "command not found" — breaking the Config/Software desktop shortcuts
+			# and every non-interactive invocation.
+			G_SHAUGHVOS-NOTIFY 2 'Wiring shaughvOS CLI tools into /usr/local/bin/'
+			for cmd in shaughvos-config shaughvos-software shaughvos-update shaughvos-services shaughvos-launcher shaughvos-backup shaughvos-bugreport shaughvos-cleaner shaughvos-drive_manager shaughvos-explorer; do
+				chroot "$live_root" ln -sf "/boot/shaughvos/$cmd" "/usr/local/bin/$cmd"
+			done
+			unset -v cmd
 
 			# Remove per-user xfce4 configs — they override /etc/xdg/ system defaults.
 			# The base image build may have run Xfce, creating configs with compositor enabled.

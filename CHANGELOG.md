@@ -11,6 +11,21 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.19.0] — 2026-04-22
+
+### Fixed
+
+- **Installed system still booted into the Xfce GUI despite v1.18.0's CLI-first intent.** `shellprocess.conf` Phase 4a set `multi-user.target` as the default, but the squashfs — which the imager built with `systemctl enable lightdm` (creating `/etc/systemd/system/graphical.target.wants/lightdm.service`) and an explicit `/etc/systemd/system/display-manager.service` symlink — carried both artifacts through `unpackfs` unchanged. Either one is enough to re-start Xfce whenever graphical.target is reached. Phase 4a now mirrors `desktop off` exactly: `systemctl disable lightdm.service` + `rm -f /etc/systemd/system/display-manager.service /etc/systemd/system/graphical.target.wants/lightdm.service`. Running `sudo desktop on` re-enables both.
+- **`shaughvOS Config` and `shaughvOS Software` desktop shortcuts did nothing.** The `Exec=xfce4-terminal -e "sudo shaughvos-config"` pattern failed because `shaughvos-config` / `shaughvos-software` are defined **only** as bash aliases (`rootfs/etc/bashrc.d/shaughvos-legacy.bash`). Sudo does not inherit aliases and `/boot/shaughvos/` is not in sudo's `secure_path`, so the subprocess exited with `command not found` and the terminal — without `--hold` — closed instantly, making it look like a broken shortcut. Fix: imager now (a) writes `Exec=xfce4-terminal --hold -x sudo /boot/shaughvos/<tool>` with absolute paths, and (b) creates `/usr/local/bin/` symlinks for every user-facing shaughvOS CLI (`shaughvos-config`, `shaughvos-software`, `shaughvos-update`, `shaughvos-services`, `shaughvos-launcher`, `shaughvos-backup`, `shaughvos-bugreport`, `shaughvos-cleaner`, `shaughvos-drive_manager`, `shaughvos-explorer`) so `sudo <tool>` resolves from any shell.
+- **First-boot login surfaced an apt "packages were automatically installed but are no longer required" warning** that users had to manually resolve. Root cause: four packages the imager installs in Step 5b were NOT in shellprocess's `apt-mark manual` list, so when Phase 2 purged live-boot/calamares and ran autoremove they lost their last reverse-dep and got flagged. Added `xz-utils`, `xserver-xorg`, `xserver-xorg-video-fbdev`, `xserver-xorg-video-vesa`, `xserver-xorg-input-libinput` to the apt-mark list. Also added a new **Phase 1d** that runs `dpkg --configure -a` + `apt-get -f install -y` BEFORE the purge, catching any residual half-configured packages from the squashfs snapshot.
+- **Calamares icon leftovers on the installed system.** Phase 1 cleanup was missing two angles: (a) the `calamares` package ships its own `/usr/share/applications/calamares.desktop` (different filename from the `calamares-installer.desktop` we owned), and (b) there was no defensive sweep of user `Desktop/` directories. Both are now handled — Phase 1 also `find`s `/home`, `/root`, `/etc/skel` for any `calamares*.desktop` residue and deletes it.
+
+### Removed
+
+- **Pentest Tools desktop shortcut, man page, and documentation references.** `pentest-tools` was referenced in the imager's desktop-shortcut block, in `rootfs/usr/share/man/man1/pentest-tools.1`, and in the SEE ALSO of `shaughvos.1` — but the script itself was never written and `/etc/shaughvos/tools.list` was never populated. Every click produced a command-not-found flash. The whole feature is removed until it is actually implemented. `sudo shaughvos-software` remains the way to browse and install the IT + security toolset.
+
+---
+
 ## [1.18.0] — 2026-04-21
 
 ### Added
@@ -50,10 +65,6 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Installed systems boot to `multi-user.target` (TTY login) by default.** Previously defaulted to `graphical.target` via squashfs inheritance. The live ISO is unchanged — it still boots to the Xfce desktop for Calamares. The flip happens in Calamares `shellprocess.conf` Phase 4a after `unpackfs`, so it applies only to the installed system.
 - **`shaughvos-update` main flow** — no longer exits early when no shaughvOS code update is available. In interactive or forced mode, it now always runs `Full_System_Refresh` afterwards; only `INPUT=2` (check-only) short-circuits.
 - **`shaughvos-banner` "Useful Commands" list** — added `shaughvos-update` and `autologin on/off`, preserving existing entries.
-
-### Deferred / Not in this release
-
-- **The full ~500-tool IT + security toolset** described in `.meta/IT_Security_Toolkit_Reference.md` (adds Kali apt repo with Priority-50 pinning, pipx/go/cargo/github-release batches, full pentest + admin + rescue + PXE boot-server stack) is planned for v1.19.0 in a dedicated follow-up session using an isolated git worktree. v1.18.0 only ships the core guarantees (`nmap`, `wireshark`, `rustc`/`cargo`, etc.) on every architecture.
 
 ---
 

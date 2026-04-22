@@ -93,7 +93,6 @@ On installer ISOs only:
 | `nd300 -t` | Network diagnostics (technician mode) |
 | `speedqx` | Quad-provider speed test |
 | `sd300` | Interactive system monitoring TUI |
-| `pentest-tools` | Browse the pre-installed IT + security toolset manifest |
 
 ## Installation
 
@@ -120,7 +119,7 @@ On installer ISOs only:
 2. Download and install [Balena Etcher](https://etcher.balena.io/).
 3. Open Balena Etcher, select the `.img.xz` file (no need to decompress it), select your microSD card as the target, and click **Flash**.
 4. Insert the microSD card into your Pi and power it on.
-5. shaughvOS will run first-boot setup automatically — this takes a few minutes. When it finishes, the Xfce desktop appears with autologin.
+5. shaughvOS will run first-boot setup automatically — this takes a few minutes. When it finishes, you land at a TTY login prompt (console mode). Log in as `admin` and run `sudo desktop on` to switch to the Xfce desktop (persists across reboot). This CLI-first default is deliberate for edge devices that may not have a monitor attached.
 
 ### Native PC / Laptop / Intel Mac
 
@@ -131,7 +130,7 @@ On installer ISOs only:
 3. Boot your computer from the USB drive:
    - **PC:** Press `F12`, `F2`, `Esc`, or `Del` during startup to open the boot menu (varies by manufacturer), then select the USB drive.
    - **Intel Mac:** Hold the `Option` key at startup, then select the USB drive from the Startup Manager.
-4. shaughvOS runs first-boot setup on the first boot, then starts the Xfce desktop.
+4. shaughvOS runs first-boot setup, then drops you at a TTY login prompt (console mode). Log in as `admin` and run `sudo desktop on` to start Xfce.
 
 **Option B: Install to internal drive**
 
