@@ -361,4 +361,9 @@ New command at `/usr/local/bin/shaughvos-init-software` that (re)installs all bu
 
 shaughvOS v1.18.0 (`.update/version`). Minimum Debian version: 7+.
 
-The full ~500-tool IT + security toolset (see `.meta/IT_Security_Toolkit_Reference.md` once copied into the repo) is deferred from v1.18.0 to v1.19.0 — that phase needs a dedicated session with isolated ISO build testing given the multi-GB install size and build-time duration. v1.18.0 ships the core guarantees (`nmap`, `wireshark`, `rustc`/`cargo`, etc.) on every architecture.
+**Next release (v1.19.0) is planned — full pentesting/IT toolset pre-install.** v1.18.0 shipped the core guarantees (`nmap`, `wireshark`, `rustc`/`cargo`, etc.) on every architecture. The full ~500-tool toolset is scoped but deferred.
+
+When resuming v1.19.0 work, start here:
+- **Spec**: `.meta/IT_Security_Toolkit_Reference.md` (28 categories, ~400-tool user manifest)
+- **Resume plan**: `.meta/v1.19.0-pentest-toolset-resume-plan.md` (standalone implementation brief — decisions, 39 ordered sub-tasks, risks, release workflow)
+- **Per-tool install method table**: Appendix A of `C:\Users\hey\.claude\plans\i-want-to-accomplish-keen-newt.md`
