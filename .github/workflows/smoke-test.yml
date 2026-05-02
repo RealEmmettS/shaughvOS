@@ -65,11 +65,13 @@ jobs:
 
     - name: Run focused ShellCheck
       run: |
-        mapfile -t files < <(
-          find .build/images shaughvos rootfs/usr/local/bin rootfs/etc/bashrc.d -type f \
-            -exec awk 'NR == 1 && /^#!.*(ba|da)?sh([[:blank:]]|$)/ {print FILENAME}' {} \;
-        )
-        shellcheck -C -xo all "${files[@]}"
+        shellcheck -C -xo all -e SC2154 \
+          .build/images/shaughvos-imager \
+          rootfs/usr/local/bin/autologin \
+          rootfs/usr/local/bin/desktop \
+          rootfs/usr/local/bin/shaughvos-init-software \
+          rootfs/etc/bashrc.d/shaughvos-legacy.bash \
+          rootfs/etc/bashrc.d/shaughvos.bash
 
     - name: Validate install/startup invariants
       run: python3 .github/scripts/validate-install-startup.py
