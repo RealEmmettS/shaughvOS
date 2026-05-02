@@ -385,4 +385,4 @@ The `pentest-tools` command was referenced in a man page, CHANGELOG, README, ima
 
 ## Current Version
 
-shaughvOS v1.19.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.20.0 (`.update/version`). Minimum Debian version: 7+.

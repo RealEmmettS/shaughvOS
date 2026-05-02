@@ -11,6 +11,25 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [1.20.0] — 2026-05-02
+
+### Fixed
+
+- **`desktop on` no longer mutates autologin-owned drop-ins.** Desktop mode now owns only systemd target switching, LightDM enable/disable, runtime VT switching, and `.shaughvos-autostart_index`. Getty and LightDM autologin files stay under the `autologin` command so `autologin on -> desktop on -> desktop off` preserves the selected user.
+- **Required live ISO setup steps now fail the build when missing.** The imager now treats initramfs rebuilds, Plymouth theme registration, LightDM enablement, and live-mode guard enablement as required steps instead of swallowing failures with `|| true`. Optional wallpaper variants still remain best-effort, but now emit explicit warnings.
+- **Additional desktop/session packages are installed and protected from autoremove.** The imager now installs and marks manual the Xorg/session packages needed by the live Calamares path and installed desktop mode, including `xserver-xorg`, `xserver-xorg-core`, fallback video/input drivers, D-Bus/X11 support, and `libpam-systemd`.
+
+### Added
+
+- **Static install/startup invariant validation.** New `.github/scripts/validate-install-startup.py` checks Calamares module wiring, imager download-loop coverage, package protection drift, `desktop`/`autologin` ownership boundaries, CLI alias symlink coverage, removed-feature references, and required hard-fail installer steps.
+- **Expanded smoke coverage for high-risk install/startup paths.** `smoke-test.yml` now runs on `dev`, `beta`, and `master` pushes that touch image-building, Calamares, workflow, update, rootfs, or shaughvOS script paths. It parses the broader shell surface, runs focused ShellCheck on install/startup files, and executes the new invariant validator.
+
+### Changed
+
+- **Release and agent documentation now match the current CI-driven release flow.** `DEPLOYMENT.md`, `AGENTS.md`, `CLAUDE.md`, and `README.md` now emphasize that CI creates GitHub Releases from pushed `v*` tags, live-boot/Calamares produces x86 ISOs, installed systems are CLI-first by default, and specific tags should be pushed instead of `git push --tags`.
+
+---
+
 ## [1.19.0] — 2026-04-22
 
 ### Fixed

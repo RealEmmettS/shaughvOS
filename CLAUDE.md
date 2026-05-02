@@ -285,4 +285,4 @@ Two mechanisms exist (important for understanding conflicts):
 
 ## Current Version
 
-shaughvOS v1.19.0 (`.update/version`). Minimum Debian version: 7+.
+shaughvOS v1.20.0 (`.update/version`). Minimum Debian version: 7+.
