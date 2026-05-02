@@ -211,13 +211,17 @@ Three tools in `.build/images/`:
 - **`shaughvos-imager`** — Shrinks and compresses images for release (`.img.xz`). For x86 ISOs, creates a live-boot ISO with squashfs + Calamares installer (replaces the old Clonezilla approach).
 - **`shaughvos-installer`** — Converts a running Debian 12+ system into shaughvOS
 
+For x86 image builds, keep the temporary raw image at **6 GiB** or larger. The v1.18.0 base outgrew the old 4 GiB temp image and failed during CI image generation.
+
 ### ISO Installer Architecture
 
 The installer ISO boots a full shaughvOS live environment using Debian's `live-boot` system. The root filesystem is compressed as squashfs. **Calamares** (industry-standard installer used by 20+ Linux distros) handles disk partitioning, filesystem creation, squashfs extraction, and GRUB installation — dynamically configured for the target hardware.
 
 Configuration: `assets/calamares/` contains settings.conf, branding, and module configs.
 
-Pre-installed software: Node.js, npm, Codex CLI.
+Pre-installed software: Node.js, npm, Claude Code CLI, full Xfce desktop, QubeTX 300 Series (TR-300, ND-300, SD-300).
+
+**CRITICAL: The base image does NOT include Xfce.** The build pipeline (`shaughvos-build` -> `shaughvos-installer`) creates a minimal server image. Xfce installation is deferred to first boot via `AUTO_SETUP_INSTALL_SOFTWARE_ID=25` in `shaughvos.txt`. But the imager sets `.install_stage=2`, suppressing first-boot software install. Therefore the imager MUST explicitly install the Xfce desktop stack (`xfce4 xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xfce4-terminal xinit dbus-user-session dbus-x11 x11-xserver-utils`) in its own `apt-get install` step. Without this, the ISO has LightDM pointing at a desktop that doesn't exist.
 
 #### Live ISO Boot Chain (critical — many non-obvious requirements)
 
@@ -241,8 +245,12 @@ The live session differs fundamentally from the base image's boot flow. The base
 14. System-wide fontconfig defaults — Makira for sans-serif/serif, IBM Plex Mono for monospace (`/etc/fonts/local.conf`)
 15. `xserver-xorg-input-libinput` explicitly installed — safety measure for input drivers
 16. `apt-get clean` + `autoremove` + list cleanup before squashfs creation — reduces ISO size
+17. `plymouth` + `plymouth-themes` installed, shaughvOS theme registered, initramfs rebuilt to include it
+18. xfwm4 compositor explicitly disabled (`use_compositing=false`) — crashes on VirtualBox with nomodeset
+19. `shaughvos-live-check` script + service — suppresses Calamares autostart when `shaughvos.live=1` in kernel cmdline
+20. `apt-mark manual plymouth plymouth-themes` before autoremove — prevents silent removal
 
-**Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (comprehensive post-install cleanup — see below).
+**Calamares module configs** (`assets/calamares/modules/`): `unpackfs.conf`, `bootloader.conf`, `partition.conf`, `users.conf`, `welcome.conf`, `finished.conf`, `services-systemd.conf` (re-enables preboot/postboot/ramlog), `shellprocess.conf` (comprehensive post-install cleanup — see below), `displaymanager.conf` (configures LightDM + Xfce session for installed system).
 
 **Calamares shellprocess.conf cleanup sequence** (runs inside target chroot, BEFORE bootloader module):
 1. Remove live-session files: sudoers, autologin, polkit rule, launcher script, Calamares `.desktop` files (including the bare `calamares.desktop` shipped by the package itself), `/etc/calamares/`, live-check service. Also sweeps `/home`, `/root`, `/etc/skel` Desktop dirs for any `calamares*.desktop` residue (v1.19.0+).
@@ -324,7 +332,7 @@ Files in `rootfs/` are copied to `/` by the installer via `cp -a "$dir/rootfs/."
 ### Live ISO vs Installed System Boot — Two Different Worlds
 - **Live ISO (Install):** lightdm + admin autologin → Xfce → Calamares autostart. Getty autologin REMOVED.
 - **Live ISO (Try):** lightdm + admin autologin → Xfce desktop only (Calamares autostart suppressed by `shaughvos-live-check`).
-- **Installed system:** lightdm (graphical.target) → greeter → user login → Xfce session. Uses `50-shaughvos.conf` for session config, NOT `live-autologin.conf`.
+- **Installed system:** defaults to `multi-user.target` (TTY login). After `sudo desktop on`, LightDM (graphical.target) → greeter/autologin → Xfce session. Uses `50-shaughvos.conf` for session config, NOT `live-autologin.conf`.
 - **Base image (non-ISO):** root getty autologin → `exec startx`. No display manager. Completely different path.
 
 ### Calamares displaymanager.conf Must Be in Download Loop
@@ -361,7 +369,7 @@ After running in chroot, copy binaries from `~/.cargo/bin/` to `/usr/local/bin/`
 New command at `/usr/local/bin/shaughvos-init-software` that (re)installs all bundled software: Node.js, npm, Claude Code CLI, QubeTX TR-300/ND-300/SD-300/SpeedQX, Firefox ESR. Run `sudo shaughvos-init-software` anytime as a safety net if software failed during ISO build.
 
 ### shaughvOS CLI Tools Are Bash Aliases, Not Executables (v1.19.0 fix)
-`shaughvos-config`, `shaughvos-software`, `shaughvos-update`, etc. are defined ONLY as aliases in `rootfs/etc/bashrc.d/shaughvos-legacy.bash`. They work interactively but fail for `sudo <tool>` because sudo drops aliases AND `/boot/shaughvos/` is not in sudo's `secure_path`. The imager now creates `/usr/local/bin/` symlinks to `/boot/shaughvos/<tool>` for every user-facing CLI so non-interactive and sudo invocations resolve. When adding a new user-facing shaughvOS CLI, update BOTH the alias block AND the imager's symlink loop.
+`shaughvos-config`, `shaughvos-software`, `shaughvos-update`, etc. are defined ONLY as aliases in `rootfs/etc/bashrc.d/shaughvos-legacy.bash`. They work interactively but fail for `sudo <tool>` because sudo drops aliases AND `/boot/shaughvos/` is not in sudo's `secure_path`. The imager now creates `/usr/local/bin/` symlinks to `/boot/shaughvos/<tool>` for every direct shaughvOS CLI alias so non-interactive and sudo invocations resolve. `.github/scripts/validate-install-startup.py` checks the alias block against the imager symlink loop; when adding a new user-facing shaughvOS CLI, update BOTH.
 
 ### Desktop Shortcut Exec Pattern (v1.19.0 fix)
 Xfdesktop shortcuts that wrap CLI tools must use `Exec=xfce4-terminal --hold -x sudo /boot/shaughvos/<tool>`:
@@ -378,4 +386,3 @@ The `pentest-tools` command was referenced in a man page, CHANGELOG, README, ima
 ## Current Version
 
 shaughvOS v1.19.0 (`.update/version`). Minimum Debian version: 7+.
-

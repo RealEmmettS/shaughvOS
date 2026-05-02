@@ -29,6 +29,11 @@ All work happens on `dev`. When ready for testing, merge to `beta`. When stable,
 git checkout dev
 git status
 
+# Safety: this repo must not have a DietPi upstream remote
+git remote -v
+gh repo view --json nameWithOwner --jq .nameWithOwner
+# Must print: RealEmmettS/shaughvOS
+
 # Run ShellCheck locally (mirrors CI)
 shellcheck -C -xo all shaughvos/shaughvos-*
 shellcheck -C -xo all shaughvos/func/shaughvos-*
@@ -104,33 +109,24 @@ git tag -a v1.1.0 -m "shaughvOS v1.1.0"
 git push origin v1.1.0
 ```
 
-The tag push triggers the automated image build workflow (when configured).
+Push only the specific new tag. Never use `git push --tags`; old DietPi-era tags can trigger unwanted CI work.
 
-### 8. Create GitHub Release
+### 8. Let CI create the GitHub Release
+
+Do not run `gh release create`. The `release-images.yml` workflow creates the Release automatically on `v*` tag pushes and attaches `.img.xz`, `.iso`, and checksum assets.
+
+Monitor the workflow:
 
 ```bash
-gh release create v1.1.0 \
-  --title "shaughvOS v1.1.0" \
-  --notes-file - << 'EOF'
-## shaughvOS v1.1.0
-
-### What's New
-(paste from CHANGELOG.md)
-
-### Downloads
-Images will be attached when the build workflow completes.
-
-### Installation
-1. Download the image for your platform
-2. Flash with Balena Etcher, Rufus, or `dd`
-3. Boot and enjoy shaughvOS
-
-### Updating
-Existing devices: run `shaughvos-update` or reboot (auto-checks on boot).
-EOF
+gh run list --workflow=release-images.yml --limit 1
+gh run view <run-id> --log-failed
 ```
 
-Once the image build workflow completes, it automatically attaches `.img.xz` and `.iso` files to the release.
+Verify the latest Release after the build completes:
+
+```bash
+gh api repos/RealEmmettS/shaughvOS/releases --jq '.[0] | "\(.tag_name): \(.assets | length) assets"'
+```
 
 ---
 
@@ -147,7 +143,7 @@ Once the image build workflow completes, it automatically attaches `.img.xz` and
 
 | Workflow | File | What it does |
 |----------|------|-------------|
-| Release Images | `release-images.yml` | Builds `.img.xz` for all targets + Clonezilla `.iso` installers for x86 targets |
+| Release Images | `release-images.yml` | Builds `.img.xz` for all targets + live-boot/Calamares `.iso` installers for x86 targets |
 
 ### Manual dispatch
 
@@ -197,8 +193,8 @@ Live patches apply on next boot without a full update cycle.
 |--------|-------|------|--------|
 | Raspberry Pi 2/3/4 | `--model 4` | aarch64 | `.img.xz` for SD card |
 | Raspberry Pi 5 | `--model 5` | aarch64 | `.img.xz` for SD card |
-| x86_64 PC/Laptop | `--model 21` | x86_64 | `.img.xz` for USB + `.iso` installer via Clonezilla |
-| x86_64 VM | `--model 20` | x86_64 | `.img.xz` for VirtualBox/VMware + `.iso` installer via Clonezilla |
+| x86_64 PC/Laptop | `--model 21` | x86_64 | `.img.xz` for USB + live-boot/Calamares `.iso` installer |
+| x86_64 VM | `--model 20` | x86_64 | `.img.xz` for VirtualBox/VMware + live-boot/Calamares `.iso` installer |
 
 ### Building locally (WSL2 or Linux host)
 

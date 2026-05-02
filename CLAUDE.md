@@ -211,6 +211,8 @@ Three tools in `.build/images/`:
 - **`shaughvos-imager`** — Shrinks and compresses images for release (`.img.xz`). For x86 ISOs, creates a live-boot ISO with squashfs + Calamares installer (replaces the old Clonezilla approach).
 - **`shaughvos-installer`** — Converts a running Debian 12+ system into shaughvOS
 
+For x86 image builds, keep the temporary raw image at **6 GiB** or larger. The v1.18.0 base outgrew the old 4 GiB temp image and failed during CI image generation.
+
 ### ISO Installer Architecture
 
 The installer ISO boots a full shaughvOS live environment using Debian's `live-boot` system. The root filesystem is compressed as squashfs. **Calamares** (industry-standard installer used by 20+ Linux distros) handles disk partitioning, filesystem creation, squashfs extraction, and GRUB installation — dynamically configured for the target hardware.
@@ -267,6 +269,15 @@ Two mechanisms exist (important for understanding conflicts):
 - **Root (legacy):** getty autologin on tty1 → `shaughvos-login` → `Run_AutoStart(2)` → `exec startx` — does NOT use a display manager
 - **Non-root (modern):** lightdm (`display-manager.service`) → autologin → Xfce session — comment in `shaughvos-login:34` confirms "non-root autologins are done via LightDM service since v7.2"
 - **`desktop` command:** Uses `systemctl start/stop lightdm` — works with the lightdm mechanism
+
+### Live ISO vs Installed System Boot — Two Different Worlds
+- **Live ISO (Install):** lightdm + admin autologin → Xfce → Calamares autostart. Getty autologin REMOVED.
+- **Live ISO (Try):** lightdm + admin autologin → Xfce desktop only (Calamares autostart suppressed by `shaughvos-live-check`).
+- **Installed system:** defaults to `multi-user.target` (TTY login). After `sudo desktop on`, LightDM (graphical.target) → greeter/autologin → Xfce session. Uses `50-shaughvos.conf` for session config, NOT `live-autologin.conf`.
+- **Base image (non-ISO):** root getty autologin → `exec startx`. No display manager. Completely different path.
+
+### shaughvOS CLI Tools Are Bash Aliases, Not Executables (v1.19.0 fix)
+`shaughvos-config`, `shaughvos-software`, `shaughvos-update`, etc. are defined ONLY as aliases in `rootfs/etc/bashrc.d/shaughvos-legacy.bash`. They work interactively but fail for `sudo <tool>` because sudo drops aliases AND `/boot/shaughvos/` is not in sudo's `secure_path`. The imager now creates `/usr/local/bin/` symlinks to `/boot/shaughvos/<tool>` for every direct shaughvOS CLI alias so non-interactive and sudo invocations resolve. `.github/scripts/validate-install-startup.py` checks the alias block against the imager symlink loop; when adding a new user-facing shaughvOS CLI, update BOTH.
 
 ## AGENTS.md Sync Requirement
 

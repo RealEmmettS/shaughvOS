@@ -70,15 +70,6 @@ Notes:
 			G_EXEC systemctl set-default graphical.target
 			systemctl enable lightdm.service 2>/dev/null
 
-			# Desktop mode owns lightdm — drop any getty autologin overrides
-			# so root/admin don't land on a console getty instead of the greeter.
-			# Note: the persistent autologin state is managed by the `autologin`
-			# command. We only remove the getty@tty1 drop-in here because
-			# lightdm owns tty7 (or the configured VT) when active.
-			rm -f /etc/systemd/system/getty@tty1.service.d/shaughvos-autologin.conf
-			rm -f /etc/systemd/system/console-getty.service.d/shaughvos-autologin.conf
-			systemctl daemon-reload
-
 			echo 2 > /boot/shaughvos/.shaughvos-autostart_index
 
 			# Runtime switch — harmless if lightdm is already running.

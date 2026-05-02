@@ -671,10 +671,11 @@ _EOF_
 				'apt-get update && apt-get install -y --no-install-recommends \
 					live-boot calamares calamares-settings-debian polkitd \
 					lightdm lightdm-gtk-greeter \
+					xserver-xorg xserver-xorg-core \
 					xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput \
 					plymouth plymouth-themes \
 					xfce4 xfce4-terminal xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar \
-					xinit dbus-user-session dbus-x11 x11-xserver-utils \
+					xinit dbus dbus-user-session dbus-x11 x11-common x11-xserver-utils libpam-systemd \
 					firefox-esr torbrowser-launcher \
 					xz-utils librsvg2-common \
 					rustc cargo \
@@ -778,14 +779,13 @@ _EOF_
 			chroot "$live_root" bash -c 'getent group wireshark > /dev/null && usermod -aG wireshark admin 2>/dev/null || true'
 
 			# Rebuild initramfs to ensure live-boot hooks are included after all package installs
-			chroot "$live_root" update-initramfs -u 2>/dev/null || true
+			G_EXEC chroot "$live_root" update-initramfs -u
 
 			# Register shaughvOS Plymouth theme and rebuild initramfs to include it
-			chroot "$live_root" bash -c \
-				'if [[ -f /usr/share/plymouth/themes/shaughvos/shaughvos.plymouth ]]; then
-					plymouth-set-default-theme shaughvos
-					update-initramfs -u
-				fi' 2>/dev/null || true
+			G_EXEC chroot "$live_root" bash -c \
+				'test -f /usr/share/plymouth/themes/shaughvos/shaughvos.plymouth &&
+					plymouth-set-default-theme shaughvos &&
+					update-initramfs -u'
 
 			### Step 5b: Prepare root filesystem for live-boot compatibility ###
 			G_SHAUGHVOS-NOTIFY 2 'Preparing root filesystem for live-boot mode'
@@ -819,10 +819,14 @@ SUDOERS
 			G_EXEC mkdir -p "$live_root/usr/share/backgrounds/shaughvos"
 			G_EXEC curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background.jpg" "https://raw.githubusercontent.com/${G_GITOWNER:-RealEmmettS}/shaughvOS/${G_GITBRANCH:-master}/assets/desktop_background.jpg"
 			# Download wallpaper variants
-			curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background_dark1.png" "$SHAUGHVOS_REPO/assets/desktop_background_dark1.png" || true
-			curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background_dark2.png" "$SHAUGHVOS_REPO/assets/desktop_background_dark2.png" || true
-			curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background_dark3.png" "$SHAUGHVOS_REPO/assets/desktop_background_dark3.png" || true
-			curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/desktop_background_4k.png" "$SHAUGHVOS_REPO/assets/desktop_background_4k.png" || true
+			for wallpaper in desktop_background_dark1.png desktop_background_dark2.png desktop_background_dark3.png desktop_background_4k.png
+			do
+				if ! curl -sSfLo "$live_root/usr/share/backgrounds/shaughvos/$wallpaper" "$SHAUGHVOS_REPO/assets/$wallpaper"
+				then
+					G_SHAUGHVOS-NOTIFY 1 "Optional wallpaper variant download failed: $wallpaper"
+				fi
+			done
+			unset -v wallpaper
 			# Ensure desktop autologin for the live session
 			G_EXEC mkdir -p "$live_root/etc/lightdm/lightdm.conf.d"
 			cat > "$live_root/etc/lightdm/lightdm.conf.d/live-autologin.conf" << 'AUTOLOGIN'
@@ -857,7 +861,7 @@ echo "--- starting session ---" >> "$LOG" 2>/dev/null
 exec /etc/X11/Xsession "$@"
 XWRAPPER
 			chmod +x "$live_root/usr/local/bin/shaughvos-xsession-wrapper"
-			chroot "$live_root" systemctl enable lightdm 2>/dev/null || true
+			G_EXEC chroot "$live_root" systemctl enable lightdm
 			# Belt and suspenders: create the display-manager symlink directly in case systemctl enable failed in chroot
 			ln -sf /lib/systemd/system/lightdm.service "$live_root/etc/systemd/system/display-manager.service"
 			# Live mode guard — suppresses Calamares autostart when booted with shaughvos.live=1
@@ -895,7 +899,7 @@ RemainAfterExit=yes
 [Install]
 WantedBy=graphical.target
 LIVESVC
-			chroot "$live_root" systemctl enable shaughvos-live-check 2>/dev/null || true
+			G_EXEC chroot "$live_root" systemctl enable shaughvos-live-check
 
 			### Step 5c: Install Dracula GTK theme, Papirus icons, and full Xfce theming ###
 			G_SHAUGHVOS-NOTIFY 2 'Installing Dracula GTK theme and Papirus-Dark icons'
@@ -1219,7 +1223,7 @@ DESKTOPCF
 			# fails with "command not found" — breaking the Config/Software desktop shortcuts
 			# and every non-interactive invocation.
 			G_SHAUGHVOS-NOTIFY 2 'Wiring shaughvOS CLI tools into /usr/local/bin/'
-			for cmd in shaughvos-config shaughvos-software shaughvos-update shaughvos-services shaughvos-launcher shaughvos-backup shaughvos-bugreport shaughvos-cleaner shaughvos-drive_manager shaughvos-explorer; do
+			for cmd in shaughvos-letsencrypt shaughvos-autostart shaughvos-cron shaughvos-launcher shaughvos-cleaner shaughvos-morsecode shaughvos-sync shaughvos-backup shaughvos-bugreport shaughvos-services shaughvos-config shaughvos-software shaughvos-update shaughvos-drive_manager shaughvos-explorer shaughvos-led_control shaughvos-cloudshell shaughvos-vpn shaughvos-ddns shaughvos-display shaughvos-benchmark shaughvos-servarr_to_ram; do
 				chroot "$live_root" ln -sf "/boot/shaughvos/$cmd" "/usr/local/bin/$cmd"
 			done
 			unset -v cmd
@@ -1330,7 +1334,8 @@ POLKIT
 			chroot "$live_root" apt-mark manual \
 				xfce4 xfce4-session xfwm4 xfdesktop4 xfce4-panel thunar xfce4-terminal \
 				lightdm lightdm-gtk-greeter dbus dbus-user-session dbus-x11 \
-				xserver-xorg-core xinit x11-common x11-xserver-utils \
+				xserver-xorg xserver-xorg-core xinit x11-common x11-xserver-utils \
+				xserver-xorg-video-fbdev xserver-xorg-video-vesa xserver-xorg-input-libinput \
 				polkitd libpam-systemd plymouth plymouth-themes papirus-icon-theme \
 				firefox-esr torbrowser-launcher nodejs npm librsvg2-common \
 				rustc cargo \

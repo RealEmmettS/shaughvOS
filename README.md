@@ -198,7 +198,7 @@ shaughvOS is built on Debian 12+ (Bookworm or later) with a minimal footprint op
 
 - **Kernel:** Standard Debian `linux-image-amd64` (x86) or Raspberry Pi kernel (ARM)
 - **Init:** systemd with boot-optimized service ordering
-- **Display manager:** LightDM with autologin
+- **Display manager:** LightDM with optional autologin when desktop mode is enabled
 - **Desktop:** Xfce 4 with Dracula GTK/icon/WM themes
 - **SSH:** Dropbear (lightweight) by default, OpenSSH available
 
