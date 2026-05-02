@@ -11,9 +11,7 @@ import re
 import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
-
 
 CRITICAL_PACKAGES = {
     "xfce4",
@@ -49,7 +47,6 @@ CRITICAL_PACKAGES = {
     "pavucontrol",
 }
 
-
 FORBIDDEN_PENTEST_PATHS = [
     ".build/images",
     "rootfs",
@@ -58,14 +55,11 @@ FORBIDDEN_PENTEST_PATHS = [
     "DEPLOYMENT.md",
 ]
 
-
 def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
-
 def fail(errors: list[str], message: str) -> None:
     errors.append(message)
-
 
 def shell_words(raw: str) -> set[str]:
     words: set[str] = set()
@@ -78,14 +72,12 @@ def shell_words(raw: str) -> set[str]:
         words.add(token)
     return words
 
-
 def apt_install_packages(text: str) -> set[str]:
     joined = re.sub(r"\\\r?\n", " ", text)
     packages: set[str] = set()
     for match in re.finditer(r"apt-get\s+install\s+(?:-[\w-]+\s+)*([^'\"\n;&]+)", joined):
         packages |= shell_words(match.group(1))
     return packages
-
 
 def apt_mark_packages(text: str) -> set[str]:
     joined = re.sub(r"\\\r?\n", " ", text)
@@ -94,14 +86,12 @@ def apt_mark_packages(text: str) -> set[str]:
         packages |= shell_words(match.group(1))
     return packages
 
-
 def imager_module_downloads(imager: str) -> set[str]:
     for match in re.finditer(r"^\s*for f in ([^;\r\n]+); do\r?$", imager, re.MULTILINE):
         modules = set(match.group(1).split())
         if modules and all(module.endswith(".conf") for module in modules):
             return modules
     return set()
-
 
 def calamares_sequence_modules(settings: str) -> set[str]:
     modules: set[str] = set()
@@ -111,20 +101,17 @@ def calamares_sequence_modules(settings: str) -> set[str]:
             modules.add(match.group(1))
     return modules
 
-
 def direct_shaughvos_aliases(legacy_bash: str) -> set[str]:
     aliases: set[str] = set()
     for match in re.finditer(r"alias\s+(shaughvos-[A-Za-z0-9_-]+)='/boot/shaughvos/\1'", legacy_bash):
         aliases.add(match.group(1))
     return aliases
 
-
 def symlinked_commands(imager: str) -> set[str]:
     match = re.search(r"for cmd in ([^;]+); do\s*\n\s*chroot \"\$live_root\" ln -sf", imager)
     if not match:
         return set()
     return set(match.group(1).split())
-
 
 def check_calamares(errors: list[str], imager: str) -> None:
     modules_dir = ROOT / "assets/calamares/modules"
@@ -149,7 +136,6 @@ def check_calamares(errors: list[str], imager: str) -> None:
     if unused_configs:
         fail(errors, f"Calamares module configs are not referenced in settings.conf: {sorted(unused_configs)}")
 
-
 def check_packages(errors: list[str], imager: str) -> None:
     shellprocess = read("assets/calamares/modules/shellprocess.conf")
     imager_installed = apt_install_packages(imager)
@@ -168,7 +154,6 @@ def check_packages(errors: list[str], imager: str) -> None:
     if missing_shellprocess_mark:
         fail(errors, f"Critical packages not apt-mark manual in Calamares shellprocess: {sorted(missing_shellprocess_mark)}")
 
-
 def check_autologin_ownership(errors: list[str]) -> None:
     desktop = read("rootfs/usr/local/bin/desktop")
     autologin = read("rootfs/usr/local/bin/autologin")
@@ -185,7 +170,6 @@ def check_autologin_ownership(errors: list[str]) -> None:
         if snippet not in autologin:
             fail(errors, f"autologin script does not manage expected file: {snippet}")
 
-
 def check_cli_symlinks(errors: list[str], imager: str) -> None:
     aliases = direct_shaughvos_aliases(read("rootfs/etc/bashrc.d/shaughvos-legacy.bash"))
     symlinks = symlinked_commands(imager)
@@ -201,7 +185,6 @@ def check_cli_symlinks(errors: list[str], imager: str) -> None:
     if nonexistent:
         fail(errors, f"Imager symlinks commands that do not exist under shaughvos/: {sorted(nonexistent)}")
 
-
 def check_removed_features(errors: list[str]) -> None:
     for rel in FORBIDDEN_PENTEST_PATHS:
         path = ROOT / rel
@@ -213,7 +196,6 @@ def check_removed_features(errors: list[str]) -> None:
                 continue
             if "pentest-tools" in text:
                 fail(errors, f"Removed pentest-tools reference found in runtime/doc path: {file_path.relative_to(ROOT)}")
-
 
 def check_required_steps(errors: list[str], imager: str) -> None:
     required_snippets = [
@@ -235,7 +217,6 @@ def check_required_steps(errors: list[str], imager: str) -> None:
         if snippet in imager:
             fail(errors, f"Required imager step is still best-effort: {snippet}")
 
-
 def main() -> int:
     errors: list[str] = []
     imager = read(".build/images/shaughvos-imager")
@@ -255,7 +236,6 @@ def main() -> int:
 
     print("Install/startup invariant check passed.")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())
