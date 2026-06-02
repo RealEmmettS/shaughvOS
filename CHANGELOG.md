@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Removed
+
+- **Removed the inherited DietPi `update_urls` nightly workflow** (`.github/workflows/update_urls.yml` and its helper `update_urls.bash`). It was the only `schedule:`-triggered workflow in the repo — running every night at 04:42 UTC — and had been failing deterministically every night since 2026-05-17 (an upstream release/architecture change in the inherited software catalog that nobody was reconciling). Nothing referenced it, its only output was an unmerged PR into the stale `dev` branch, and it still carried DietPi author attribution, so it was dropped as part of the project's upstream independence. The leftover `update_urls` branch and its stale PR were deleted alongside it.
+
 ---
 
 ## [1.20.0] — 2026-05-02
